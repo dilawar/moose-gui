@@ -13,6 +13,7 @@ __email__            = ""
 __status__           = "Development"
 
 import sys
+import signal
 import os
 import code
 import imp

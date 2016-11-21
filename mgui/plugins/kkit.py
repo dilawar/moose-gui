@@ -23,6 +23,8 @@ from mgui.plugins.kkitCalcArrow import *
 from mgui.plugins.kkitOrdinateUtil import *
 from mgui.plugins.setsolver import *
 
+from mgui.config import _logger
+
 
 class KkitPlugin(MoosePlugin):
     """Default plugin for MOOSE GUI"""
@@ -164,12 +166,6 @@ class KkitPlugin(MoosePlugin):
         graphView.layout().addWidget(self.currentRunView,0,0,2,1)
         return self.view
 
-# class AnotherKkitRunViewsCentralWidget(QWidget):
-
-#     def __init__():
-#         QWidget.__init__()
-
-#     def
 
 class AnotherKkitRunView(RunView):
 
@@ -393,8 +389,15 @@ class  KineticsWidget(EditorWidgetBase):
             #self.drawLine_arrow()
             if hasattr(self, 'view') and isinstance(self.view, QtGui.QWidget):
                 self.layout().removeWidget(self.view)
-            self.view = GraphicalView(self.modelRoot,self.sceneContainer,self.border,self,self.createdItem,minmaxratiodict)
-            if isinstance(self,kineticEditorWidget):
+            self.view = GraphicalView(
+                    self.modelRoot
+                    , self.sceneContainer
+                    , self.border
+                    , self
+                    , self.createdItem
+                    , minmaxratiodict
+                    )
+            if isinstance(self, kineticEditorWidget):
                 #self.getMooseObj()
                 self.mooseObjOntoscene()
                 self.drawLine_arrow()
@@ -404,12 +407,18 @@ class  KineticsWidget(EditorWidgetBase):
                 hLayout = QtGui.QGridLayout(self)
                 self.setLayout(hLayout)
                 hLayout.addWidget(self.view)
-            elif isinstance(self,kineticRunWidget):
+            elif isinstance(self, kineticRunWidget):
                 self.view.setRefWidget("runView")
                 hLayout = QtGui.QGridLayout(self)
                 self.setLayout(hLayout)
                 hLayout.addWidget(self.view)
-                self.view.fitInView(self.sceneContainer.itemsBoundingRect().x()-10,self.sceneContainer.itemsBoundingRect().y()-10,self.sceneContainer.itemsBoundingRect().width()+20,self.sceneContainer.itemsBoundingRect().height()+20,Qt.Qt.IgnoreAspectRatio)
+                self.view.fitInView(
+                        self.sceneContainer.itemsBoundingRect().x()-10
+                        , self.sceneContainer.itemsBoundingRect().y()-10
+                        , self.sceneContainer.itemsBoundingRect().width()+20
+                        , self.sceneContainer.itemsBoundingRect().height()+20
+                        , Qt.Qt.IgnoreAspectRatio
+                        )
 
     def getMooseObj(self):
         #This fun call 2 more function
@@ -855,6 +864,7 @@ class  KineticsWidget(EditorWidgetBase):
                 v.setRect(rectcompt.x()-comptWidth,rectcompt.y()-comptWidth,rectcompt.width()+(comptWidth*2),rectcompt.height()+(comptWidth*2))
 
 class kineticEditorWidget(KineticsWidget):
+
     def __init__(self, plugin,*args):
 
         KineticsWidget.__init__(self, plugin, *args)
@@ -863,9 +873,10 @@ class kineticEditorWidget(KineticsWidget):
         self._menus.append(self.insertMenu)
         self.insertMapper = QtCore.QSignalMapper(self)
         classlist = ['CubeMesh','CylMesh','Pool','BufPool','Function','Reac','Enz','MMenz','StimulusTable']
-        self.toolTipinfo = { "CubeMesh":"",
-                             "CylMesh" : "",
-                             "Pool":"A Pool is a collection of molecules of a given species in a given cellular compartment.\n It can undergo reactions that convert it into other pool(s). \nParameters: initConc (Initial concentration), diffConst (diffusion constant). Variable: conc (Concentration)",
+        self.toolTipinfo = { 
+                "CubeMesh":""
+                , "CylMesh" : ""
+                , "Pool": "A Pool is a collection of molecules of a given species in a given cellular compartment.\n It can undergo reactions that convert it into other pool(s). \nParameters: initConc (Initial concentration), diffConst (diffusion constant). Variable: conc (Concentration)",
                              "BufPool":"A BufPool is a buffered pool. \nIt is a collection of molecules of a given species in a given cellular compartment, that are always present at the same concentration.\n This is set by the initConc parameter. \nIt can undergo reactions in the same way as a pool.",
                              "Function":"A Func computes an arbitrary mathematical expression of one or more input concentrations of Pools. The output can be used to control the concentration of another Pool, or as an input to another Func",
                              "StimulusTable":"A StimulusTable stores an array of values that are read out during a simulation, and typically control the concentration of one of the pools in the model. \nParameters: size of table, values of entries, start and stop times, and an optional loopTime that defines the period over which the StimulusTable should loop around to repeat its values",
@@ -884,9 +895,9 @@ class kineticEditorWidget(KineticsWidget):
                 doc = doc.split('Description:')[-1].split('Name:')[0].strip()
             action.setToolTip(doc)
 
-    def GrViewresize(self,event):
+    def GrViewresize(self, event):
         #when Gui resize and event is sent which inturn call resizeEvent of qgraphicsview
-        pass
+        _logger.debug( "Resizing on event %s" % event )
         #self.view.resizeEvent1(event)
 
     def makePoolItem(self, poolObj, qGraCompt):

@@ -11,9 +11,12 @@ from PyQt4.QtGui import QPixmap
 from PyQt4.QtGui import QPainter
 from PyQt4.QtGui import QFont
 from PyQt4.QtCore import QPoint
+
 import moose
-from . import default
 import moogli
+
+from mgui.config import _logger
+from mgui.plugins import default
 
 class MorphologyEditor(moogli.MorphologyViewer):
 
@@ -74,10 +77,7 @@ class MorphologySimulator(moogli.MorphologyViewer):
         super(MorphologySimulator, self).hide()
 
     def start_drag(self, info_id):
-        # pixmap = QPixmap()
-        # painter = QPainter( pixmap )
-        # painter.setFont( QFont("Arial") );
-        # painter.drawText( QPoint(100, 100), info_id );
+        _logger.info( "started dragging" )
         mimeData = QMimeData()
         mimeData.data =("/" + info_id.partition("/")[2].partition("/")[0], moose.element(info_id))
         mimeData.setText(info_id)

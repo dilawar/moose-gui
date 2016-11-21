@@ -56,6 +56,21 @@ import errno
 from PyQt4.Qt import Qt
 from PyQt4 import QtGui, QtCore
 
+# Logger
+import logging
+logging.basicConfig(level=logging.DEBUG,
+    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+    datefmt='%m-%d %H:%M',
+    filename='moose-gui.log',
+    filemode='w'
+    )
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+console.setFormatter(formatter)
+_logger = logging.getLogger('')
+_logger.addHandler(console)
+
 TEMPDIR = tempfile.gettempdir()
 KEY_FIRSTTIME = 'firsttime'
 # KEY_STATE_FILE = 'statefile'
@@ -148,6 +163,7 @@ class MooseSetting(dict):
             cls._instance.qsettings.setValue(KEY_COLORMAP_DIR, os.path.join(MOOSE_GUI_DIR, 'colormaps'))
             cls._instance.qsettings.setValue(KEY_BIOMODEL_DIR, os.path.join(MOOSE_GUI_DIR, 'bioModels'))
             cls._instance.qsettings.setValue(KEY_ICON_DIR, os.path.join(MOOSE_GUI_DIR, 'icons'))
+            _logger.info( "Icon directory is %s" % KEY_ICON_DIR )
             cls._instance.qsettings.setValue(KEY_NUMPTHREADS, '1')
             cls._instance.qsettings.setValue(KEY_UNDO_LENGTH, unicode(MOOSE_UNDO_LENGTH))
             # These are to be checked at every run
@@ -242,20 +258,3 @@ LOGGER = logging.getLogger('moose')
 BENCHMARK_LOGGER = logging.getLogger('moose.benchmark')
 BENCHMARK_LOGGER.setLevel(logging.INFO)
 
-# Logger
-import logging
-logging.basicConfig(level=logging.DEBUG,
-    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-    datefmt='%m-%d %H:%M',
-    filename='moose-gui.log',
-    filemode='w'
-    )
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
-formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
-console.setFormatter(formatter)
-_logger = logging.getLogger('')
-_logger.addHandler(console)
-
-#
-# config.py ends here
