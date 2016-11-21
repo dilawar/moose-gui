@@ -24,34 +24,22 @@ from distutils.core import setup
 with open("README.md") as f:
     readme = f.read()
 
-classifiers = [
-    'Development Status :: 4 - Beta',
-    'Intended Audience :: Developers',
-    'License :: OSI Approved :: MIT License',
-    'Operating System :: OS Independent',
-    'Programming Language :: Python',
-    ]
-
 setup(
     name = "moose-gui",
     version = "1.0.0",
     description = "Graphical User Interface of MOOSE simulator",
     long_description = readme,
     packages = [ "mgui", 'mgui.plugins', 'mgui.colormaps', 'suds' ],
-    package_dir = { 
-        'mgui' : 'mgui'
+    package_dir = { 'mgui' : 'mgui'
         , 'suds' : 'suds'
         , 'mgui.plugins' : 'mgui/plugins'
         , 'mgui.colormaps' : 'mgui/colormaps'
         },
-    install_requires = [ ],
+    package_data = { 'mgui' : [ 'colormaps/*' ] },
     author = "Harsha Rani",
     author_email = "hrani@ncbs.res.in",
     maintainer = 'Dilawar Singh',
     maintainer_email = 'dilawars@ncbs.res.in',
     url = "http://github.com/BhallaLab/moose-gui",
     license='GPL',
-    classifiers=classifiers,
-    entry_points = { 'console_scripts' : [ 'moose=mgui.mgui:main' ] }
-
 )

@@ -32,7 +32,11 @@ from suds.reader import DocumentReader
 
 import re
 from . import soaparray
-from urllib.parse import urljoin
+
+try:
+    from urllib.parse import urljoin
+except Exception as e:
+    from urlparse import urljoin
 
 from logging import getLogger
 log = getLogger(__name__)

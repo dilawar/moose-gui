@@ -1,1 +1,1 @@
-all = [ "plugins", 'suds' ]
+from mgui import main

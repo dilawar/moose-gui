@@ -22,12 +22,27 @@ from suds.properties import Unskin
 from suds.transport import *
 
 import base64
-from http.cookiejar import CookieJar
-import http.client
+try:
+    from http.cookiejar import CookieJar
+except Exception as e:
+    from cookielib import CookieJar
+
+try:
+    import http.client
+except Exception as e:
+    import httplib 
+
 import socket
 import sys
-import urllib.request, urllib.error, urllib.parse
-from urllib.parse import urlparse
+try:
+    import urllib.request, urllib.error, urllib.parse
+except Exception as e:
+    import urllib
+
+try:
+    from urllib.parse import urlparse
+except Exception as e:
+    from urlparse import urlparse 
 
 from logging import getLogger
 log = getLogger(__name__)

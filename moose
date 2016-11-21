@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import mgui
+print( mgui.__file__ )
+print( dir(mgui) )
+mgui.main( )

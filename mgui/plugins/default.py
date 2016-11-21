@@ -46,7 +46,7 @@
 # Code:
 
 import sys
-import config
+from mgui import config
 import pickle
 import os
 from collections import defaultdict
@@ -56,23 +56,25 @@ from PyQt4.Qt import Qt
 
 import moose
 from moose import utils
-import mtree
-from mtoolbutton import MToolButton
-from msearch import SearchWidget
-from checkcombobox import CheckComboBox
 
-from mplugin import MoosePluginBase, EditorBase, EditorWidgetBase, PlotBase, RunBase
+import mgui.mtree as mtree
+
+from mgui.mtoolbutton import MToolButton
+from mgui.msearch import SearchWidget
+from mgui.checkcombobox import CheckComboBox
+
+from mgui.mplugin import MoosePluginBase, EditorBase, EditorWidgetBase, PlotBase, RunBase
 #from defaultToolPanel import DefaultToolPanel
 #from DataTable import DataTable
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
 from matplotlib.lines import Line2D
-from PlotWidgetContainer import PlotWidgetContainer
+from mgui.PlotWidgetContainer import PlotWidgetContainer
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import QDoubleValidator
-from .kkitUtil import getColor
-from .Runner import Runner
+from mgui.plugins.kkitUtil import getColor
+from mgui.plugins.Runner import Runner
 # from Runner import Runner
 # from __future__ import print_function
 from PyQt4 import QtGui, QtCore
@@ -89,8 +91,9 @@ from PyQt4.QtGui import QAction
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 #from EventBlocker import EventBlocker
 # from PlotNavigationToolbar import PlotNavigationToolbar
-from global_constants import preferences
-from .setsolver import *
+from mgui.global_constants import preferences
+from mgui.plugins.setsolver import *
+
 ELECTRICAL_MODEL = 0
 CHEMICAL_MODEL   = 1
 
@@ -313,7 +316,7 @@ class DefaultEditorWidget(EditorWidgetBase):
 ############################################################
 
 
-from mplot import CanvasWidget
+from mgui.mplot import CanvasWidget
 
 class RunView(RunBase):
     """A default runtime view implementation. This should be

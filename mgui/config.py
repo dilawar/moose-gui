@@ -85,7 +85,7 @@ KEY_ELECTRICAL_SIMDT = 'electrical/simdt'
 KEY_ELECTRICAL_PLOTDT = 'electrical/plotdt'
 KEY_SIMTIME = 'main/simtime'
 
-QT_VERSION = str(QtCore.QT_VERSION_STR).split('.')
+QT_VERSION = unicode(QtCore.QT_VERSION_STR).split('.')
 QT_MAJOR_VERSION = int(QT_VERSION[0])
 QT_MINOR_VERSION = int(QT_VERSION[1])
 
@@ -108,6 +108,18 @@ LOCAL_BUILD = False
 
 sys.path.append(os.path.join(MOOSE_PLUGIN_DIR))
 
+def qvalue( qsetting, key ):
+    """ Return value as unicode from QSetting object.
+    Calling toString is not compatible with python3.
+    """
+    qval = qsetting.value( key )
+    try: 
+        val = qval.toString( )
+    except Exception as e:
+        val = unicode( qval )
+    return u'%s' % val
+
+
 class MooseSetting(dict):
     """
     dict-like access to QSettings.
@@ -128,7 +140,7 @@ class MooseSetting(dict):
             firsttime, errs = init_dirs()
             for e in errs:
                 print(e)
-            QtCore.QCoreApplication.setOrganizationName('NCBS')
+            QtCore.QCoreApplication.setOrganizationName('NCBS Bangalore')
             QtCore.QCoreApplication.setOrganizationDomain('ncbs.res.in')
             QtCore.QCoreApplication.setApplicationName('MOOSE')
             cls._instance.qsettings = QtCore.QSettings()
@@ -137,7 +149,7 @@ class MooseSetting(dict):
             cls._instance.qsettings.setValue(KEY_BIOMODEL_DIR, os.path.join(MOOSE_GUI_DIR, 'bioModels'))
             cls._instance.qsettings.setValue(KEY_ICON_DIR, os.path.join(MOOSE_GUI_DIR, 'icons'))
             cls._instance.qsettings.setValue(KEY_NUMPTHREADS, '1')
-            cls._instance.qsettings.setValue(KEY_UNDO_LENGTH, str(MOOSE_UNDO_LENGTH))
+            cls._instance.qsettings.setValue(KEY_UNDO_LENGTH, unicode(MOOSE_UNDO_LENGTH))
             # These are to be checked at every run
             cls._instance.qsettings.setValue(KEY_HOME_DIR, os.environ['HOME'])
             cls._instance.qsettings.setValue(KEY_DEMOS_DIR, MOOSE_DEMOS_DIR)
@@ -145,14 +157,14 @@ class MooseSetting(dict):
             cls._instance.qsettings.setValue(KEY_DOCS_DIR, MOOSE_DOCS_DIR)
             cls._instance.qsettings.setValue(KEY_MOOSE_LOCAL_DIR, MOOSE_LOCAL_DIR)
             cls._instance.qsettings.setValue(KEY_LOCAL_BUILD, LOCAL_BUILD)
-            os.environ['NUMPTHREADS'] = str(cls._instance.qsettings.value(KEY_NUMPTHREADS))
+            os.environ['NUMPTHREADS'] = qvalue(cls._instance.qsettings, KEY_NUMPTHREADS)
         return cls._instance
 
     def __init__(self, *args, **kwargs):
         super(MooseSetting, self).__init__(self, *args, **kwargs)
 
     def __iter__(self):
-        return (str(key) for key in self.qsettings.allKeys())
+        return (unicode(key) for key in self.qsettings.allKeys())
 
     def __setitem__(self, key, value):
         if isinstance(key, str):
@@ -161,16 +173,18 @@ class MooseSetting(dict):
             raise TypeError('Expect only strings as keys')
 
     def __getitem__(self, key):
-        return str(self.qsettings.value(key))
+        val = qvalue( self.qsettings, key )
+        assert isinstance( val, unicode ), "Expected string, got %s" % type(val)
+        return val
 
     def keys(self):
-        return [str(key) for key in self.qsettings.allKeys()]
+        return [unicode(key) for key in self.qsettings.allKeys()]
 
     def values(self):
-        return [str(self.qsettings.value(key)) for key in self.qsettings.allKeys()]
+        return [unicode(self.qsettings.value(key)) for key in self.qsettings.allKeys()]
 
     def itervalues(self):
-        return (str(self.qsettings.value(key)) for key in self.qsettings.allKeys())
+        return (unicode(self.qsettings.value(key)) for key in self.qsettings.allKeys())
 
 def init_dirs():
     """Check if there is a `.moose` directory in user's home

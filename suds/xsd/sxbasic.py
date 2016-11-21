@@ -26,7 +26,10 @@ from suds.xsd.query import *
 from suds.sax import Namespace
 from suds.transport import TransportError
 from suds.reader import DocumentReader
-from urllib.parse import urljoin
+try:
+    from urllib.parse import urljoin
+except Exception as e:
+    from urlparse import urljoin
 
 from logging import getLogger
 log = getLogger(__name__)

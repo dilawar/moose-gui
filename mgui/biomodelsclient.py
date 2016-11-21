@@ -45,12 +45,13 @@
 
 # Code:
 
-from .suds.client import Client
-from .suds.transport.http import HttpTransport as SudsHttpTransport
 import os
-from . import config
 import pickle
 import moose
+
+from suds.client import Client
+from suds.transport.http import HttpTransport as SudsHttpTransport
+from . import config
 
 BIOMODELS_WSDL_URI = 'http://www.ebi.ac.uk/biomodels-main/services/BioModelsWebServices?wsdl'
 proxyOpts = dict()

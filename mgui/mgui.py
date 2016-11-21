@@ -69,11 +69,11 @@ from . import mload
 from .loaderdialog import LoaderDialog
 from .shell import get_shell_class
 from .objectedit import ObjectEditDockWidget
-from .mgui.newmodeldialog import DialogWidget
-from .mgui.biomodelsclient import BioModelsClientWidget
-from .mgui.MdiArea import MdiArea
-from .mgui.plugins.setsolver import *
-from .mgui.plugins.defines import *
+from .newmodeldialog import DialogWidget
+from .biomodelsclient import BioModelsClientWidget
+from .MdiArea import MdiArea
+from .plugins.setsolver import *
+from .plugins.defines import *
 
 __author__ = 'Subhasis Ray , HarshaRani, Aviral Goel, NCBS'
 

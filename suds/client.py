@@ -39,10 +39,15 @@ from suds.umx.basic import Basic as UmxBasic
 from suds.wsdl import Definitions
 from . import sudsobject
 
-from http.cookiejar import CookieJar
 from copy import deepcopy
-import http.client
-from urllib.parse import urlparse
+try:
+    from http.cookiejar import CookieJar
+    import http.client
+    from urllib.parse import urlparse
+except Exception as e:
+    from cookielib import CookieJar 
+    import httplib
+    from urlparse import urlparse
 
 from logging import getLogger
 log = getLogger(__name__)
