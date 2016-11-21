@@ -35,7 +35,7 @@ setup(
         , 'mgui.plugins' : 'mgui/plugins'
         , 'mgui.colormaps' : 'mgui/colormaps'
         },
-    package_data = { 'mgui' : [ 'colormaps/*' ] },
+    package_data = { 'mgui' : [ 'icons/*', 'colormaps/*', '../examples/*' ] },
     author = "Harsha Rani",
     author_email = "hrani@ncbs.res.in",
     maintainer = 'Dilawar Singh',

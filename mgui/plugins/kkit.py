@@ -1,24 +1,28 @@
 import sys
-from PyQt4 import QtGui, QtCore, Qt
-from .default import *
-from moose import *
-from moose.genesis import write
-from moose import SBML
-#sys.path.append('plugins')
-from mplugin import *
-from .kkitUtil import *
-from .kkitQGraphics import PoolItem, ReacItem,EnzItem,CplxItem,ComptItem
-from .kkitViewcontrol import *
-from .kkitCalcArrow import *
-from .kkitOrdinateUtil import *
 import posixpath
-from mtoolbutton import MToolButton
+from os.path import expanduser
+
+from PyQt4 import QtGui, QtCore, Qt
 from PyQt4.QtGui import QWidget
 from PyQt4.QtGui import QGridLayout
 from PyQt4.QtGui import QColor
-import RunWidget
-from os.path import expanduser
-from .setsolver import *
+
+from moose import *
+from moose.genesis import write
+from moose import SBML
+
+from mgui.mplugin import *
+from mgui.mtoolbutton import MToolButton
+import mgui.RunWidget as RunWidget
+
+from mgui.plugins.default import *
+from mgui.plugins.kkitUtil import *
+from mgui.plugins.kkitQGraphics import PoolItem, ReacItem,EnzItem,CplxItem,ComptItem
+from mgui.plugins.kkitViewcontrol import *
+from mgui.plugins.kkitCalcArrow import *
+from mgui.plugins.kkitOrdinateUtil import *
+from mgui.plugins.setsolver import *
+
 
 class KkitPlugin(MoosePlugin):
     """Default plugin for MOOSE GUI"""
@@ -26,15 +30,8 @@ class KkitPlugin(MoosePlugin):
         #print args
         MoosePlugin.__init__(self, *args)
         self.view = None
-        #self.plotView = PlotView(self)
-        #self.getRunView()
-        #self.plotView.dataTable = self.view._centralWidget.dataTable
-        #self.plotView.updateCallback = self.view._centralWidget.legendUpdate
-        #self.view._centralWidget.legendUpdate()
-        #self.dataTable = DataTable(self.dataRoot)
         self.fileinsertMenu = QtGui.QMenu('&File')
         if not hasattr(self,'SaveModelAction'):
-            #self.fileinsertMenu.addSeparator()
             self.saveModelAction = QtGui.QAction('Save', self)
             self.saveModelAction.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
             self.connect(self.saveModelAction, QtCore.SIGNAL('triggered()'), self.SaveModelDialogSlot)

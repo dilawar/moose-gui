@@ -1,9 +1,7 @@
-
-# -*- coding: utf-8 -*-
-
-
-"""Sidebar for plugins. The sidebar comprises of actions.
+"""
+Sidebar for plugins. The sidebar comprises of actions.
 Currently mode, connect and settings are defined.
+
 """
 
 __author__      =   "Aviral Goel"
@@ -32,6 +30,7 @@ class RunWidget(QSplitter):
         layout          = QGridLayout()
         self.setLayout(layout)
         self.plotWidgetContainer = None
+
     def setChildWidget(self, widget, wrap, row, col, rowspan = 1, colspan = 1):
         if wrap:
             scrollArea = QScrollArea()
