@@ -970,66 +970,11 @@ class kineticRunWidget(KineticsWidget):
             if isinstance(item,PoolItemCircle):
                 item.returnEllispeSize()
 
-    # def addSolver(self,solver):
-    #     print "\t addSolver--------"
-    #     compt = moose.wildcardFind(self.modelRoot+'/##[ISA=ChemCompt]')
-    #     comptinfo = moose.Annotator(moose.element(compt[0]).path+'/info')
-    #     print " $$$$$$$$$$$$$$ ",moose.element(compt[0].path)
-    #     previousSolver = comptinfo.solver
-
-    #     print "pre solver from kkit ",previousSolver, solver
-    #     currentSolver = previousSolver
-    #     if solver == "Gillespie":
-    #         currentSolver = "Gillespie"
-    #     elif solver == "Runge Kutta":
-    #         currentSolver = "Runge Kutta"
-    #     elif solver == " Exponential Euler":
-    #         currentSolver == "Exponential Euler"
-
-    #     if previousSolver != currentSolver:
-    #         if ( moose.exists( compt[0].path+'/stoich' ) ):
-    #             print "1"
-    #             self.deleteSolver()
-    #             self.setCompartmentSolver(compt,currentSolver)
-    #         elif ( moose.exists( compt[0].path+'/stoich' ) ):
-    #             print "2"
-    #             self.setCompartmentSolver(compt, currentSolver)
-    #         comptinfo.solver = currentSolver
-    #     else:
-    #         print "3", moose.exists(compt[0].path+'/stoich')
-    #         if not ( moose.exists( compt[0].path+'/stoich' ) ):
-    #             self.setCompartmentSolver(compt,currentSolver)
-    #     for x in moose.wildcardFind( self.modelRoot+'/data/graph#/#' ):
-    #                 x.tick = 18
-    #     #self.solverStatus()
-    # def setCompartmentSolver(self,compt,solver):
-    #     if solver == 'GSL' or solver == "Runge Kutta":
-    #         solver = 'gsl'
-    #     elif solver == 'Gillespie':
-    #         solver = 'gssa'
-    #     elif solver == "Exponential Euler":
-    #         solver = 'ee'
-    #     print "setCompartmentSolver ",solver
-    #     if ( solver == 'gsl' ):
-    #         ksolve = moose.Ksolve( compt[0].path+'/ksolve' )
-    #     if ( solver == 'gssa' ):
-    #         ksolve = moose.Gsolve( compt[0].path+'/gsolve' )
-    #     if (solver!= 'ee'):
-    #         stoich = moose.Stoich( compt[0].path+'/stoich' )
-    #         stoich.compartment = compt[0]
-    #         stoich.ksolve = ksolve
-    #         stoich.path = compt[0].path+'/##'
-    #     moose.reinit()
-
+'''
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     size = QtCore.QSize(1024 ,768)
-    #modelPath = 'Kholodenko'
     modelPath = 'acc27'
-    #modelPath = 'acc8'
-    #modelPath = '3ARECB'
-    #modelPath = '3AreacB'
-    #modelPath = '5AreacB'
     itemignoreZooming = False
     try:
         filepath = '../../Demos/Genesis_files/'+modelPath+'.g'
@@ -1053,3 +998,5 @@ if __name__ == "__main__":
       print("Error number",errno,"(%s)" %strerror)
       sys.exit(0)
     sys.exit(app.exec_())
+
+'''

@@ -34,7 +34,7 @@ def main():
     sys.excepthook = mWindow.handleException
     mWindow.show()
     config.settings[config.KEY_FIRSTTIME] = 'False'
-    sys.exit(app_.exec_())
+    sys.exit( app_.exec_() )
 
 if __name__ == '__main__':
     main()

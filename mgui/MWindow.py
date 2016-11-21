@@ -721,7 +721,6 @@ class MWindow(QtGui.QMainWindow):
         self.subWindowMenu.addActions(self.getSubWindowActions())
         return self.viewMenu
 
-
     def getEditActions(self):
         return None
 
@@ -909,6 +908,7 @@ class MWindow(QtGui.QMainWindow):
 
     def pauseSimulation(self):
         moose.stop()
+
     '''
     def continueSimulation(self):
         """TODO implement this somewhere else"""
@@ -918,16 +918,13 @@ class MWindow(QtGui.QMainWindow):
             simtime = 1.0
         moose.start(simtime)
     '''
-    #Harsha: added visible=True so that loadModelDialogSlot and NewModelDialogSlot call this function
-    #        to clear out object path
+
     def objectEditSlot(self, mobj, visible=True):
         """Slot for switching the current object in object editor."""
         self.objectEditDockWidget.setObject(mobj)
         self.objectEditDockWidget.setVisible(visible)
 
     def loadedModelsAction(self,modelPath,pluginName):
-        #Harsha: added under file Menu, Recently Loaded Models
-        #All the previously loaded chemical models, solver's and table's ticks are made -1
         for model in self._loadedModels:
             self.disableModel(model[0])
 
@@ -940,16 +937,12 @@ class MWindow(QtGui.QMainWindow):
         if compt:
             self.simulationdt = c.tickDt[11]
             self.plotdt = c.tickDt[16]
-        #index = [(ind, self._loadedModels[ind].index(modelPath)) for ind in xrange(len(self.loadedModels)) if item in self._loadedModels[ind]]
-        # for i,j in enumerate(self._loadedModels):
-        #     if j[0] == modelPath:
-        #         #del(self._loadedModels[i])
-        #         pass
-        #         break
 
-        self._loadedModels.append([modelPath,pluginName,action,self.simulationdt,self.plotdt])
-        if len(self._loadedModels)>5:
-            self._loadedModels.pop(0)
+        self._loadedModels.append(
+                [ modelPath,pluginName,action,self.simulationdt,self.plotdt ]
+                )
+        if len(self._loadedModels) > 5:
+            self._loadedModels.pop( 0 )
 
     def disableModel(self, modelPath):
         compt = moose.wildcardFind(modelPath + '/##[ISA=ChemCompt]')
@@ -1066,8 +1059,8 @@ class MWindow(QtGui.QMainWindow):
                     return
             else:
                 return ret,True
+
     def newModelDialogSlot(self):
-        #Harsha: Create a new dialog widget for model building
         self.popup.close()
         newModelDialog = DialogWidget()
         if newModelDialog.exec_():
@@ -1076,14 +1069,7 @@ class MWindow(QtGui.QMainWindow):
                 raise mexception.ElementNameError('Model path cannot be empty')
             if re.search('[ /]',modelPath) is not None:
                 raise mexception.ElementNameError('Model path should not containe / or whitespace')
-            #plugin = str(newModelDialog.submenu.currentText())
             plugin = str(newModelDialog.getcurrentRadioButton())
-            #Harsha: All model will be forced to load/build under /model,
-            #2014 sep 10: All the model will be forced to load/build model under /modelName/model
-            '''
-            modelContainer = moose.Neutral('/model')
-            modelRoot = moose.Neutral('%s/%s' % (modelContainer.path, modelPath))
-            '''
             if moose.exists(modelPath+'/model'):
                 moose.delete(modelPath)
 
@@ -1097,5 +1083,4 @@ class MWindow(QtGui.QMainWindow):
             modelAnno.dirpath = " "
             self.loadedModelsAction(modelRoot.path,plugin)
             self.setPlugin(plugin, modelRoot.path)
-            #Harsha: This will clear out object editor's objectpath and make it invisible
             self.objectEditSlot('/', False)

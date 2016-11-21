@@ -2,24 +2,23 @@ import sys
 import os
 import math
 import re
-from PyQt4 import QtGui, QtCore, Qt
-#import pygraphviz as pgv
-import networkx as nx
-#sys.path.insert(0, '/home/harsha/BuildQ/gui')
-import numpy as np
 import config
 import pickle 
-from .default import *
-from moose import *
-sys.path.append('plugins')
-from mplugin import *
-from .kkitUtil import *
-from .kkitQGraphics import PoolItem, ReacItem,EnzItem,CplxItem,ComptItem
-from .kkitViewcontrol import *
-from .kkitCalcArrow import *
-from .kkitOrdinateUtil import *
 import posixpath
-from mtoolbutton import MToolButton
+
+from PyQt4 import QtGui, QtCore, Qt
+
+from moose import *
+import networkx as nx
+import numpy as np
+
+from mgui.plugins.default import *
+from mgui.plugins.kkitUtil import *
+from mgui.plugins.kkitQGraphics import PoolItem, ReacItem,EnzItem,CplxItem,ComptItem
+from mgui.plugins.kkitViewcontrol import *
+from mgui.plugins.kkitCalcArrow import *
+from mgui.plugins.kkitOrdinateUtil import *
+from mgui.mtoolbutton import MToolButton
 
 class KkitPlugin(MoosePlugin):
     """Default plugin for MOOSE GUI"""
