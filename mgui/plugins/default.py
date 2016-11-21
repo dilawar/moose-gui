@@ -1226,7 +1226,7 @@ class PlotWidget(QWidget):
         if fileDialog2.exec_():
             directory = fileDialog2.directory().path()
             for line in list(self.lineToDataSource.keys()):
-		        self.saveCsv(line,directory)
+                        self.saveCsv(line,directory)
 
 
     def getMenus(self):

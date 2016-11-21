@@ -82,7 +82,7 @@ class KkitEditorView(MooseEditorView):
 
     def SaveModelDialogSlot(self):
         type_sbml = 'SBML'
-	print(" here in saveModelDialog")
+        print(" here in saveModelDialog")
         filters = {'SBML(*.xml)': type_sbml}
         filename,filter_ = QtGui.QFileDialog.getSaveFileNameAndFilter(None,'Save File','',';;'.join(filters))
         extension = ""
@@ -117,14 +117,14 @@ class KkitEditorView(MooseEditorView):
 
 class  KineticsWidget(EditorWidgetBase):
     def __init__(self, *args): 
-	EditorWidgetBase.__init__(self, *args)
+        EditorWidgetBase.__init__(self, *args)
         self.setAcceptDrops(True)
         self.border = 10        
         self.sceneContainer = QtGui.QGraphicsScene(self)
         self.sceneContainer.setSceneRect(self.sceneContainer.itemsBoundingRect())
         self.sceneContainer.setBackgroundBrush(QtGui.QColor(230,220,219,120))
 
-	self.insertMenu = QtGui.QMenu('&Insert')
+        self.insertMenu = QtGui.QMenu('&Insert')
         self._menus.append(self.insertMenu)
         self.insertMapper = QtCore.QSignalMapper(self)
 
@@ -227,7 +227,7 @@ class  KineticsWidget(EditorWidgetBase):
                 self.layout().removeWidget(self.view)
             self.view = GraphicalView(self.sceneContainer,self.border,self)
             hLayout = QtGui.QGridLayout(self)
-	    self.setLayout(hLayout)
+            self.setLayout(hLayout)
             hLayout.addWidget(self.view)
             #self.layout().addWidget(self.view)
     

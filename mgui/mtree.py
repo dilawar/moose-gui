@@ -119,17 +119,17 @@ class MooseTreeModel(QtCore.QAbstractItemModel):
     
 class MooseTreeItem(QtGui.QTreeWidgetItem):
     def __init__(self, *args):
-	QtGui.QTreeWidgetItem.__init__(self, *args)
-	self.mobj = None
+        QtGui.QTreeWidgetItem.__init__(self, *args)
+        self.mobj = None
 
     def setObject(self, element):
         self.mobj = moose.element(element)
-	self.setText(0, QtCore.QString(self.mobj.path.rpartition('/')[-1]))
-	self.setText(1, QtCore.QString(self.mobj.className))
-	#self.setToolTip(0, QtCore.QString('class:' + self.mooseObj_.className))
+        self.setText(0, QtCore.QString(self.mobj.path.rpartition('/')[-1]))
+        self.setText(1, QtCore.QString(self.mobj.className))
+        #self.setToolTip(0, QtCore.QString('class:' + self.mooseObj_.className))
 
     def updateSlot(self):
-	self.setText(0, QtCore.QString(self.mobj.name))
+        self.setText(0, QtCore.QString(self.mobj.name))
 
 
 class MooseTreeWidget(QtGui.QTreeWidget):
@@ -159,10 +159,10 @@ class MooseTreeWidget(QtGui.QTreeWidget):
         elementInserted(melement) emitted when a new element is inserted.
 
         """
-	QtGui.QTreeWidget.__init__(self, *args)
+        QtGui.QTreeWidget.__init__(self, *args)
         self.header().hide()
-	self.rootElement = moose.element('/')
-	self.odict = {}
+        self.rootElement = moose.element('/')
+        self.odict = {}
         self.recreateTree()        
 
     def setupTree(self, obj, parent, odict):
@@ -183,19 +183,19 @@ class MooseTreeWidget(QtGui.QTreeWidget):
         for ii in MooseTreeWidget.ignored:
             if obj.path.startswith(ii):
                 return None
-	item = MooseTreeItem(parent)
-	item.setObject(obj)
-	odict[obj] = item
+        item = MooseTreeItem(parent)
+        item.setObject(obj)
+        odict[obj] = item
         # TODO: check and verify that this still works with synapses -
         # there have been change in API. - Subha, Fri Sep 19 19:04:35 IST 2014
 
-	for child in obj.children:    
+        for child in obj.children:    
             ch = child
             if child.name in obj.getFieldNames('fieldElementFinfo'):
                 ch = obj.getField(child.name)
             for elm in ch:
                 self.setupTree(moose.element(elm), item, odict)      
-	return item
+        return item
 
     def recreateTree(self, root=None):        
         """Clears the current tree and recreates the tree. If root is not

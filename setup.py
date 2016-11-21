@@ -33,8 +33,6 @@ classifiers = [
     'License :: OSI Approved :: MIT License',
     'Operating System :: OS Independent',
     'Programming Language :: Python',
-    'Programming Language :: Python :: 2.6',
-    'Programming Language :: Python :: 2.7',
     ]
 
 setup(
@@ -42,10 +40,12 @@ setup(
     version = "1.0.0",
     description = "Graphical User Interface of MOOSE simulator",
     long_description = readme,
-    packages = [ "mgui", 'mgui.plugins', 'suds' ],
-    package_dir = { 'mgui' : 'mgui'
+    packages = [ "mgui", 'mgui.plugins', 'mgui.colormaps', 'suds' ],
+    package_dir = { 
+        'mgui' : 'mgui'
         , 'suds' : 'suds'
         , 'mgui.plugins' : 'mgui/plugins'
+        , 'mgui.colormaps' : 'mgui/colormaps'
         },
     install_requires = [ ],
     author = "Harsha Rani",

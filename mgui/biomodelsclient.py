@@ -67,20 +67,20 @@ for k,v in list({'http':'http_proxy','https':'https_proxy'}.items()):
 class HttpTransport(SudsHttpTransport):
     """HttpTransport which properly obeys the ``*_proxy`` environment variables."""
     def u2handlers(self):
-	return []
+        return []
 '''
 class BioModelsClient(Client):
     def __init__(self, WSDL_URI=BIOMODELS_WSDL_URI):
-	"""Initialize the client with the available queries listed in
-	the WSDL file. All the queries can be executed using the following syntax:
-	
-	client.service.queryToBeExecuted()
-	"""
-	try:
-	    Client.__init__(self, WSDL_URI,proxy=proxyOpts)
-	    #Client.__init__(self, WSDL_URI,transport=HttpTransport())
-	except Exception as e:
-	    print(e)
+        """Initialize the client with the available queries listed in
+        the WSDL file. All the queries can be executed using the following syntax:
+        
+        client.service.queryToBeExecuted()
+        """
+        try:
+            Client.__init__(self, WSDL_URI,proxy=proxyOpts)
+            #Client.__init__(self, WSDL_URI,transport=HttpTransport())
+        except Exception as e:
+            print(e)
 
 from PyQt4.Qt import Qt
 from PyQt4 import QtCore, QtGui
@@ -102,9 +102,9 @@ class BioModelsClientWidget(QtGui.QDialog):
                             ('Model Ids by Publication', 'getModelsIdByPublication'),
                             ('Model Ids by Taxonomy', 'getModelsIdByTaxonomy'),]
     def __init__(self, parent=None):
-	QtGui.QWidget.__init__(self, parent)
+        QtGui.QWidget.__init__(self, parent)
         self.setWindowTitle('Connect to BioModels')
-	self.client = BioModelsClient()
+        self.client = BioModelsClient()
         self.queryPanel = QtGui.QWidget(self)
         self.queryModelLabel = QtGui.QLabel('Get ', self.queryPanel)
         self.queryModelCombo = QtGui.QComboBox(self.queryPanel)
@@ -139,8 +139,8 @@ class BioModelsClientWidget(QtGui.QDialog):
         self.setupActions()
         self.client.set_options(proxy=proxyOpts)
         
-	# TODO:
-	# proxy = [ can be set using set_option(proxy={'http':'proxyhost:port', ...}) function
+        # TODO:
+        # proxy = [ can be set using set_option(proxy={'http':'proxyhost:port', ...}) function
 
     def setupActions(self):
         self.connect(self.queryLineEdit, QtCore.SIGNAL('returnPressed()'), self.runQuery)
