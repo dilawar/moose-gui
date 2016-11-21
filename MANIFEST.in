@@ -1,0 +1,3 @@
+include mgui/colormaps/*
+recursive-include mgui *.pkl
+include bioModels/*
