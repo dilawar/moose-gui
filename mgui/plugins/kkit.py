@@ -970,7 +970,6 @@ class kineticRunWidget(KineticsWidget):
             if isinstance(item,PoolItemCircle):
                 item.returnEllispeSize()
 
-'''
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     size = QtCore.QSize(1024 ,768)
@@ -999,4 +998,3 @@ if __name__ == "__main__":
       sys.exit(0)
     sys.exit(app.exec_())
 
-'''
