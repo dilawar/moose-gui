@@ -44,7 +44,6 @@ from .plugins.defines import *
 # Logger
 _logger = config._logger
 
-
 # This maps model subtypes to corresponding plugin names. Should be
 # moved to a separate property file perhaps
 subtype_plugin_map = {  
@@ -57,7 +56,6 @@ subtype_plugin_map = {
 def busyCursor():
     app = QtGui.qApp
     app.setOverrideCursor(QtGui.QCursor(Qt.Qt.BusyCursor)) 
-    #shows a hourglass - or a busy/working arrow
 
 def freeCursor():
     app = QtGui.qApp
@@ -271,16 +269,15 @@ class MWindow(QtGui.QMainWindow):
         QtGui.qApp.closeAllWindows()
 
     def handleException(self, t, v, s):
-        """This handler will show warning messages for error exceptions. Show
+        """
+        This handler will show warning messages for error exceptions. Show
         info at status bar for non-error exceptions. It will replace
         sys.excepthook and has the same signature (except being bound
         to this object).
 
-        t : exception type
-
-        v : exception value
-
-        s: traceback object.
+            t : exception type
+            v : exception value
+            s: traceback object.
 
         """
         traceback.print_exception(t, v, s)
@@ -294,9 +291,9 @@ class MWindow(QtGui.QMainWindow):
             QtGui.QMessageBox.critical(self, title, '\n'.join((title, trace)))
 
     def getPluginNames(self):
-        """Return pluginNames attribute or create it by retrieving
+        """
+        Return pluginNames attribute or create it by retrieving
         available plugin names from plugin/list.txt file.
-
         """
         if self.pluginNames is None:
             pluginF = os.path.join( config.MOOSE_GUI_DIR, 'plugins', 'list.txt' )
@@ -317,12 +314,16 @@ class MWindow(QtGui.QMainWindow):
         if (not re) and name in sys.modules:
             return sys.modules[name]
         fp, pathname, description = imp.find_module(name, [config.MOOSE_PLUGIN_DIR])
+
         try:
             module = imp.load_module(name, fp, pathname, description)
-        finally:
-            if fp:
-                fp.close()
+        except Exception as e:
+            _logger.warn( "Could not load module %s' % fp" )
+            _logger.debug( "Error was %s" % e )
+
+        if fp: fp.close()
         return module
+
 
     def getMyDockWidgets(self):
         """Return a list of dockwidgets that belong to the top

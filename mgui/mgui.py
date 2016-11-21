@@ -23,7 +23,7 @@ def main():
     mWindow.setWindowState(QtCore.Qt.WindowMaximized)
     sys.excepthook = mWindow.handleException
     mWindow.show()
-    config.settings[config.KEY_FIRSTTIME] = 'False' # string not boolean
+    config.settings[config.KEY_FIRSTTIME] = 'False'
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
