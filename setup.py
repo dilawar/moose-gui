@@ -19,10 +19,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import sys
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from distutils.core import setup
 
 with open("README.md") as f:
     readme = f.read()
