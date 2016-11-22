@@ -21,28 +21,18 @@ import os
 import sys
 from distutils.core import setup
 
+with open("README.md") as f:
+    readme = f.read()
+
 setup(
     name = "moosegui",
     version = "1.0.0",
     description = "Graphical User Interface of MOOSE simulator",
-    long_description = open( 'README.md' ).read(),
-    packages = [ "moosegui"
-        , "moosegui.mgui"
-        , 'moosegui.mgui.plugins'
-        , 'moosegui.suds' 
-        ],
-    package_dir = { 
-        'moosegui' : '.'
-        , 'moosegui.mgui' : 'mgui'
-        , 'moosegui.mgui.plugins' : 'mgui/plugins'
-        , 'moosegui.suds' : 'suds'
-        },
-    package_data = { 
-        'moosegui' : [ 'moose', 'examples/*' ]
-        , 'moosegui.mgui' : [ 'icons/*', 'colormaps/*', ]
-        , 'moosegui.mgui.plugins' : [ 'datastore/*', 'list.txt' ]
-        },
-    author = open('AUTHOR').read(),
+    long_description = readme,
+    packages = [ "mgui" ]
+    package_dir = { 'mgui' : 'mgui' },
+    author = "Dilawar Singh"
+    author_email = "dilawars@ncbs.res.in",
     maintainer = 'Dilawar Singh',
     maintainer_email = 'dilawars@ncbs.res.in',
     url = "http://github.com/BhallaLab/moose-gui",
