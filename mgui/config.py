@@ -108,6 +108,7 @@ MOOSE_DOCS_DIR =  '/usr/share/doc/moose'
 
 MOOSE_GUI_DIR = os.path.dirname(os.path.abspath(__file__))
 MOOSE_PLUGIN_DIR = os.path.join(MOOSE_GUI_DIR, 'plugins')
+MOOSE_ICON_DIR = os.path.join(MOOSE_GUI_DIR, 'icons' )
 NEUROKIT_PLUGIN_DIR = os.path.join(MOOSE_GUI_DIR, 'plugins/NeuroKit')
 MOOSE_NUMPTHREADS = '1'
 

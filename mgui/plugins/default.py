@@ -426,23 +426,26 @@ class SchedulingWidget(QtGui.QWidget):
 
         bar = QToolBar("Run", self)
 
-        self.resetAction = bar.addAction( QIcon('icons/arrow_undo.png')
-                                        , 'Reset'
-                                        , self.resetSimulation
-                                        )
+        self.resetAction = bar.addAction( 
+                QIcon( os.path.join( config.MOOSE_ICON_DIR, 'reset.png' ) )
+                , 'Reset'
+                , self.resetSimulation
+                )
         self.resetAction.setToolTip('Reset simulation.')
 
-        self.runAction = bar.addAction( QIcon('icons/run.png')
-                                      , 'Run'
-                                      , self.runSimulation
-                                      )
+        self.runAction = bar.addAction( 
+                QIcon( os.path.join( config.MOOSE_ICON_DIR, 'run.png') )
+                , 'Run'
+                , self.runSimulation
+                )
         self.runAction.setToolTip('Run simulation.')
 
 
-        self.stopAction = bar.addAction( QIcon('icons/stop.png')
-                                       , 'Stop'
-                                       , self.runner.togglePauseSimulation
-                                       )
+        self.stopAction = bar.addAction( 
+                QIcon( os.path.join( config.MOOSE_ICON_DIR,  'stop.png') )
+                , 'Stop'
+                , self.runner.togglePauseSimulation
+                )
         self.stopAction.setToolTip('Stop simulation.')
 
         bar.addSeparator()

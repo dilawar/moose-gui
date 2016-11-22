@@ -16,13 +16,14 @@ __status__      =   "Development"
 import sys
 import os
 from . import SettingsDialog
-from PyQt4 import QtGui, Qt
+
 from PyQt4.QtGui import QWidget
 from PyQt4.QtGui import QScrollArea
 from PyQt4.QtGui import QGridLayout
 from PyQt4.QtGui import QSplitter
 
 class RunWidget(QSplitter):
+    """ Run view """
 
     def __init__(self, modelRoot, *args, **kwargs):
         super(RunWidget, self).__init__(None)
