@@ -18,11 +18,17 @@ import os
 import Tkinter as tk
 import logging
 
-menuList_ = { 
-        "Model" : [ ("New", "Ctrl+N", "Control-n" )
-            , ("Open", "Ctrl+O", "Control-o")
+menus_ = [ 'File', 'Insert' ]
+menu_dict_ = { 
+        "File" : [ ("New Model", "Ctrl+N", "Control-n" )
+            , ("Load Model", "Ctrl+O", "Control-o")
             , ("Exit", "Ctrl+Q", "Control-q") ]
-            }
+        , "Insert" : [ ( "CubeMesh", )
+            , ( "CylMesh" , )
+            , ( "Pool" , )
+            , ( "BufPool", )
+            , ( "Reac" , ) ]
+        }
 
 def callback( action, parent ):
     logging.info( "Got action %s" % action )
@@ -37,11 +43,11 @@ def main( parent ):
 
     """
     menu = tk.Menu( parent )
-    for menuName in menuList_ :
+    for menuName in menus_ :
         logging.info( "Adding menu %s" % menuName )
         thismenu = tk.Menu( menu )
         menu.add_cascade( label = menuName, menu = thismenu )
-        for action in menuList_[ menuName ]:
+        for action in menu_dict_[ menuName ]:
             shortcut, underline = '', 0
             cmd = action[0]
             if len( action ) > 1:

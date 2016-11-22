@@ -17,6 +17,8 @@ import os
 
 import menus
 import canvas
+import toolbar 
+
 import Tkinter as tk
 
 import logging
@@ -30,6 +32,8 @@ def main( ):
     # root.minsize( 800, 800 )
     # Handle all menues.
     menus.main(  root )
+    # Add toolbar
+    toolbar.main( root )
     # All frames
     canvas.main( root )
     tk.mainloop( )
