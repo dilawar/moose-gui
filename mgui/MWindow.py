@@ -153,18 +153,18 @@ class MWindow(QtGui.QMainWindow):
         layout.setContentsMargins(QtCore.QMargins(20,20,20,20))
 
         self.menuitems = OrderedDict([
-            ("Fig2C" ,  "examples/paper-2015/Fig2_elecModels/Fig2C.py"),
-            ("Fig2D (35s)", "examples/paper-2015/Fig2_elecModels/Fig2D.py"),
-            ("Fig2E", "examples/paper-2015/Fig2_elecModels/Fig2E.py"),
-            ("Fig3B_Gssa", "examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
-            ("Fig3C_Gsl", "examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
-            ("Fig3D", "examples/paper-2015/Fig3_chemModels/Fig3D.py"),
-            ("Fig4B", "examples/paper-2015/Fig4_ReacDiff/Fig4B.py"  ),
-            ("Fig4K",  "examples/paper-2015/Fig4_ReacDiff/rxdSpineSize.py"),
-            ("Fig5A (20s)", "examples/paper-2015/Fig5_CellMultiscale/Fig5A.py"),
-            ("Fig5BCD (240s)", "examples/paper-2015/Fig5_CellMultiscale/Fig5BCD.py"),
-            ("Fig6A (60s)", "examples/paper-2015/Fig6_NetMultiscale/Fig6A.py" ),
-            ("Reduced6 (200s)", "examples/paper-2015/Fig6_NetMultiscale/ReducedModel.py"),
+            ("Fig2C" ,  "examples/gFig2_elecModels/Fig2C.py"),
+            ("Fig2D (35s)", "examples/gFig2_elecModels/Fig2D.py"),
+            ("Fig2E", "examples/gFig2_elecModels/Fig2E.py"),
+            ("Fig3B_Gssa", "examples/gFig3_chemModels/Fig3ABC.g"),
+            ("Fig3C_Gsl", "examples/gFig3_chemModels/Fig3ABC.g"),
+            ("Fig3D", "examples/gFig3_chemModels/Fig3D.py"),
+            ("Fig4B", "examples/gFig4_ReacDiff/Fig4B.py"  ),
+            ("Fig4K",  "examples/gFig4_ReacDiff/rxdSpineSize.py"),
+            ("Fig5A (20s)", "examples/gFig5_CellMultiscale/Fig5A.py"),
+            ("Fig5BCD (240s)", "examples/gFig5_CellMultiscale/Fig5BCD.py"),
+            ("Fig6A (60s)", "examples/gFig6_NetMultiscale/Fig6A.py" ),
+            ("Reduced6 (200s)", "examples/gFig6_NetMultiscale/ReducedModel.py"),
             ("Squid" ,  "examples/squid/squid_demo.py")
             ])
         layout.setContentsMargins(QtCore.QMargins(20,20,20,20))
@@ -262,7 +262,7 @@ class MWindow(QtGui.QMainWindow):
         import subprocess, shlex
         t = os.path.abspath(filepath)
         directory, filename = os.path.split(t)
-        p = subprocess.Popen(["python", filename], cwd=directory)
+        p = subprocess.Popen([ sys.executable, filename], cwd=directory)
         p.wait()
         freeCursor()
 
@@ -321,6 +321,7 @@ class MWindow(QtGui.QMainWindow):
         except Exception as e:
             _logger.warn( "Could not load module %s' % fp" )
             _logger.debug( "Error was %s" % e )
+            module = ""
 
         if fp: fp.close()
         return module
@@ -591,18 +592,18 @@ class MWindow(QtGui.QMainWindow):
 
         if not hasattr(self, 'Paper_2015'):
             self.menuitems = OrderedDict([
-                                        ("Fig2C (6s)" ,     "examples/paper-2015/Fig2_elecModels/Fig2C.py"),
-                                        ("Fig2D (35s)",     "examples/paper-2015/Fig2_elecModels/Fig2D.py"),
-                                        ("Fig2E (5s)" ,     "examples/paper-2015/Fig2_elecModels/Fig2E.py"),
-                                        ("Fig3B_Gssa (2s)", "examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
-                                        ("Fig3C_Gsl (2s)",  "examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
-                                        ("Fig3D (1s)",      "examples/paper-2015/Fig3_chemModels/Fig3D.py"),
-                                        ("Fig4B (10s)",     "examples/paper-2015/Fig4_ReacDiff/Fig4B.py"  ),
-                                        ("Fig4K",           "examples/paper-2015/Fig4_ReacDiff/rxdSpineSize.py"),
-                                        ("Fig5A (20s)",     "examples/paper-2015/Fig5_CellMultiscale/Fig5A.py"),
-                                        ("Fig5BCD (240s)" , "examples/paper-2015/Fig5_CellMultiscale/Fig5BCD.py"),
-                                        ("Fig6A (60s)",     "examples/paper-2015/Fig6_NetMultiscale/Fig6A.py" ),
-                                        ("Reduced6 (200s)", "examples/paper-2015/Fig6_NetMultiscale/ReducedModel.py"),
+                                        ("Fig2C (6s)" ,     "examples/gFig2_elecModels/Fig2C.py"),
+                                        ("Fig2D (35s)",     "examples/gFig2_elecModels/Fig2D.py"),
+                                        ("Fig2E (5s)" ,     "examples/gFig2_elecModels/Fig2E.py"),
+                                        ("Fig3B_Gssa (2s)", "examples/gFig3_chemModels/Fig3ABC.g"),
+                                        ("Fig3C_Gsl (2s)",  "examples/gFig3_chemModels/Fig3ABC.g"),
+                                        ("Fig3D (1s)",      "examples/gFig3_chemModels/Fig3D.py"),
+                                        ("Fig4B (10s)",     "examples/gFig4_ReacDiff/Fig4B.py"  ),
+                                        ("Fig4K",           "examples/gFig4_ReacDiff/rxdSpineSize.py"),
+                                        ("Fig5A (20s)",     "examples/gFig5_CellMultiscale/Fig5A.py"),
+                                        ("Fig5BCD (240s)" , "examples/gFig5_CellMultiscale/Fig5BCD.py"),
+                                        ("Fig6A (60s)",     "examples/gFig6_NetMultiscale/Fig6A.py" ),
+                                        ("Reduced6 (200s)", "examples/gFig6_NetMultiscale/ReducedModel.py"),
                                         ("Squid" ,          "examples/squid/squid_demo.py")
                                      ])
             self.subMenu = QtGui.QMenu('Paper_2015_Demos')
