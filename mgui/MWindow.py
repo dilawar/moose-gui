@@ -41,6 +41,8 @@ from mgui.biomodelsclient import BioModelsClientWidget
 from mgui.MdiArea import MdiArea
 from mgui.plugins.setsolver import *
 from mgui.plugins.defines import *
+import mgui.examples as demos
+
 
 # Logger
 _logger = config._logger
@@ -130,7 +132,7 @@ class MWindow(QtGui.QMainWindow):
         self.setPlugin('default', '/')
         self.plugin.getEditorView().getCentralWidget().parent().close()
         self.popup = None
-        # self.createPopup()
+        self.createPopup()
 
     def createPopup(self):
         self.popup = dialog = QDialog(self)
@@ -152,21 +154,7 @@ class MWindow(QtGui.QMainWindow):
         loadNeuronalModelButton  = QPushButton("Load Neuronal Model")
         layout.setContentsMargins(QtCore.QMargins(20,20,20,20))
 
-        self.menuitems = OrderedDict([
-            ("Fig2C" ,  "examples/Fig2_elecModels/Fig2C.py"),
-            ("Fig2D (35s)", "examples/Fig2_elecModels/Fig2D.py"),
-            ("Fig2E", "examples/Fig2_elecModels/Fig2E.py"),
-            ("Fig3B_Gssa", "examples/Fig3_chemModels/Fig3ABC.g"),
-            ("Fig3C_Gsl", "examples/Fig3_chemModels/Fig3ABC.g"),
-            ("Fig3D", "examples/Fig3_chemModels/Fig3D.py"),
-            ("Fig4B", "examples/Fig4_ReacDiff/Fig4B.py"  ),
-            ("Fig4K",  "examples/Fig4_ReacDiff/rxdSpineSize.py"),
-            ("Fig5A (20s)", "examples/Fig5_CellMultiscale/Fig5A.py"),
-            ("Fig5BCD (240s)", "examples/Fig5_CellMultiscale/Fig5BCD.py"),
-            ("Fig6A (60s)", "examples/Fig6_NetMultiscale/Fig6A.py" ),
-            ("Reduced6 (200s)", "examples/Fig6_NetMultiscale/ReducedModel.py"),
-            ("Squid" ,  "examples/squid/squid_demo.py")
-            ])
+        self.menuitems = demos.examples_ 
         layout.setContentsMargins(QtCore.QMargins(20,20,20,20))
         layout1 = QHBoxLayout()
         layout1.addWidget(createKineticModelButton)
@@ -178,36 +166,11 @@ class MWindow(QtGui.QMainWindow):
         layout6 = QHBoxLayout()
         layout7 = QHBoxLayout()
         listofButtons = {}
-        for i in range(0,len(self.menuitems)):
-            k = self.menuitems.popitem(0)
+        for i, k in enumerate( self.menuitems ):
+            _logger.debug( "Adding button for %s" % k[0] )
             t = k[0]
             button = QPushButton(k[0])
-            if k[0] == "Fig2E":
-                button.setToolTip("<span style=\"color:black;\">Illustrates loading a model from an SWC file, inserting  channels, and running it</span>")
-            elif k[0] == "Fig2D (35s)":
-                button.setToolTip("<span style=\"color:black;\">Illustrates loading a model from an SWC file, inserting  spines, and running it</span>")
-            elif k[0] == "Fig2C":
-                button.setToolTip("<span style=\"color:black;\">Illustrates building a panel of multiscale models to test neuronal plasticity in different contexts</span>")    
-            elif k[0] == "Fig3B_Gssa":
-                button.setToolTip("<span style=\"color:black;\">Loades Repressilator model into Gui with Gssa solver and runs the model</span>")
-            elif k[0] == "Fig3C_Gsl":
-                button.setToolTip("<span style=\"color:black;\">Loades Repressilator model into Gui with Gsl solver and runs the model</span>")
-            elif k[0] == "Fig3D":
-                button.setToolTip("<span style=\"color:black;\">This example implements a reaction-diffusion like system which is bistable and propagates losslessly</span>")
-            elif k[0] == "Fig4B":
-                button.setToolTip("<span style=\"color:black;\">This program builds a multiscale model with a few spines inserted into a simplified cellular morphology. Each spine has a signaling model in it too. The program doesn't run the model, it just displays it in 3D</span>")
-            elif k[0] == "Fig4K":
-                button.setToolTip("<span style=\"color:black;\">Builds a cell with spines and a propagating reaction wave</span>")
-            elif k[0] == "Fig5A (20s)":
-                button.setToolTip("<span style=\"color:black;\">Illustrates building a panel of multiscale models to test neuronal plasticity in different contexts</span>")
-            elif k[0] == "Fig5BCD (240s)":
-                button.setToolTip("<span style=\"color:black;\">Illustrates building a panel of multiscale models to test neuronal plasticity in different contexts</span>")
-            elif k[0] == "Fig6A (60s)":
-                button.setToolTip("<span style=\"color:black;\">This LIF network with Ca plasticity is based on: Memory Maintenance in Synapses with Calcium-Based Plasticity in the Presence of Background Activity PLOS Computational Biology, 2014</span>")
-            elif k[0] == "Reduced6 (200s)":
-                button.setToolTip("<span style=\"color:black;\">This is the Reduced version of LIF network with Ca plasticity model based on: Memory Maintenance in Synapses with Calcium-Based Plasticity in the Presence of Background Activity PLOS Computational Biology, 2014</span>")
-            elif k[0] == "Squid":
-                button.setToolTip("<span style=\"color:black;\">squid Demo</span>")
+            button.setToolTip( demos.description_[ t ] )
             if k[0] in ["Fig2E","Fig2D (35s)","Fig2C"]:
                 layout2.addWidget(button)
             elif k[0] in ["Fig3B_Gssa","Fig3C_Gsl","Fig3D"]:
@@ -246,8 +209,9 @@ class MWindow(QtGui.QMainWindow):
         freeCursor()
         return dialog
 
-    def run_genesis_script(self,filepath,solver):
-        self.popup.hide()
+    def run_genesis_script(self, filepath, solver):
+        if self.popup:
+            self.popup.hide()
         abspath = os.path.abspath(filepath)
         directory, modulename = os.path.split(abspath)
         modelName = os.path.splitext(modulename)[0]
@@ -258,10 +222,12 @@ class MWindow(QtGui.QMainWindow):
         widget.runSimulation()
 
     def run_python_script(self, filepath):
+        """ Execute a python script """
         busyCursor()
         import subprocess, shlex
         t = os.path.abspath(filepath)
         directory, filename = os.path.split(t)
+        _logger.info( "Executing %s" % filepath )
         p = subprocess.Popen([ sys.executable, filename], cwd=directory)
         p.wait()
         freeCursor()
@@ -594,37 +560,6 @@ class MWindow(QtGui.QMainWindow):
             self.loadModelAction.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+O", None, QtGui.QApplication.UnicodeUTF8))
             self.connect(self.loadModelAction, QtCore.SIGNAL('triggered()'), self.loadModelDialogSlot)
         self.fileMenu.addAction(self.loadModelAction)
-
-        if not hasattr(self, 'Paper_2015'):
-            self.menuitems = OrderedDict([
-                                        ("Fig2C (6s)" ,     "examples/gFig2_elecModels/Fig2C.py"),
-                                        ("Fig2D (35s)",     "examples/gFig2_elecModels/Fig2D.py"),
-                                        ("Fig2E (5s)" ,     "examples/gFig2_elecModels/Fig2E.py"),
-                                        ("Fig3B_Gssa (2s)", "examples/gFig3_chemModels/Fig3ABC.g"),
-                                        ("Fig3C_Gsl (2s)",  "examples/gFig3_chemModels/Fig3ABC.g"),
-                                        ("Fig3D (1s)",      "examples/gFig3_chemModels/Fig3D.py"),
-                                        ("Fig4B (10s)",     "examples/gFig4_ReacDiff/Fig4B.py"  ),
-                                        ("Fig4K",           "examples/gFig4_ReacDiff/rxdSpineSize.py"),
-                                        ("Fig5A (20s)",     "examples/gFig5_CellMultiscale/Fig5A.py"),
-                                        ("Fig5BCD (240s)" , "examples/gFig5_CellMultiscale/Fig5BCD.py"),
-                                        ("Fig6A (60s)",     "examples/gFig6_NetMultiscale/Fig6A.py" ),
-                                        ("Reduced6 (200s)", "examples/gFig6_NetMultiscale/ReducedModel.py"),
-                                        ("Squid" ,          "examples/squid/squid_demo.py")
-                                     ])
-            self.subMenu = QtGui.QMenu('Paper_2015_Demos')
-            for i in range(0,len(self.menuitems)):
-                k = self.menuitems.popitem(0)
-                t = "self."+k[0]+"Action"
-                t = QtGui.QAction(k[0],self)
-                self.subMenu.addAction(t)
-                if k[0] == "Fig3C_Gsl (2s)":
-                    t.connect(t,QtCore.SIGNAL('triggered()'),lambda script = k[1]: self.run_genesis_script(script,"gsl"))
-                elif k[0] == "Fig3B_Gssa (2s)":
-                    t.connect(t,QtCore.SIGNAL('triggered()'),lambda script = k[1]: self.run_genesis_script(script,"gssa"))
-                else:
-                    t.connect(t,QtCore.SIGNAL('triggered()'),lambda : self.run_python_script(k[1]))
-                self.subMenu.addAction(t)    
-            self.fileMenu.addMenu(self.subMenu)
 
         if not hasattr(self,'loadedModels'):
             self.loadedModelAction = QtGui.QAction('Recently Loaded Models',self)
@@ -989,7 +924,8 @@ class MWindow(QtGui.QMainWindow):
         by looking into the model file for a regular expression)
 
         """
-        self.popup.close()
+        if self.popup is not None:
+            self.popup.close()
         activeWindow = None # This to be used later to refresh the current widget with newly loaded model
         dialog = LoaderDialog(self,
                               self.tr('Load model from file'))
@@ -1067,7 +1003,8 @@ class MWindow(QtGui.QMainWindow):
                 return ret,True
 
     def newModelDialogSlot(self):
-        self.popup.close()
+        if self.popup is not None:
+            self.popup.close()
         newModelDialog = DialogWidget()
         if newModelDialog.exec_():
             modelPath = str(newModelDialog.modelPathEdit.text()).strip()

@@ -41,10 +41,12 @@ from collections import deque
 import traceback
 
 import moose
+import numpy as np
 
 from mgui import defaults
 from mgui import config
 from mgui.plugins.kkitUtil import getColor
+from mgui.GenericTypes import QVariant
 
 extra_fields = ['this',
                 'me',
@@ -155,7 +157,6 @@ class ObjectEditModel(QtCore.QAbstractTableModel):
     def setData(self, index, value, role=QtCore.Qt.EditRole):
         if not index.isValid() or index.row () >= len(self.fields) or index.column() != 1:
             return False
-        print(value)
         field = self.fields[index.row()]
         if (role == QtCore.Qt.CheckStateRole):
             if (index.column() == 1):
@@ -163,7 +164,8 @@ class ObjectEditModel(QtCore.QAbstractTableModel):
                 return True
 
         else:
-            value = str(value.toString()).strip() # convert Qt datastructure to Python string
+            # convert Qt datastructure to Python string
+            value = value.strip() 
             if len(value) == 0:
                 return False
             if field == "Notes":
@@ -192,8 +194,7 @@ class ObjectEditModel(QtCore.QAbstractTableModel):
                         vectorlist.append(float(d))
                     except:
                         pass
-                from numpy import array
-                a = array( vectorlist )
+                a = np.array( vectorlist )
                 self.mooseObject.setField(field, a)
             
             else:

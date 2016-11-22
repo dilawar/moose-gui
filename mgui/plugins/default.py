@@ -59,6 +59,8 @@ from PyQt4.QtGui import QIcon
 from PyQt4.QtGui import QPixmap
 from PyQt4.QtGui import QAction
 
+from mgui.config import _logger
+
 ELECTRICAL_MODEL = 0
 CHEMICAL_MODEL   = 1
 
@@ -388,15 +390,6 @@ class SchedulingWidget(QtGui.QWidget):
         self.updateInterval     = None
         self.runTime            = None
 
-        # if not self.advanceOptiondisplayed:
-        #     self.advancedOptionsWidget.hide()
-
-        # self.__getUpdateIntervalWidget()
-        #layout.addWidget(self.__getUpdateIntervalWidget())
-        # spacerItem = QtGui.QSpacerItem(450, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        # layout.addItem(spacerItem)
-        # self.setLayout(layout)
-        # self._toolBars.append(
         self.modelRoot                  = None
         self.dataRoot                   = None
         self.runner                     = Runner()
@@ -411,10 +404,6 @@ class SchedulingWidget(QtGui.QWidget):
         self.runner.simulationProgressed.connect(self.updateCurrentSimulationRuntime)
         self.continueFlag               = False
         self.preferences.applyChemicalSettings.connect(self.resetSimulation)
-        # self.resetAndRunButton.clicked.connect(self.resetAndRunSlot)
-        # self.continueButton.clicked.connect(self.doContinueRun)
-        # self.continueRun.connect(self.runner.continueRun)
-        # self.stopButton.clicked.connect(self.runner.stop)
 
     def updateCurrentSimulationRuntime(self, time):
         self.currentSimulationRuntime.setText(str(time))
@@ -460,9 +449,6 @@ class SchedulingWidget(QtGui.QWidget):
         bar.addSeparator()
 
         #: current time
-        # spacer.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
-        # self._runToolBar.addWidget(spacer)
-        # self._runToolBar.addWidget(QtGui.QLabel('Current time'))
         self.currentSimulationRuntime = QLineEdit() # 6 digits
         self.currentSimulationRuntime.setToolTip('Current simulation runtime.')
         self.currentSimulationRuntime.setFixedWidth(75)
@@ -688,9 +674,6 @@ class PlotWidget(QWidget):
 
     dataRoot - path to the container of data tables.
 
-    TODO: do we really need this separation or should we go for
-    standardizing location of data with respect to model root.
-
     pathToLine - map from moose path to Line2D objects in plot. Can
     one moose table be plotted multiple times? Maybe yes (e.g., when
     you want multiple other tables to be compared with the same data).
@@ -701,6 +684,7 @@ class PlotWidget(QWidget):
 
     widgetClosedSignal = pyqtSignal(object)
     addGraph           = pyqtSignal(object)
+
     def __init__(self, model, graph, index, parentWidget, *args, **kwargs):
         super(PlotWidget, self).__init__()
         self.model = model
@@ -720,70 +704,44 @@ class PlotWidget(QWidget):
         self.navToolbar = NavigationToolbar(self.canvas, self)
         self.hackNavigationToolbar()
         self.canvas.mpl_connect('pick_event',self.togglePlot)
-        # self.canvas.
-        # self.navToolbar.addSeparator()
         layout = QtGui.QGridLayout()
-        # canvasScrollArea = QScrollArea()
-        # canvasScrollArea.setWidget(self.canvas)
         layout.addWidget(self.navToolbar, 0, 0)
         layout.addWidget(self.canvas, 1, 0)
         self.setLayout(layout)
-        # self.setAcceptDrops(True)
-        #self.modelRoot = '/'
         self.pathToLine = defaultdict(set)
         self.lineToDataSource = {}
         self.axesRef = self.canvas.addSubplot(1, 1)
-        # box = self.axesRef.get_position()
-        # self.axesRef.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-
         self.legend  = None
-        # layout.setSizeConstraint( QLayout.SetNoConstraint )
-        # self.setSizePolicy( QtGui.QSizePolicy.Expanding
-        #                   , QtGui.QSizePolicy.Expanding
-        #                   )
-
         desktop = QtGui.QApplication.desktop()
-        # print("**********************")
-        # print(desktop.screenGeometry())
-        # print("***********************")
         self.setMinimumSize(desktop.screenGeometry().width() / 4, desktop.screenGeometry().height() / 3)
-        # self.setMaximumSize(desktop.screenGeometry().width() / 2, desktop.screenGeometry().height() / 2)
-        # self.setMinimumSize(self.width(), self.height())
-        # self.setMaximumSize(2 * self.width(), 2* self.height())
-        # QtCore.QObject.connect(utils.tableEmitter,QtCore.SIGNAL("tableCreated()"),self.plotAllData)
         self.canvas.updateSignal.connect(self.plotAllData)
         self.plotAllData()
-        # self.plotView = PlotView(model, graph, index, self)
-        #self.dataTable = DataTable()
-        #utils.tableCreated.connect(plotAllData)
-        # self.plotAllData()
-        # self.setSizePolicy(QtGui.QSizePolicy.Fixed,
-        #         QtGui.QSizePolicy.Expanding)
 
     def hackNavigationToolbar(self):
         # ADD Graph Action
-        pixmap = QPixmap("icons/add_graph.png")
+        pixmap = QPixmap(
+                os.path.join( config.MOOSE_ICON_DIR, 'add_graph.png' )
+                )
         icon   = QIcon(pixmap)
         action  = QAction(icon, "Add a graph", self.navToolbar)
         # self.navToolbar.addAction(action)
-        action.triggered.connect(self.addGraph.emit)
+        action.triggered.connect( self.addGraph.emit )
         self.navToolbar.insertAction(self.navToolbar.actions()[0], action)
 
         # Delete Graph Action
-        pixmap = QPixmap("icons/delete_graph.png")
+        pixmap = QPixmap( os.path.join( config.MOOSE_ICON_DIR,
+            "delete_graph.png") )
         icon   = QIcon(pixmap)
         action  = QAction(icon, "Delete this graph", self.navToolbar)
-        # self.navToolbar.addAction(action)
         action.triggered.connect(self.delete)
-
         self.navToolbar.insertAction(self.navToolbar.actions()[1], action)
 
         #Toggle Grid Action
-
-        pixmap = QPixmap("icons/grid.png")
+        pixmap = QPixmap(
+                os.path.join( config.MOOSE_ICON_DIR, "grid.png" )
+                )
         icon   = QIcon(pixmap)
         action  = QAction(icon, "Toggle Grid", self.navToolbar)
-        # self.navToolbar.addAction(action)
         action.triggered.connect(self.canvas.toggleGrid)
         self.navToolbar.insertAction(self.navToolbar.actions()[2], action)
         self.navToolbar.insertSeparator(self.navToolbar.actions()[3])
@@ -815,11 +773,13 @@ class PlotWidget(QWidget):
         return menu
 
     def deleteGraph(self):
-        print(("Deleting " + self.graph.path))
+        """ If there is only one graph in the view, please don't delete it """
+        print( "Deleting %s " % self.graph.path)
         moose.delete(self.graph.path)
 
     def delete(self, event):
-        print("Deleting PlotWidget")
+        """FIXME: The last element should not be deleted """
+        _logger.info("Deleting PlotWidget " )
         self.deleteGraph()
         self.close()
         self.widgetClosedSignal.emit(self)
@@ -830,16 +790,6 @@ class PlotWidget(QWidget):
 
     @pyqtSlot(QtCore.QPoint)
     def contextMenuRequested(self,point):
-        # menu     = QtGui.QMenu()
-
-    #     # action1 = menu.addAction("Set Size 100x100")
-    #     # action2 = menu.addAction("Set Size 500x500")
-
-
-    #     # self.connect(action2,SIGNAL("triggered()"),
-    #     #                 self,SLOT("slotShow500x500()"))
-    #     # self.connect(action1,SIGNAL("triggered()"),
-    #     #                 self,SLOT("slotShow100x100()"))
         self.menu.exec_(self.mapToGlobal(point))
 
     def setModelRoot(self, path):
@@ -850,7 +800,6 @@ class PlotWidget(QWidget):
         #plotAllData()
 
     def genColorMap(self,tableObject):
-        #print "tableObject in colorMap ",tableObject
         species = tableObject+'/info'
         colormap_file = open(os.path.join(config.settings[config.KEY_COLORMAP_DIR], 'rainbow2.pkl'),'rb')
         self.colorMap = pickle.load(colormap_file)
@@ -870,7 +819,6 @@ class PlotWidget(QWidget):
             else:
                 color = 'white'
         return color
-
 
     def removePlot(self, table):
         print(("removePlot =>", table))

@@ -8,4 +8,5 @@ except ImportError:
     # we are using Python3 so QString is not defined. Also QVariant is a mapped
     # type.
     QtCore.QString = type("")
-
+    # In python3, QtCore.QVariant is just a string
+    QtCore.QVariant = type( "" )

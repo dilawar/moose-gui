@@ -1,12 +1,15 @@
 import sys
-from .modelBuild import *
-from .constants import *
+
+from mgui.plugins.modelBuild import *
+from mgui.plugins.constants import *
+from mgui.plugins.kkitUtil import  *
+from mgui.plugins.setsolver import *
+
 from PyQt4.QtGui import QPixmap, QImage, QPen, QGraphicsPixmapItem, QGraphicsLineItem
 from PyQt4.QtCore import pyqtSignal
-from .kkitUtil import  *
-from .setsolver import *
 from PyQt4 import QtSvg
 from moose import utils
+from mgui.GenericTypes import QVariant
 
 class GraphicalView(QtGui.QGraphicsView):
 
@@ -105,10 +108,6 @@ class GraphicalView(QtGui.QGraphicsView):
         return solution
 
     def editorMousePressEvent(self, event):
-        # self.deselectSelections()
-        # if self.state["press"]["item"] is not None:
-        #     self.state["press"]["item"].setSelected(False)
-        # self.resetState()
         if event.buttons() == QtCore.Qt.LeftButton:
             self.clickPosition  = self.mapToScene(event.pos())
             (item, itemType) = self.resolveItem(self.items(event.pos()), self.clickPosition)
@@ -116,14 +115,11 @@ class GraphicalView(QtGui.QGraphicsView):
             self.state["press"]["item"] = item
             self.state["press"]["type"] = itemType
             self.state["press"]["pos"]  = event.pos()
-            #If connector exist and if mousePress on Compartment interior,
-            # then removing any connect if exist
             if itemType == COMPARTMENT_INTERIOR:
                 self.removeConnector()
             elif itemType == ITEM:
                 if not self.move:
                     self.showConnector(self.state["press"]["item"])
-            # self.layoutPt.plugin.mainWindow.objectEditSlot(self.state["press"]["item"].mobj, False)
         else:
             self.resetState()
             comptList = []
@@ -238,15 +234,6 @@ class GraphicalView(QtGui.QGraphicsView):
                 y0,y1= y1,y0
 
             self.customrubberBand.setGeometry(QtCore.QRect(QtCore.QPoint(x0, y0), QtCore.QSize(abs(displacement.x()), abs(displacement.y()))))
-            
-
-        # if itemType == COMPARTMENT:
-        #     rubberband selection
-
-        # if itemType == COMPARTMENT_BOUNDARY:
-            
-        # if itemType == ITEM:
-        #     dragging the item
     
     def editorMouseReleaseEvent(self, event):
         if self.move:
@@ -543,8 +530,10 @@ class GraphicalView(QtGui.QGraphicsView):
 
             if isinstance(item.mobj,PoolBase) or isinstance(item.mobj,ReacBase):
                 if l == "clone":
-                    self.connectionSign = QtSvg.QGraphicsSvgItem('icons/clone.svg')
-                    self.connectionSign.setData(0, QtCore.QVariant("clone"))
+                    self.connectionSign = QtSvg.QGraphicsSvgItem(
+                            os.path.join( config.MOOSE_ICON_DIR, 'clone.svg' )
+                            )
+                    self.connectionSign.setData(0, QVariant("clone"))
                     self.connectionSign.setParent(self.connectionSource)
                     self.connectionSign.setScale(
                         (1.0 * rectangle.height()) / self.connectionSign.boundingRect().height()
@@ -558,8 +547,10 @@ class GraphicalView(QtGui.QGraphicsView):
                     
             if isinstance(item.mobj,PoolBase):
                 if l == "plot":
-                    self.connectionSign = QtSvg.QGraphicsSvgItem('icons/plot.svg')
-                    self.connectionSign.setData(0, QtCore.QVariant("plot"))
+                    self.connectionSign = QtSvg.QGraphicsSvgItem(
+                            os.path.join( config.MOOSE_ICON_DIR, 'plot.svg' )
+                            )
+                    self.connectionSign.setData(0, QVariant("plot"))
                     self.connectionSign.setParent(self.connectionSource)
                     self.connectionSign.setScale(
                         (1.0 * rectangle.height()) / self.connectionSign.boundingRect().height()
@@ -575,8 +566,10 @@ class GraphicalView(QtGui.QGraphicsView):
                 if ((item.mobj.parent.className == "ZombieEnz") or (item.mobj.parent.className == "Enz")):
                     pass
                 else:
-                    self.connectionSign = QtSvg.QGraphicsSvgItem('icons/move.svg')
-                    self.connectionSign.setData(0, QtCore.QVariant("move"))
+                    self.connectionSign = QtSvg.QGraphicsSvgItem(
+                            os.path.join( config.MOOSE_ICON_DIR, 'move.svg' )
+                            )
+                    self.connectionSign.setData(0, QVariant("move"))
                     self.connectionSign.setParent(self.connectionSource)
                     self.connectionSign.setToolTip("Drag to move.")
                     if ( item.mobj.className == "ZombieFunction" or item.mobj.className == "Function"):
@@ -596,9 +589,11 @@ class GraphicalView(QtGui.QGraphicsView):
                 if ((item.mobj.parent.className == "ZombieEnz") or (item.mobj.parent.className == "Enz")):
                     pass
                 else:
-                    self.connectionSign = QtSvg.QGraphicsSvgItem('icons/delete.svg')
+                    self.connectionSign = QtSvg.QGraphicsSvgItem(
+                            os.path.join( config.MOOSE_ICON_DIR, 'delete.svg' )
+                            )
                     self.connectionSign.setParent(self.connectionSource)
-                    self.connectionSign.setData(0, QtCore.QVariant("delete"))
+                    self.connectionSign.setData(0, QVariant("delete"))
                     if ( item.mobj.className == "ZombieFunction" or item.mobj.className == "Function"):
                         self.connectionSign.setScale(
                         (0.75 * rectangle.height()) / self.connectionSign.boundingRect().height()
