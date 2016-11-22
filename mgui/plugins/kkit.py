@@ -958,7 +958,7 @@ class kineticRunWidget(KineticsWidget):
                     ratio = presentConc
                 if ratio > 10:
                     ratio = 9
-                if ratio < '0.0':
+                if ratio < 0.0:
                     ratio =0.1
                 item.updateRect(math.sqrt(abs(ratio)))
 
