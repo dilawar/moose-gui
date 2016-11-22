@@ -21,14 +21,11 @@ import os
 import sys
 from distutils.core import setup
 
-with open("README.md") as f:
-    readme = f.read()
-
 setup(
     name = "moosegui",
     version = "1.0.0",
     description = "Graphical User Interface of MOOSE simulator",
-    long_description = readme,
+    long_description = open( 'README.md' ).read(),
     packages = [ "moosegui"
         , "moosegui.mgui"
         , 'moosegui.mgui.plugins'
@@ -43,7 +40,7 @@ setup(
     package_data = { 
         'moosegui' : [ 'moose', 'examples/*' ]
         , 'moosegui.mgui' : [ 'icons/*', 'colormaps/*', ]
-        , 'moosegui.mgui.plugins' : [ 'datastore/*' ]
+        , 'moosegui.mgui.plugins' : [ 'datastore/*', 'list.txt' ]
         },
     author = open('AUTHOR').read(),
     maintainer = 'Dilawar Singh',
