@@ -25,19 +25,27 @@ with open("README.md") as f:
     readme = f.read()
 
 setup(
-    name = "moose-gui",
+    name = "moosegui",
     version = "1.0.0",
     description = "Graphical User Interface of MOOSE simulator",
     long_description = readme,
-    packages = [ "mgui", 'mgui.plugins', 'mgui.colormaps', 'suds' ],
-    package_dir = { 'mgui' : 'mgui'
-        , 'suds' : 'suds'
-        , 'mgui.plugins' : 'mgui/plugins'
-        , 'mgui.colormaps' : 'mgui/colormaps'
+    packages = [ "moosegui"
+        , "moosegui.mgui"
+        , 'moosegui.mgui.plugins'
+        , 'moosegui.suds' 
+        ],
+    package_dir = { 
+        'moosegui' : '.'
+        , 'moosegui.mgui' : 'mgui'
+        , 'moosegui.mgui.plugins' : 'mgui/plugins'
+        , 'moosegui.suds' : 'suds'
         },
-    package_data = { 'mgui' : [ 'icons/*', 'colormaps/*', '../examples/*' ] },
-    author = "Harsha Rani",
-    author_email = "hrani@ncbs.res.in",
+    package_data = { 
+        'moosegui' : [ 'moose', 'examples/*' ]
+        , 'moosegui.mgui' : [ 'icons/*', 'colormaps/*', ]
+        , 'moosegui.mgui.plugins' : [ 'datastore/*' ]
+        },
+    author = open('AUTHOR').read(),
     maintainer = 'Dilawar Singh',
     maintainer_email = 'dilawars@ncbs.res.in',
     url = "http://github.com/BhallaLab/moose-gui",
