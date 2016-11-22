@@ -130,7 +130,7 @@ class MWindow(QtGui.QMainWindow):
         self.setPlugin('default', '/')
         self.plugin.getEditorView().getCentralWidget().parent().close()
         self.popup = None
-        self.createPopup()
+        # self.createPopup()
 
     def createPopup(self):
         self.popup = dialog = QDialog(self)
@@ -476,14 +476,12 @@ class MWindow(QtGui.QMainWindow):
         """
         self.menuBar().clear()
         self.getPluginsMenu()
-        menus = [self.getFileMenu(),
-                 self.getEditMenu(),
-                 self.getViewMenu(),
-                 #self.getRunMenu(),
-                 #self.getConnectMenu(),
-                 self.getHelpMenu()]
-        for menu in menus:
-            self.menuBar().addMenu(menu)
+        menus = [self.getFileMenu()
+                , self.getEditMenu()
+                , self.getViewMenu(),
+                 self.getHelpMenu()
+                 ]
+        [ self.menuBar().addMenu(menu) for menu in menus ]
 
         for menu in self.plugin.getMenus():
             if not self.updateExistingMenu(menu):
@@ -494,7 +492,7 @@ class MWindow(QtGui.QMainWindow):
         menus[0].addAction(self.quitAction)
 
     def updateToolbars(self):
-        _logger.info( "Updating toolbar" )
+        _logger.debug( "Updating toolbar" )
         for toolbar in self.toolBars:
             self.removeToolBar(toolbar)
         self.toolBars = []
