@@ -13,15 +13,21 @@ __status__           = "Development"
 
 import sys
 import os
-import Tkinter as tk
+
 import menus
+import canvas
+
+import Tkinter as tk
 import logging
 logging.basicConfig( level = logging.DEBUG )
 
 def main( ):
     root = tk.Tk( )
+    root.resizable( width = False, height = False )
     # Handle all menues.
     menus.main(  root )
+    # All frames
+    canvas.main( root )
     tk.mainloop( )
 
 if __name__ == '__main__':

@@ -19,13 +19,17 @@ import Tkinter as tk
 import logging
 
 menuList_ = { 
-        "Model" : [ "New", "Open", "Exit" ]
-        }
+        "Model" : [ ("New", "Ctrl+N", "Control-n" )
+            , ("Open", "Ctrl+O", "Control-o")
+            , ("Exit", "Ctrl+Q", "Control-q") ]
+            }
 
 def callback( action, parent ):
     logging.info( "Got action %s" % action )
     if action.lower() == 'exit':
         parent.quit( )
+    else:
+        logging.info( "TODO %s" % action )
 
 def main( parent ):
     """
@@ -33,15 +37,26 @@ def main( parent ):
 
     """
     menu = tk.Menu( parent )
-    parent.config( menu = menu )
     for menuName in menuList_ :
         logging.info( "Adding menu %s" % menuName )
         thismenu = tk.Menu( menu )
         menu.add_cascade( label = menuName, menu = thismenu )
         for action in menuList_[ menuName ]:
-            thismenu.add_command( label = action 
-                    , command = lambda action=action: callback(action, parent)
-                    )
+            shortcut, underline = '', 0
+            cmd = action[0]
+            if len( action ) > 1:
+                shortcut, underline = action[1], 1
+                shortKey = "<%s>" % action[2]
+                logging.debug( "Bidning key %s to action %s" % (shortKey, cmd))
+                parent.bind( shortKey, lambda e, x=cmd:  callback(x, parent) )
+
+            thismenu.add_command( label = action[0]
+                , command = lambda x=cmd: callback(x, parent)
+                , underline = underline
+                , accelerator = shortcut
+                )
+
+    parent.config( menu = menu )
 
 if __name__ == '__main__':
     main()
