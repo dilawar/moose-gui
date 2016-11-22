@@ -153,18 +153,18 @@ class MWindow(QtGui.QMainWindow):
         layout.setContentsMargins(QtCore.QMargins(20,20,20,20))
 
         self.menuitems = OrderedDict([
-            ("Fig2C" ,  "examples/gFig2_elecModels/Fig2C.py"),
-            ("Fig2D (35s)", "examples/gFig2_elecModels/Fig2D.py"),
-            ("Fig2E", "examples/gFig2_elecModels/Fig2E.py"),
-            ("Fig3B_Gssa", "examples/gFig3_chemModels/Fig3ABC.g"),
-            ("Fig3C_Gsl", "examples/gFig3_chemModels/Fig3ABC.g"),
-            ("Fig3D", "examples/gFig3_chemModels/Fig3D.py"),
-            ("Fig4B", "examples/gFig4_ReacDiff/Fig4B.py"  ),
-            ("Fig4K",  "examples/gFig4_ReacDiff/rxdSpineSize.py"),
-            ("Fig5A (20s)", "examples/gFig5_CellMultiscale/Fig5A.py"),
-            ("Fig5BCD (240s)", "examples/gFig5_CellMultiscale/Fig5BCD.py"),
-            ("Fig6A (60s)", "examples/gFig6_NetMultiscale/Fig6A.py" ),
-            ("Reduced6 (200s)", "examples/gFig6_NetMultiscale/ReducedModel.py"),
+            ("Fig2C" ,  "examples/Fig2_elecModels/Fig2C.py"),
+            ("Fig2D (35s)", "examples/Fig2_elecModels/Fig2D.py"),
+            ("Fig2E", "examples/Fig2_elecModels/Fig2E.py"),
+            ("Fig3B_Gssa", "examples/Fig3_chemModels/Fig3ABC.g"),
+            ("Fig3C_Gsl", "examples/Fig3_chemModels/Fig3ABC.g"),
+            ("Fig3D", "examples/Fig3_chemModels/Fig3D.py"),
+            ("Fig4B", "examples/Fig4_ReacDiff/Fig4B.py"  ),
+            ("Fig4K",  "examples/Fig4_ReacDiff/rxdSpineSize.py"),
+            ("Fig5A (20s)", "examples/Fig5_CellMultiscale/Fig5A.py"),
+            ("Fig5BCD (240s)", "examples/Fig5_CellMultiscale/Fig5BCD.py"),
+            ("Fig6A (60s)", "examples/Fig6_NetMultiscale/Fig6A.py" ),
+            ("Reduced6 (200s)", "examples/Fig6_NetMultiscale/ReducedModel.py"),
             ("Squid" ,  "examples/squid/squid_demo.py")
             ])
         layout.setContentsMargins(QtCore.QMargins(20,20,20,20))
@@ -311,16 +311,24 @@ class MWindow(QtGui.QMainWindow):
         module from {MOOSE_GUI_DIRECTORY}/plugins directory.
 
         If re is True, the plugin is reloaded.
-        """
-        if (not re) and name in sys.modules:
-            return sys.modules[name]
-        fp, pathname, description = imp.find_module(name, [config.MOOSE_PLUGIN_DIR])
 
+        """
+        _logger.info( "Loading plugin '%s' from %s" % ( name,
+            config.MOOSE_PLUGIN_DIR )
+            )
+        if (not re) and name in sys.modules:
+            _logger.debug( "\tThis plugin is already loaded" )
+            return sys.modules[name]
+
+        fp, pathname, description = imp.find_module( 
+                name, [ config.MOOSE_PLUGIN_DIR ]
+                )
+        _logger.debug( "Found modules %s, %s" % (pathname, description) )
         try:
             module = imp.load_module(name, fp, pathname, description)
         except Exception as e:
-            _logger.warn( "Could not load module %s' % fp" )
-            _logger.debug( "Error was %s" % e )
+            _logger.warn( "Could not load module %s" % fp )
+            _logger.debug( "\tError was %s" % e )
             module = ""
 
         if fp: fp.close()
@@ -367,16 +375,15 @@ class MWindow(QtGui.QMainWindow):
         MoosePluginBase. Otherwise the first such class found will be
         loaded.
         """
-        try:
+        if name in self._loadedPlugins:
             return self._loadedPlugins[name]
-        except KeyError:
-            pluginModule = self.loadPluginModule(name, re=re)
-            for classname, classobj in inspect.getmembers(pluginModule, inspect.isclass):
-                if issubclass(classobj, mplugin.MoosePluginBase):
-                    self._loadedPlugins[name] = classobj
-                    # classobj.getEditorView().getCentralWidget().editObject.connect(self.objectEditSlot)
-                    return self._loadedPlugins[name]
-        raise Exception('No plugin with name: %s' % (name))
+
+        pluginModule = self.loadPluginModule(name, re=re)
+        for classname, classobj in inspect.getmembers(pluginModule, inspect.isclass):
+            if issubclass(classobj, mplugin.MoosePluginBase):
+                self._loadedPlugins[name] = classobj
+                return self._loadedPlugins[name]
+        raise IndexError('No plugin with name: %s' % name)
 
     def setPlugin(self, name, root='/'):
         """Set the current plugin to use.

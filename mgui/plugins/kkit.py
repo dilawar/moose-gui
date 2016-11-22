@@ -13,8 +13,6 @@ from moose import SBML
 
 from mgui.mplugin import *
 from mgui.mtoolbutton import MToolButton
-import mgui.RunWidget as RunWidget
-
 from mgui.plugins.default import *
 from mgui.plugins.kkitUtil import *
 from mgui.plugins.kkitQGraphics import PoolItem, ReacItem,EnzItem,CplxItem,ComptItem
@@ -22,24 +20,27 @@ from mgui.plugins.kkitViewcontrol import *
 from mgui.plugins.kkitCalcArrow import *
 from mgui.plugins.kkitOrdinateUtil import *
 from mgui.plugins.setsolver import *
+from mgui.RunWidget import RunWidget
 
 from mgui.config import _logger
-
 
 class KkitPlugin(MoosePlugin):
     """Default plugin for MOOSE GUI"""
     def __init__(self, *args):
-        #print args
         MoosePlugin.__init__(self, *args)
         self.view = None
         self.fileinsertMenu = QtGui.QMenu('&File')
         if not hasattr(self,'SaveModelAction'):
             self.saveModelAction = QtGui.QAction('Save', self)
             self.saveModelAction.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
-            self.connect(self.saveModelAction, QtCore.SIGNAL('triggered()'), self.SaveModelDialogSlot)
+            # self.connect(self.saveModelAction, QtCore.SIGNAL('triggered()'), self.SaveModelDialogSlot)
             self.fileinsertMenu.addAction(self.saveModelAction)
         self._menus.append(self.fileinsertMenu)
         self.getEditorView()
+
+    def connect( self, *args ):
+        """Commeneted out """
+        pass
         
     def SaveModelDialogSlot(self):
         type_sbml = 'SBML'
@@ -157,10 +158,8 @@ class KkitPlugin(MoosePlugin):
         graphView.plotAllData()
         schedulingDockWidget = self.view.getSchedulingDockWidget().widget()
         self._kkitWidget = self.view.plugin.getEditorView().getCentralWidget()
-        #self.runView = KkitRunView(self,self.dataTable)
-        self.runView = KkitRunView(self, self._kkitWidget)
-        self.currentRunView = self.ruAnotherKkitRunViewnView.getCentralWidget()
-
+        self.runView = KkitRunView(self._kkitWidget)
+        # self.currentRunView = self.ruAnotherKkitRunViewnView.getCentralWidget()
         #schedulingDockWidget.runner.update.connect(self.currentRunView.changeBgSize)
         #schedulingDockWidget.runner.resetAndRun.connect(self.currentRunView.resetColor)
         graphView.layout().addWidget(self.currentRunView,0,0,2,1)
@@ -180,7 +179,7 @@ class AnotherKkitRunView(RunView):
                        chemicalSettings["simulation"]["solver"])
 
     def createCentralWidget(self):
-        self._centralWidget = RunWidget.RunWidget(self.modelRoot)
+        self._centralWidget = RunWidget(self.modelRoot)
         self.kkitRunView   = KkitRunView(self.plugin)
         self.plotWidgetContainer = PlotWidgetContainer(self.modelRoot)
         self._centralWidget.setChildWidget(self.kkitRunView.getCentralWidget(), False, 0, 0, 1, 1)
@@ -378,7 +377,7 @@ class  KineticsWidget(EditorWidgetBase):
                 self.view.setAcceptDrops(True)
             elif isinstance(self,kineticRunWidget):
                 self.view.setRefWidget("runView")
-            self.connect(self.view, QtCore.SIGNAL("dropped"), self.objectEditSlot)
+            # self.connect(self.view, QtCore.SIGNAL("dropped"), self.objectEditSlot)
             hLayout = QtGui.QGridLayout(self)
             self.setLayout(hLayout)
             hLayout.addWidget(self.view,0,0)
@@ -403,7 +402,7 @@ class  KineticsWidget(EditorWidgetBase):
                 self.drawLine_arrow()
                 self.view.setRefWidget("editorView")
                 self.view.setAcceptDrops(True)
-                self.connect(self.view, QtCore.SIGNAL("dropped"), self.objectEditSlot)
+                # self.connect(self.view, QtCore.SIGNAL("dropped"), self.objectEditSlot)
                 hLayout = QtGui.QGridLayout(self)
                 self.setLayout(hLayout)
                 hLayout.addWidget(self.view)
@@ -957,12 +956,10 @@ class kineticRunWidget(KineticsWidget):
                 else:
                     # multipying by 1000 b'cos moose concentration is in milli in moose
                     ratio = presentConc
-                #print "ratio",item.mobj,ratio
-                if ratio > '10':
+                if ratio > 10:
                     ratio = 9
                 if ratio < '0.0':
                     ratio =0.1
-                #print "size ",ratio
                 item.updateRect(math.sqrt(abs(ratio)))
 
     def resetColor(self):
@@ -970,31 +967,32 @@ class kineticRunWidget(KineticsWidget):
             if isinstance(item,PoolItemCircle):
                 item.returnEllispeSize()
 
-if __name__ == "__main__":
-    app = QtGui.QApplication(sys.argv)
-    size = QtCore.QSize(1024 ,768)
-    modelPath = 'acc27'
-    itemignoreZooming = False
-    try:
-        filepath = '../../Demos/Genesis_files/'+modelPath+'.g'
-        filepath = '/home/harsha/genesis_files/gfile/'+modelPath+'.g'
-        print(filepath)
-        f = open(filepath, "r")
-        loadModel(filepath,'/'+modelPath)
 
-        #moose.le('/'+modelPath+'/kinetics')
-        dt = KineticsWidget()
-        dt.modelRoot ='/'+modelPath
-        ''' Loading moose signalling model in python '''
-        #execfile('/home/harsha/BuildQ/Demos/Genesis_files/scriptKineticModel.py')
-        #dt.modelRoot = '/model'
-
-        dt.updateModelView()
-        dt.show()
-
-    except  IOError as what:
-      (errno, strerror) = what
-      print("Error number",errno,"(%s)" %strerror)
-      sys.exit(0)
-    sys.exit(app.exec_())
-
+# if __name__ == "__main__":
+#     app = QtGui.QApplication(sys.argv)
+#     size = QtCore.QSize(1024 ,768)
+#     modelPath = 'acc27'
+#     itemignoreZooming = False
+#     try:
+#         filepath = '../../Demos/Genesis_files/'+modelPath+'.g'
+#         filepath = '/home/harsha/genesis_files/gfile/'+modelPath+'.g'
+#         print(filepath)
+#         f = open(filepath, "r")
+#         loadModel(filepath,'/'+modelPath)
+# 
+#         #moose.le('/'+modelPath+'/kinetics')
+#         dt = KineticsWidget()
+#         dt.modelRoot ='/'+modelPath
+#         ''' Loading moose signalling model in python '''
+#         #execfile('/home/harsha/BuildQ/Demos/Genesis_files/scriptKineticModel.py')
+#         #dt.modelRoot = '/model'
+# 
+#         dt.updateModelView()
+#         dt.show()
+# 
+#     except  IOError as what:
+#       (errno, strerror) = what
+#       print("Error number",errno,"(%s)" %strerror)
+#       sys.exit(0)
+#     sys.exit(app.exec_())
+# 

@@ -5,10 +5,6 @@
 # Author: Subhasis Ray
 # Maintainer:
 # Created: Tue Nov 13 15:58:31 2012 (+0530)
-# Version:
-# Last-Updated: Thu Jul 18 10:35:00 2013 (+0530)
-#           By: subha
-#     Update #: 2244
 # URL:
 # Keywords:
 # Compatibility:
@@ -21,63 +17,37 @@
 #
 #
 
-# Change log:
-#
-#
-#
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 3, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-# Floor, Boston, MA 02110-1301, USA.
-#
-#
-
-# Code:
+from __future__ import print_function
 
 import sys
-from mgui import config
 import pickle
 import os
 from collections import defaultdict
 import numpy as np
-from PyQt4 import QtGui, QtCore
-from PyQt4.Qt import Qt
+
+from matplotlib import rcParams
+from matplotlib.lines import Line2D
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
+rcParams.update({'figure.autolayout': True})
 
 import moose
 from moose import utils
 
 import mgui.mtree as mtree
-
 from mgui.mtoolbutton import MToolButton
 from mgui.msearch import SearchWidget
 from mgui.checkcombobox import CheckComboBox
-
+from mgui import config
 from mgui.mplugin import MoosePluginBase, EditorBase, EditorWidgetBase, PlotBase, RunBase
-#from defaultToolPanel import DefaultToolPanel
-#from DataTable import DataTable
-from matplotlib import rcParams
-rcParams.update({'figure.autolayout': True})
-from matplotlib.lines import Line2D
 from mgui.PlotWidgetContainer import PlotWidgetContainer
-
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtGui import QDoubleValidator
 from mgui.plugins.kkitUtil import getColor
 from mgui.plugins.Runner import Runner
-# from Runner import Runner
-# from __future__ import print_function
-from PyQt4 import QtGui, QtCore
+from mgui.global_constants import preferences
+from mgui.plugins.setsolver import *
+
+from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QDoubleValidator
 from PyQt4.QtGui import QToolBar
 from PyQt4.QtGui import QToolButton
 from PyQt4.QtGui import QLabel
@@ -88,11 +58,6 @@ from PyQt4.QtGui import QSizeGrip
 from PyQt4.QtGui import QIcon
 from PyQt4.QtGui import QPixmap
 from PyQt4.QtGui import QAction
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
-#from EventBlocker import EventBlocker
-# from PlotNavigationToolbar import PlotNavigationToolbar
-from mgui.global_constants import preferences
-from mgui.plugins.setsolver import *
 
 ELECTRICAL_MODEL = 0
 CHEMICAL_MODEL   = 1
@@ -101,8 +66,7 @@ class MoosePlugin(MoosePluginBase):
     """Default plugin for MOOSE GUI"""
     def __init__(self, root, mainwindow):
         MoosePluginBase.__init__(self, root, mainwindow)
-        #print "mplugin ",self.getRunView()
-        #self.connect(self, QtCore.SIGNAL("tableCreated"),self.getRunView().getCentralWidget().plotAllData)
+
     def getPreviousPlugin(self):
         return None
 
@@ -249,6 +213,7 @@ class DefaultEditorWidget(EditorWidgetBase):
             return self.treeMenu
         except AttributeError:
             self.treeMenu = QtGui.QMenu()
+
         self.tree.setContextMenuPolicy(Qt.CustomContextMenu)
         self.tree.customContextMenuRequested.connect(lambda : self.treeMenu.exec_(QtGui.QCursor.pos()) )
         # Inserting a child element
@@ -314,8 +279,6 @@ class DefaultEditorWidget(EditorWidgetBase):
 # View for running a simulation and runtime visualization
 #
 ############################################################
-
-
 from mgui.mplot import CanvasWidget
 
 class RunView(RunBase):
@@ -391,77 +354,7 @@ class RunView(RunBase):
         self._toolBars += widget.getToolBars()
         return self.schedulingDockWidget
 
-'''
-class MooseRunner(QtCore.QObject):
-    """Helper class to control simulation execution
 
-    See: http://doc.qt.digia.com/qq/qq27-responsive-guis.html :
-    'Solving a Problem Step by Step' for design details.
-    """
-    resetAndRun = QtCore.pyqtSignal(name='resetAndRun')
-    update = QtCore.pyqtSignal(name='update')
-    currentTime = QtCore.pyqtSignal(float, name='currentTime')
-    finished = QtCore.pyqtSignal(name='finished')
-
-    def __init__( self
-                , runTime
-                , updateInterval
-                ):
-        QtCore.QObject.__init__(self)
-        # if (MooseRunner.inited):
-        #     return
-        self.runTime = runTime
-        self.updateInterval = updateInterval
-        self._updateInterval = 100e-3
-        self._simtime = 0.0
-        self._clock = moose.Clock('/clock')
-        self._pause = False
-        self.dataRoot = '/data'
-        self.modelRoot = '/model'
-        #MooseRunner.inited = True
-
-    def doResetAndRun(self, tickDtMap, tickTargetMap, simtime, updateInterval):
-        self._pause = False
-        self._updateInterval = 0.1 #updateInterval
-        self._simtime = simtime
-        utils.updateTicks(tickDtMap)
-        utils.assignTicks(tickTargetMap)
-        self.resetAndRun.emit()
-        moose.reinit()
-        QtCore.QTimer.singleShot(0, self.run)
-
-    def run(self):
-        """Run simulation for a small interval."""
-        print("simtime => ", self._simtime)
-        print("update interval => ", self._updateInterval)
-        print("current time => ", self._clock.currentTime)
-        print("Base dt => ", self._clock.baseDt)
-        if self._clock.currentTime >= self._simtime:
-            self.finished.emit()
-            return
-        if self._pause:
-            return
-        toRun = self._simtime - self._clock.currentTime
-        if toRun > self._updateInterval:
-            toRun = self._updateInterval
-        if toRun < self._clock.baseDt:
-            return
-        moose.start(toRun)
-        self.update.emit()
-        self.currentTime.emit(self._clock.currentTime)
-        QtCore.QTimer.singleShot(0, self.run)
-
-    def continueRun(self, simtime, updateInterval):
-        """Continue running without reset for `simtime`."""
-        self._simtime = simtime
-        self._updateInterval = updateInterval
-        self._pause = False
-        QtCore.QTimer.singleShot(0, self.run)
-
-    def stop(self):
-        """Pause simulation"""
-        self._pause = True
-'''
 class SchedulingWidget(QtGui.QWidget):
     """Widget for scheduling.
 
@@ -578,7 +471,6 @@ class SchedulingWidget(QtGui.QWidget):
         bar.addWidget(QLabel("Current Time : "))
         bar.addWidget(self.currentSimulationRuntime)
         bar.addWidget(QLabel(" (s)"))
-        # self._runToolBar.addWidget(self.())
 
         bar.addSeparator()
 
@@ -589,13 +481,6 @@ class SchedulingWidget(QtGui.QWidget):
         bar.addWidget(self.preferencesButton)
         return bar
 
-    # def updateTickswidget(self):
-    #     if self.advanceOptiondisplayed:
-    #         self.advancedOptionsWidget.hide()
-    #         self.advanceOptiondisplayed = False
-    #     else:
-    #         self.advancedOptionsWidget.show()
-    #         self.advanceOptiondisplayed = True
 
     def continueSimulation(self):
         self.runner.continueSimulation( self.runTime
@@ -649,12 +534,6 @@ class SchedulingWidget(QtGui.QWidget):
         self.checkConsistency()
         self.continueSimulation = True
         self.runner.runSimulation(self.runtime)
-        # return
-        # if self.continueFlag:
-        #     self.continueSimulation()
-        # else:
-        #     self.runner.runSimulation()
-        #     self.continueFlag = True
 
     def setParameters(self):
         if self.modelType == ELECTRICAL_MODEL:
@@ -671,7 +550,6 @@ class SchedulingWidget(QtGui.QWidget):
             self.simulationRuntime.setText(str(chemicalPreferences["simulation"]["default-runtime"]))
         self.runTime            = float(self.simulationRuntime.text())
         self.solver             = chemicalPreferences["simulation"]["solver"]
-        #print(self.solver)
 
     def setElectricalParameters(self):
         electricalPreferences   = self.preferences.getElectricalPreferences()
@@ -682,27 +560,12 @@ class SchedulingWidget(QtGui.QWidget):
             self.simulationRuntime.setText(str(electricalPreferences["simulation"]["default-runtime"]))
         self.runTime            = float(self.simulationRuntime.text())
         self.solver             = electricalPreferences["simulation"]["solver"]
-        #print(self.solver)
 
     def checkConsistency(self):
         if self.updateInterval < self.simulationInterval :
             self.updateInterval = self.simulationInterval
-
-            # print("Hello")
-            # dialog = QErrorMessage()
-            # dialog.showMessage(
-            #     """GUI Update interval should be greater than Simulation Interval.
-            #     Please update these values in Edit > Preferences."""
-            #                    )
-            # return False
         if self.runTime < self.updateInterval :
             self.runTime = self.updateInterval
-            # dialog = QErrorMessage()
-            # dialog.showMessage(
-            #     """Simulation runtime should greater than GUI Update interval.
-            #     Please update the runtime in the Scheduling Toolbar"""
-            #                   )
-            # return False
         return True
 
     def solverStatus(self):
@@ -738,16 +601,6 @@ class SchedulingWidget(QtGui.QWidget):
                 print("Successfully built stoichiometry matrix.\n ")
                 # moose.reinit()
                 return 0
-    # def setElectricalParameters(self):
-    #     chemicalPreferences     = self.preferences.getChemicalPreferences()
-    #     self.updateInterval     = chemicalPreferences["guiUpdateInterval"]
-    #     self.simulationInterval = chemicalPreferences["simulationInterval"]
-    #     chemicalPreferences["diffusionInterval"]
-    #     chemicalPreferences
-    #     self. chemicalPreferences
-    #     self. chemicalPreferences
-    #     self. chemicalPreferences
-    #     self. runTime            = float(self.simulationRuntime.text())
 
     def __getAdvanceOptionsButton(self):
         icon = QtGui.QIcon(os.path.join(config.settings[config.KEY_ICON_DIR],'arrow.png'))
@@ -1254,155 +1107,6 @@ class PlotWidget(QWidget):
 # Plot view - select fields to record
 #
 ###################################################
-'''
-class PlotView(PlotBase):
-    """View for selecting fields on elements to plot."""
-    def __init__(self, model, graph, index, *args):
-        PlotBase.__init__(self, *args)
-        self.model = model
-        self.graph = graph
-        self.index = index
-        # self.plugin.modelRootChanged.connect(self.getSelectionPane().setSearchRoot)
-        # self.plugin.dataRootChanged.connect(self.setDataRoot)
-        # self.dataRoot = self.plugin.dataRoot
-
-    def setDataRoot(self, root):
-        self.dataRoot = moose.element(root).path
-
-    def getToolPanes(self):
-        return (self.getFieldSelectionDock(), )
-
-    def getSelectionPane(self):
-        """Creates a widget to select elements and fields for plotting.
-        search-root, field-name, comparison operator , value
-        """
-        if not hasattr(self, '_selectionPane'):
-            self._searchWidget = SearchWidget()
-            self._searchWidget.setSearchRoot(self.model.path)
-            self._fieldLabel = QtGui.QLabel('Field to plot')
-            self._fieldEdit = QtGui.QLineEdit()
-            self._fieldEdit.returnPressed.connect(self._searchWidget.searchSlot)
-            self._selectionPane = QtGui.QWidget()
-            layout = QtGui.QHBoxLayout()
-            layout.addWidget(self._fieldLabel)
-            layout.addWidget(self._fieldEdit)
-            self._searchWidget.layout().addLayout(layout)
-            self._selectionPane = self._searchWidget
-            self._selectionPane.layout().addStretch(1)
-        return self._selectionPane
-
-    def getOperationsPane(self):
-        """TODO: complete this"""
-        if hasattr(self, 'operationsPane'):
-            return self.operationsPane
-        self.operationsPane = QtGui.QWidget()
-        self._createTablesButton = QtGui.QPushButton('Create tables for recording selected fields', self.operationsPane)
-        self._createTablesButton.clicked.connect(self.setupRecording)
-        layout = QtGui.QVBoxLayout()
-        self.operationsPane.setLayout(layout)
-        layout.addWidget(self._createTablesButton)
-        return self.operationsPane
-
-    def getFieldSelectionDock(self):
-        if not hasattr(self, '_fieldSelectionDock'):
-            self._fieldSelectionDock = QtGui.QDockWidget('Search and select elements')
-            self._fieldSelectionWidget = QtGui.QWidget()
-            layout = QtGui.QVBoxLayout()
-            self._fieldSelectionWidget.setLayout(layout)
-            layout.addWidget(self.getSelectionPane())
-            layout.addWidget(self.getOperationsPane())
-            self._fieldSelectionDock.setWidget(self._fieldSelectionWidget)
-        return self._fieldSelectionDock
-
-    def getCentralWidget(self):
-        if not hasattr(self, '_centralWidget') or self._centralWidget is None:
-            self._centralWidget = PlotSelectionWidget(self.model, self.graph)
-            self.getSelectionPane().executed.connect(self.selectElements)
-        return self._centralWidget
-
-    def selectElements(self, elements):
-        """Refines the selection.
-
-        Currently checks if _fieldEdit has an entry and if so, selects
-        only elements which have that field, and ticks the same in the
-        PlotSelectionWidget.
-
-        """
-        field = str(self._fieldEdit.text()).strip()
-        if len(field) == 0:
-            self.getCentralWidget().setSelectedElements(elements)
-            return
-        classElementDict = defaultdict(list)
-        for epath in elements:
-            el = moose.element(epath)
-            classElementDict[el.className].append(el)
-        refinedList = []
-        elementFieldList = []
-        for className, elist in classElementDict.items():
-            if field in elist[0].getFieldNames('valueFinfo'):
-                refinedList +=elist
-                elementFieldList += [(el, field) for el in elist]
-        self.getCentralWidget().setSelectedElements(refinedList)
-        self.getCentralWidget().setSelectedFields(elementFieldList)
-
-
-    def setupRecording(self):
-        """Create the tables for recording selected data and connect them."""
-        for element, field in self.getCentralWidget().getSelectedFields():
-            #createRecordingTable(element, field, self._recordingDict, self._reverseDict, self.dataRoot)
-            #harsha:CreateRecordingTable function is moved to python/moose/utils.py file as create function
-            #as this is required when I drop table on to the plot
-            utils.create(self.plugin.modelRoot,moose.element(element),field,"Table2")
-            #self.dataTable.create(self.plugin.modelRoot, moose.element(element), field)
-            #self.updateCallback()
-
-    def createRecordingTable(self, element, field):
-        """Create table to record `field` from element `element`
-
-        Tables are created under `dataRoot`, the names are generally
-        created by removing `/model` in the beginning of `elementPath`
-        and replacing `/` with `_`. If this conflicts with an existing
-        table, the id value of the target element (elementPath) is
-        appended to the name.
-
-        """
-        if len(field) == 0 or ((element, field) in self._recordingDict):
-            return
-        # The table path is not foolproof - conflict is
-        # possible: e.g. /model/test_object and
-        # /model/test/object will map to same table. So we
-        # check for existing table without element field
-        # path in recording dict.
-        relativePath = element.path.partition('/model[0]/')[-1]
-        if relativePath.startswith('/'):
-            relativePath = relativePath[1:]
-        #Convert to camelcase
-        if field == "concInit":
-            field = "ConcInit"
-        elif field == "conc":
-            field = "Conc"
-        elif field == "nInit":
-            field = "NInit"
-        elif field == "n":
-            field = "N"
-        elif field == "volume":
-            field = "Volume"
-        elif field == "diffConst":
-            field ="DiffConst"
-
-        tablePath =  relativePath.replace('/', '_') + '.' + field
-        tablePath = re.sub('.', lambda m: {'[':'_', ']':'_'}.get(m.group(), m.group()),tablePath)
-        tablePath = self.dataRoot + '/' +tablePath
-        if moose.exists(tablePath):
-            tablePath = '%s_%d' % (tablePath, element.getId().value)
-        if not moose.exists(tablePath):
-            table = moose.Table(tablePath)
-            print 'Created', table.path, 'for plotting', '%s.%s' % (element.path, field)
-            target = element
-            moose.connect(table, 'requestOut', target, 'get%s' % (field))
-            self._recordingDict[(target, field)] = table
-            self._reverseDict[table] = (target, field)
-'''
 class PlotSelectionWidget(QtGui.QScrollArea):
     """Widget showing the fields of specified elements and their plottable
     fields. User can select any number of fields for plotting and click a
@@ -1504,5 +1208,3 @@ class PlotSelectionWidget(QtGui.QScrollArea):
             if idx >= 0:
                 combo.setItemData(idx, QtCore.QVariant(Qt.Checked), Qt.CheckStateRole)
                 combo.setCurrentIndex(idx)
-#
-# default.py ends here

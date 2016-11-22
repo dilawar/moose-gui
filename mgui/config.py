@@ -65,7 +65,7 @@ logging.basicConfig(level=logging.DEBUG,
     filemode='a'
     )
 console = logging.StreamHandler()
-console.setLevel(logging.INFO)
+console.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
 console.setFormatter(formatter)
 _logger = logging.getLogger('')
@@ -113,6 +113,10 @@ MOOSE_NUMPTHREADS = '1'
 
 MOOSE_UNDO_LENGTH = 128 # Arbitrary undo length
 
+# It is important that MOOSE_PLUGIN_DIR is added to system path. This is ued to
+# search multiple plugins.
+sys.path.append( MOOSE_PLUGIN_DIR )
+
 
 def qvalue( qsetting, key ):
     """ Return value as unicode from QSetting object.
@@ -155,7 +159,6 @@ class MooseSetting(dict):
             cls._instance.qsettings.setValue(KEY_UNDO_LENGTH, ('%s' % MOOSE_UNDO_LENGTH))
             # These are to be checked at every run
             cls._instance.qsettings.setValue(KEY_HOME_DIR, os.environ['HOME'])
-            cls._instance.qsettings.setValue(KEY_DEMOS_DIR, MOOSE_DEMOS_DIR)
             cls._instance.qsettings.setValue(KEY_DOCS_DIR, MOOSE_DOCS_DIR)
         return cls._instance
 
@@ -179,7 +182,7 @@ class MooseSetting(dict):
         return ['%s' % key for key in self.qsettings.allKeys()]
 
     def values(self):
-        return [ qvalue(self.qsettings, key)) for key in self.qsettings.allKeys()]
+        return [ qvalue(self.qsettings, key) for key in self.qsettings.allKeys()]
 
     def itervalues(self):
         return ( qvalue(self.qsettings, key) for key in self.qsettings.allKeys())
