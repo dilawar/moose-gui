@@ -26,39 +26,6 @@
 #
 #
 
-# Change log:
-#
-# Wed Jun 30 11:18:34 2010 (+0530) - Originally created by Subhasis
-# Ray, the model and the view
-#
-# Modified/adapted to dh_branch by Chaitanya/Harsharani
-#
-# Thu Apr 18 18:37:31 IST 2013 - Reintroduced into multiscale GUI by
-# Subhasis
-#
-# Fri Apr 19 15:05:53 IST 2013 - Subhasis added undo redo
-# feature. Create ObjectEditModel as part of ObjectEditView.
-#
-
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 3, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-# Floor, Boston, MA 02110-1301, USA.
-#
-#
-
-# Code:
 import PyQt4
 from PyQt4 import QtCore
 from PyQt4 import QtGui
@@ -308,9 +275,9 @@ class ObjectEditModel(QtCore.QAbstractTableModel):
         field = self.fields[index.row()]
         if index.column() == 0 and role == QtCore.Qt.DisplayRole:
             try:
-                ret = QtCore.QVariant(QtCore.QString(field)+' ('+defaults.FIELD_UNITS[field]+')')
+                ret = '%s (%s)' % (QtCore.QString(field), defaults.FIELD_UNITS[field])
             except KeyError:
-                ret = QtCore.QVariant(QtCore.QString(field))
+                ret = QtCore.QString(field)
         elif index.column() == 1:
             if role==QtCore.Qt.CheckStateRole:
                 if ((str(field) == "plot Conc") or (str(field) == "plot n") ):
@@ -322,25 +289,25 @@ class ObjectEditModel(QtCore.QAbstractTableModel):
                         return QtGui.QPushButton("Press Me!")
                     if ( (str(field) != "Notes") and (str(field) != "className")):
                         ret = self.mooseObject.getField(str(field))
-                        ret = QtCore.QVariant(QtCore.QString(str(ret)))
+                        ret = QtCore.QString(str(ret))
                     elif(str(field) == "className"):
                         ret = self.mooseObject.getField(str(field))
                         if 'Zombie' in ret:
                             ret = ret.split('Zombie')[1]
-                        ret = QtCore.QVariant(QtCore.QString(str(ret)))
+                        ret = QtCore.QString(str(ret))
                     elif(str(field) == "Notes"):
                         astr = self.mooseObject.path+'/info'
                         mastr = moose.Annotator(astr)
                         ret = (mastr).getField(str('notes'))
-                        ret = QtCore.QVariant(QtCore.QString(str(ret)))
+                        ret = (QtCore.QString(str(ret)))
                 except ValueError:
                     ret = None
         return ret
 
     def headerData(self, col, orientation, role):
         if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
-            return QtCore.QVariant(self.headerdata[col])
-        return QtCore.QVariant()
+            return (self.headerdata[col])
+        return ""
 
 class ObjectEditView(QtGui.QTableView):
     """View class for object editor.
@@ -515,4 +482,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ojectedit.py ends here

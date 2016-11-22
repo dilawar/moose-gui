@@ -5,12 +5,7 @@ from PyQt4 import QtCore
 try:
     from PyQt4.QtCore import QString
 except ImportError:
-    # we are using Python3 so QString is not defined
+    # we are using Python3 so QString is not defined. Also QVariant is a mapped
+    # type.
     QtCore.QString = type("")
-
-# QtCore is a mapped type i.e. 
-try:
-    from PyQt4.QtCore import QVariant
-except Exception as e:
-    QtCore.QVariant = type( "" )
 
