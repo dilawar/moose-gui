@@ -1,4 +1,5 @@
-"""mgui.py: 
+"""
+Entry point.
 
 """
     
@@ -16,14 +17,17 @@ import os
 
 import menus
 import canvas
-
 import Tkinter as tk
+
 import logging
+from moosegui.MooseWindow import MooseWindow 
+
 logging.basicConfig( level = logging.DEBUG )
 
 def main( ):
-    root = tk.Tk( )
+    root = MooseWindow( )
     root.resizable( width = False, height = False )
+    # root.minsize( 800, 800 )
     # Handle all menues.
     menus.main(  root )
     # All frames
