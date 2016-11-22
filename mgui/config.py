@@ -100,7 +100,7 @@ KEY_ELECTRICAL_SIMDT = 'electrical/simdt'
 KEY_ELECTRICAL_PLOTDT = 'electrical/plotdt'
 KEY_SIMTIME = 'main/simtime'
 
-QT_VERSION = unicode(QtCore.QT_VERSION_STR).split('.')
+QT_VERSION = ('%s' % QtCore.QT_VERSION_STR).split('.')
 QT_MAJOR_VERSION = int(QT_VERSION[0])
 QT_MINOR_VERSION = int(QT_VERSION[1])
 
@@ -131,7 +131,7 @@ def qvalue( qsetting, key ):
     try: 
         val = qval.toString( )
     except Exception as e:
-        val = unicode( qval )
+        val = '%s' % qval
     return u'%s' % val
 
 
@@ -165,7 +165,7 @@ class MooseSetting(dict):
             cls._instance.qsettings.setValue(KEY_ICON_DIR, os.path.join(MOOSE_GUI_DIR, 'icons'))
             _logger.info( "Icon directory is %s" % KEY_ICON_DIR )
             cls._instance.qsettings.setValue(KEY_NUMPTHREADS, '1')
-            cls._instance.qsettings.setValue(KEY_UNDO_LENGTH, unicode(MOOSE_UNDO_LENGTH))
+            cls._instance.qsettings.setValue(KEY_UNDO_LENGTH, ('%s' % MOOSE_UNDO_LENGTH))
             # These are to be checked at every run
             cls._instance.qsettings.setValue(KEY_HOME_DIR, os.environ['HOME'])
             cls._instance.qsettings.setValue(KEY_DEMOS_DIR, MOOSE_DEMOS_DIR)
@@ -180,7 +180,7 @@ class MooseSetting(dict):
         super(MooseSetting, self).__init__(self, *args, **kwargs)
 
     def __iter__(self):
-        return (unicode(key) for key in self.qsettings.allKeys())
+        return ('%s' % key for key in self.qsettings.allKeys())
 
     def __setitem__(self, key, value):
         if isinstance(key, str):
@@ -190,7 +190,6 @@ class MooseSetting(dict):
 
     def __getitem__(self, key):
         val = qvalue( self.qsettings, key )
-        assert isinstance( val, unicode ), "Expected string, got %s" % type(val)
         return val
 
     def keys(self):

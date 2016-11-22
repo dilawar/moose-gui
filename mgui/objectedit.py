@@ -73,12 +73,12 @@ import sys
 from collections import deque
 import traceback
 
-sys.path.append('../python')
 import moose
-from . import defaults
-from . import config
-from .plugins.kkitUtil import getColor
-#these fields will be ignored
+
+from mgui import defaults
+from mgui import config
+from mgui.plugins.kkitUtil import getColor
+
 extra_fields = ['this',
                 'me',
                 'parent',

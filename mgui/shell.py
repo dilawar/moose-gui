@@ -31,6 +31,12 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import QTextEdit, QTextCursor
 from PyQt4.QtCore import Qt
 
+# In python3, QString is just python strings.
+try:
+    from PyQt4.QtCore import QString
+except ImportError as e:
+    # we are using Python3 so QString is not defined
+    QtCore.QString = type("")
 
 class History:
   """ Backup and restore history between sessions 
