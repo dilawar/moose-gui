@@ -262,7 +262,7 @@ class MWindow(QtGui.QMainWindow):
         import subprocess, shlex
         t = os.path.abspath(filepath)
         directory, filename = os.path.split(t)
-        p = subprocess.Popen(["python", filename], cwd=directory)
+        p = subprocess.Popen([ sys.executable, filename], cwd=directory)
         p.wait()
         freeCursor()
 
@@ -321,6 +321,7 @@ class MWindow(QtGui.QMainWindow):
         except Exception as e:
             _logger.warn( "Could not load module %s' % fp" )
             _logger.debug( "Error was %s" % e )
+            module = ""
 
         if fp: fp.close()
         return module
