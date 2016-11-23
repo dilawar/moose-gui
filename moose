@@ -2,4 +2,5 @@
 
 import moosegui
 print( moosegui.__file__ )
+print( dir(moosegui) )
 moosegui.main( )

@@ -11,20 +11,20 @@ from moose import *
 from moose.genesis import write
 from moose import SBML
 
-from mgui.mplugin import *
-from mgui.mtoolbutton import MToolButton
-from mgui.plugins.default import *
-from mgui.plugins.kkitUtil import *
-from mgui.plugins.kkitQGraphics import PoolItem, ReacItem, EnzItem, CplxItem, ComptItem
-from mgui.plugins.kkitViewcontrol import *
-from mgui.plugins.kkitCalcArrow import *
-from mgui.plugins.kkitOrdinateUtil import *
-from mgui.plugins.setsolver import *
-from mgui.RunWidget import RunWidget
+from moosegui.mplugin import *
+from moosegui.mtoolbutton import MToolButton
+from moosegui.plugins.default import *
+from moosegui.plugins.kkitUtil import *
+from moosegui.plugins.kkitQGraphics import PoolItem, ReacItem, EnzItem, CplxItem, ComptItem
+from moosegui.plugins.kkitViewcontrol import *
+from moosegui.plugins.kkitCalcArrow import *
+from moosegui.plugins.kkitOrdinateUtil import *
+from moosegui.plugins.setsolver import *
+from moosegui.RunWidget import RunWidget
 
-import mgui.TooltipInfo as TooltipInfo
+import moosegui.TooltipInfo as TooltipInfo
 
-from mgui.config import _logger
+from moosegui.config import _logger
 
 
 class KkitPlugin(MoosePlugin):

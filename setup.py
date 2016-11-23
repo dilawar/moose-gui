@@ -26,21 +26,19 @@ setup(
     version = "1.0.0",
     description = "Graphical User Interface of MOOSE simulator",
     long_description = open( 'README.md' ).read(),
-    packages = [ "moosegui"
-        , "moosegui.mgui"
-        , 'moosegui.mgui.plugins'
-        , 'moosegui.suds' 
+    packages = [ "moosegui", 'moosegui.plugins'
+        , 'moosegui.demos', 'moosegui.suds' 
         ],
     package_dir = { 
-        'moosegui' : '.'
-        , 'moosegui.mgui' : 'mgui'
-        , 'moosegui.mgui.plugins' : 'mgui/plugins'
+        'moosegui' : 'src'
+        , 'moosegui.plugins' : 'src/plugins'
+        , 'moosegui.demos' : 'demos'
         , 'moosegui.suds' : 'suds'
         },
     package_data = { 
-        'moosegui' : [ 'moose', 'examples/*' ]
-        , 'moosegui.mgui' : [ 'icons/*', 'colormaps/*', ]
-        , 'moosegui.mgui.plugins' : [ 'datastore/*', 'list.txt' ]
+        'moosegui' : [ '../moose', 'icons/*', 'colormaps/*' ]
+        , 'moosegui.demos' : [ './*' ]
+        , 'moosegui.plugins' : [ 'datastore/*', 'list.txt' ]
         },
     author = open('AUTHOR').read(),
     maintainer = 'Dilawar Singh',

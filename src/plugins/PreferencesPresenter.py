@@ -6,8 +6,8 @@ from PyQt4.QtCore import QObject
 from PyQt4.QtCore import pyqtSignal
 from PyQt4.QtGui import QColor
 from PyQt4.QtGui import QGroupBox
-from mgui.plugins.PreferencesView import PreferencesView
-from mgui.plugins.defines import *
+from moosegui.plugins.PreferencesView import PreferencesView
+from moosegui.plugins.defines import *
 import json
 import os
 

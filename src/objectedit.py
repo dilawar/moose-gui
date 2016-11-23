@@ -43,10 +43,10 @@ import traceback
 import moose
 import numpy as np
 
-from mgui import defaults
-from mgui import config
-from mgui.plugins.kkitUtil import getColor
-from mgui.GenericTypes import QVariant
+from moosegui import defaults
+from moosegui import config
+from moosegui.plugins.kkitUtil import getColor
+from moosegui.GenericTypes import QVariant
 
 extra_fields = ['this',
                 'me',

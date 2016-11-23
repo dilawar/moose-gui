@@ -1,4 +1,3 @@
-
 PLOT_FIELDS={
     'LeakyIaF':['Vm'],
     'Compartment':['Vm','Im'],

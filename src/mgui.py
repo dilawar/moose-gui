@@ -1,4 +1,4 @@
-# Filename: mgui.py
+# Filename: moosegui.py
 # Description: Graphical user interface of MOOSE simulator.
 # Author: Subhasis Ray, Harsha Rani, Dilawar Singh
 # Maintainer:
@@ -13,8 +13,8 @@ from PyQt4 import QtGui, QtCore, Qt
 from PyQt4 import Qt, QtCore, QtGui
 import posixpath 
 
-from . import config
-from . import MWindow as MWindow
+from moosegui import config
+from moosegui import MWindow as MWindow
 
 app_ = None
 
@@ -40,4 +40,4 @@ if __name__ == '__main__':
     main()
 
 #
-# mgui.py ends here
+# moosegui.py ends here

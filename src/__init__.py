@@ -1,4 +1,4 @@
-from .mgui import main
+from . import mgui
 
 # Hack. In python3, Qt4 does not have QString object. 
 from PyQt4 import QtCore
