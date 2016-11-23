@@ -26,14 +26,16 @@ setup(
     version = "1.0.0",
     description = "Graphical User Interface of MOOSE simulator",
     long_description = open( 'README.md' ).read(),
-    packages = [ "moosegui", 'moosegui.plugins'
-        , 'moosegui.demos', 'moosegui.suds' 
+    packages = [ 
+        "moosegui", 'moosegui.plugins' , 'moosegui.demos'
+        , 'moosegui.suds', 'moosegui.suds.bindings'
+        , 'moosegui.suds.transport', 'moosegui.suds.mx'
+        , 'moosegui.suds.umx', 'moosegui.suds.xsd', 'moosegui.suds.sax'
         ],
     package_dir = { 
         'moosegui' : 'src'
-        , 'moosegui.plugins' : 'src/plugins'
         , 'moosegui.demos' : 'demos'
-        , 'moosegui.suds' : 'suds'
+        , 'moosegui.suds' : 'external/suds'
         },
     package_data = { 
         'moosegui' : [ '../moose', 'icons/*', 'colormaps/*' ]
