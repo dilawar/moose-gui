@@ -1,1 +1,1 @@
-from moosegui.mgui import *
+from moosegui.moosegui import *

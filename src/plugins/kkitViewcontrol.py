@@ -1,16 +1,16 @@
 import sys
 
-from mgui.plugins.modelBuild import *
-from mgui.plugins.constants import *
-from mgui.plugins.kkitUtil import *
-from mgui.plugins.setsolver import *
+from moosegui.plugins.modelBuild import *
+from moosegui.plugins.constants import *
+from moosegui.plugins.kkitUtil import *
+from moosegui.plugins.setsolver import *
 
 from PyQt4.QtGui import QPixmap, QImage, QPen, QGraphicsPixmapItem, QGraphicsLineItem
 from PyQt4.QtCore import pyqtSignal
 from PyQt4 import QtSvg
 from moose import utils
-from mgui.GenericTypes import QVariant
-from mgui.config import _logger
+from moosegui.GenericTypes import QVariant
+from moosegui.config import _logger
 
 
 class GraphicalView(QtGui.QGraphicsView):

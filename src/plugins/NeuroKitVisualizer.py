@@ -15,8 +15,8 @@ from PyQt4.QtCore import QPoint
 import moose
 import moogli
 
-from mgui.config import _logger
-from mgui.plugins import default
+from moosegui.config import _logger
+from moosegui.plugins import default
 
 class MorphologyEditor(moogli.MorphologyViewer):
 

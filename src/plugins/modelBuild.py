@@ -1,12 +1,12 @@
 import PyQt4
 import moose
 
-from mgui.plugins.kkitQGraphics import *
-from mgui.plugins.kkitOrdinateUtil import *
-from mgui.plugins.kkitUtil import *
-from mgui.plugins.setsolver import *
+from moosegui.plugins.kkitQGraphics import *
+from moosegui.plugins.kkitOrdinateUtil import *
+from moosegui.plugins.kkitUtil import *
+from moosegui.plugins.setsolver import *
 
-from mgui.config import _logger
+from moosegui.config import _logger
 
 
 def updateCompartmentSize(qGraCompt):

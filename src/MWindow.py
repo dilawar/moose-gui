@@ -29,19 +29,19 @@ from PyQt4.QtGui import *
 import moose
 from moose import utils
 
-from mgui import config 
-from mgui import mplugin
-from mgui import mexception
-from mgui import mload
-from mgui.loaderdialog import LoaderDialog
-from mgui.shell import get_shell_class
-from mgui.objectedit import ObjectEditDockWidget
-from mgui.newmodeldialog import DialogWidget
-from mgui.biomodelsclient import BioModelsClientWidget
-from mgui.MdiArea import MdiArea
-from mgui.plugins.setsolver import *
-from mgui.plugins.defines import *
-import mgui.examples as demos
+from moosegui import config 
+from moosegui import mplugin
+from moosegui import mexception
+from moosegui import mload
+from moosegui.loaderdialog import LoaderDialog
+from moosegui.shell import get_shell_class
+from moosegui.objectedit import ObjectEditDockWidget
+from moosegui.newmodeldialog import DialogWidget
+from moosegui.biomodelsclient import BioModelsClientWidget
+from moosegui.MdiArea import MdiArea
+from moosegui.plugins.setsolver import *
+from moosegui.plugins.defines import *
+import moosegui.examples as demos
 
 
 # Logger

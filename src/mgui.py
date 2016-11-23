@@ -1,4 +1,4 @@
-# Filename: mgui.py
+# Filename: moosegui.py
 # Description: Graphical user interface of MOOSE simulator.
 # Author: Subhasis Ray, Harsha Rani, Dilawar Singh
 # Maintainer:
@@ -40,4 +40,4 @@ if __name__ == '__main__':
     main()
 
 #
-# mgui.py ends here
+# moosegui.py ends here

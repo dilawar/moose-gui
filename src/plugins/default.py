@@ -33,17 +33,17 @@ rcParams.update({'figure.autolayout': True})
 import moose
 from moose import utils
 
-import mgui.mtree as mtree
-from mgui.mtoolbutton import MToolButton
-from mgui.msearch import SearchWidget
-from mgui.checkcombobox import CheckComboBox
-from mgui import config
-from mgui.mplugin import MoosePluginBase, EditorBase, EditorWidgetBase, PlotBase, RunBase
-from mgui.PlotWidgetContainer import PlotWidgetContainer
-from mgui.plugins.kkitUtil import getColor
-from mgui.plugins.Runner import Runner
-from mgui.global_constants import preferences
-from mgui.plugins.setsolver import *
+import moosegui.mtree as mtree
+from moosegui.mtoolbutton import MToolButton
+from moosegui.msearch import SearchWidget
+from moosegui.checkcombobox import CheckComboBox
+from moosegui import config
+from moosegui.mplugin import MoosePluginBase, EditorBase, EditorWidgetBase, PlotBase, RunBase
+from moosegui.PlotWidgetContainer import PlotWidgetContainer
+from moosegui.plugins.kkitUtil import getColor
+from moosegui.plugins.Runner import Runner
+from moosegui.global_constants import preferences
+from moosegui.plugins.setsolver import *
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
@@ -59,7 +59,7 @@ from PyQt4.QtGui import QIcon
 from PyQt4.QtGui import QPixmap
 from PyQt4.QtGui import QAction
 
-from mgui.config import _logger
+from moosegui.config import _logger
 
 ELECTRICAL_MODEL = 0
 CHEMICAL_MODEL   = 1
@@ -281,7 +281,7 @@ class DefaultEditorWidget(EditorWidgetBase):
 # View for running a simulation and runtime visualization
 #
 ############################################################
-from mgui.mplot import CanvasWidget
+from moosegui.mplot import CanvasWidget
 
 class RunView(RunBase):
     """A default runtime view implementation. This should be

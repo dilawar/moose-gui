@@ -1,4 +1,4 @@
-from mgui import config
+from moosegui import config
 from PyQt4 import QtGui, QtCore, Qt
 from moose import *
 from PyQt4.QtGui import QPixmap, QImage, QGraphicsPixmapItem

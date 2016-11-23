@@ -27,20 +27,21 @@ setup(
     description = "Graphical User Interface of MOOSE simulator",
     long_description = open( 'README.md' ).read(),
     packages = [ "moosegui"
-        , "moosegui.mgui"
-        , 'moosegui.mgui.plugins'
-        , 'moosegui.suds' 
+        , "moosegui.demos"
+        , 'moosegui.plugins'
+        , 'suds', 'suds.bindings', 'suds.sax', 'suds.mx', 'suds.xsd'
+        , 'suds.umx', 'suds.transport'
         ],
     package_dir = { 
-        'moosegui' : '.'
-        , 'moosegui.mgui' : 'mgui'
-        , 'moosegui.mgui.plugins' : 'mgui/plugins'
-        , 'moosegui.suds' : 'suds'
+        'moosegui' : 'src'
+        , 'moosegui.demos' : 'demos'
+        , 'moosegui.plugins' : 'src/plugins'
+        , 'suds' : 'suds'
         },
     package_data = { 
-        'moosegui' : [ 'moose', 'examples/*' ]
-        , 'moosegui.mgui' : [ 'icons/*', 'colormaps/*', ]
-        , 'moosegui.mgui.plugins' : [ 'datastore/*', 'list.txt' ]
+        'moosegui' : [ 'moose', 'icons/*', 'colormaps/*' ]
+        , 'moosegui.demos' : [ './*' ]
+        , 'moosegui.plugins' : [ 'datastore/*', 'list.txt' ]
         },
     author = open('AUTHOR').read(),
     maintainer = 'Dilawar Singh',

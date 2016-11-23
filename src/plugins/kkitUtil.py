@@ -2,7 +2,7 @@ from moose import Annotator
 from .kkitQGraphics import PoolItem, ReacItem,EnzItem,CplxItem,ComptItem
 from PyQt4 import QtCore,QtGui,QtSvg
 from PyQt4.QtGui import QColor
-from mgui import config
+from moosegui import config
 
 import numpy as np
 import os
