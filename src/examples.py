@@ -19,19 +19,19 @@ import os
 from collections import OrderedDict
 
 examples_ = [
-            ("Fig2C" , "examples/Fig2_elecModels/Fig2C.py")
-            , ("Fig2D (35s)","examples/Fig2_elecModels/Fig2D.py")
-            , ("Fig2E","examples/Fig2_elecModels/Fig2E.py")
-            , ("Fig3B_Gssa","examples/Fig3_chemModels/Fig3ABC.g")
-            , ("Fig3C_Gsl","examples/Fig3_chemModels/Fig3ABC.g")
-            , ("Fig3D","examples/Fig3_chemModels/Fig3D.py")
-            , ("Fig4B","examples/Fig4_ReacDiff/Fig4B.py"  )
-            , ("Fig4K", "examples/Fig4_ReacDiff/rxdSpineSize.py")
-            , ("Fig5A (20s)","examples/Fig5_CellMultiscale/Fig5A.py")
-            , ("Fig5BCD (240s)","examples/Fig5_CellMultiscale/Fig5BCD.py")
-            , ("Fig6A (60s)","examples/Fig6_NetMultiscale/Fig6A.py" )
-            , ("Reduced6 (200s)","examples/Fig6_NetMultiscale/ReducedModel.py")
-            , ("Squid" , "examples/squid/squid_demo.py")
+            ("Fig2C" , "demos/Fig2_elecModels/Fig2C.py")
+            , ("Fig2D (35s)","demos/Fig2_elecModels/Fig2D.py")
+            , ("Fig2E","demos/Fig2_elecModels/Fig2E.py")
+            , ("Fig3B_Gssa","demos/Fig3_chemModels/Fig3ABC.g")
+            , ("Fig3C_Gsl","demos/Fig3_chemModels/Fig3ABC.g")
+            , ("Fig3D","demos/Fig3_chemModels/Fig3D.py")
+            , ("Fig4B","demos/Fig4_ReacDiff/Fig4B.py"  )
+            , ("Fig4K", "demos/Fig4_ReacDiff/rxdSpineSize.py")
+            , ("Fig5A (20s)","demos/Fig5_CellMultiscale/Fig5A.py")
+            , ("Fig5BCD (240s)","demos/Fig5_CellMultiscale/Fig5BCD.py")
+            , ("Fig6A (60s)","demos/Fig6_NetMultiscale/Fig6A.py" )
+            , ("Reduced6 (200s)","demos/Fig6_NetMultiscale/ReducedModel.py")
+            , ("Squid" , "demos/squid/squid_demo.py")
             ]
 
 description_ = {

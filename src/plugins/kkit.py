@@ -971,11 +971,13 @@ class KineticEditorWidget(KineticsWidget):
                 button.setDefaultAction(action)
                 # set the unicode instead of image by setting
                 # button.setText(unicode(u'\u20de'))
-                Iconpath = os.path.join(
-                    config.MOOSE_GUI_DIR, 'icons/classIcon/')
-                button.setIcon(QtGui.QIcon(Iconpath + action.text() + ".png"))
-                # button.setIcon(QtGui.QIcon("icons/classIcon/"+action.text()+".png"))
-                # button.setIconSize(QtCore.QSize(200,200))
+                Iconpath = os.path.join(config.MOOSE_ICON_DIR, 'classIcon')
+                _logger.debug( "Reading icons from %s" % Iconpath )
+                button.setIcon( 
+                        QtGui.QIcon( 
+                            os.path.join(Iconpath, '%s' % action.text() + ".png")
+                            )
+                        )
                 self._insertToolBar.addWidget(button)
         return self._toolBars
 

@@ -26,9 +26,7 @@ setup(
     version = "1.0.0",
     description = "Graphical User Interface of MOOSE simulator",
     long_description = open( 'README.md' ).read(),
-    packages = [ "moosegui"
-        , "moosegui.demos"
-        , 'moosegui.plugins'
+    packages = [ "moosegui", 'moosegui.plugins', "moosegui.demos"
         , 'suds', 'suds.bindings', 'suds.sax', 'suds.mx', 'suds.xsd'
         , 'suds.umx', 'suds.transport'
         ],
@@ -39,7 +37,7 @@ setup(
         , 'suds' : 'suds'
         },
     package_data = { 
-        'moosegui' : [ 'moose', 'icons/*', 'colormaps/*' ]
+        'moosegui' : [ 'icons/*', 'icons/classIcon/*', 'colormaps/*' ]
         , 'moosegui.demos' : [ './*' ]
         , 'moosegui.plugins' : [ 'datastore/*', 'list.txt' ]
         },
