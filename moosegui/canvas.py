@@ -14,10 +14,10 @@ __status__           = "Development"
 
 import sys
 import os
+import _globals
 
 import logging
 from moosegui.MooseCanvas import MooseCanvas
-
 from Tkinter import *
 
 
@@ -32,8 +32,8 @@ def main( parent ):
 
     w, h = parent.winfo_screenwidth( ), parent.winfo_screenheight( )
     editCanvas = MooseCanvas( parent ) 
-    editCanvas.pack( fill= 'both', expand = True )
-    
+    editCanvas.pack( fill = 'both', expand = True )
+    _globals.canvas_ = editCanvas 
 
 if __name__ == '__main__':
     main()

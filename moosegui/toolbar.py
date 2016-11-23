@@ -17,7 +17,10 @@ import sys
 import os
 import Tkinter as tk
 import ttk
+import _globals
+
 import logging
+
 from PIL import Image, ImageTk
 
 # After each section, put a separator.
@@ -34,6 +37,9 @@ def iconRead(name):
 def btnCallback( btn ):
     if btn.lower( ) == 'exit':
         raise SystemExit
+    if btn.lower( ) == 'cube':
+        logging.debug( "Drawing cube and changing cursor " )
+        _globals.frame_.config( cursor = 'cross' )
     print( btn )
 
 class ToolBar(tk.Frame):
@@ -59,3 +65,4 @@ class ToolBar(tk.Frame):
 def main(parent):
     toolbar = ToolBar(parent)  # toolbarFrame )
     toolbar.pack(side='top', fill='x', expand=True)
+    _globals.toolbar_ = toolbar

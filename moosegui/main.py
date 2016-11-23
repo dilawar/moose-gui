@@ -18,12 +18,13 @@ import os
 import menus
 import canvas
 import toolbar 
-
+import traceback 
 import Tkinter as tk
+import _globals
 
-import logging
 from moosegui.MooseWindow import MooseWindow 
 
+import logging
 logging.basicConfig( level = logging.DEBUG )
 
 
@@ -49,11 +50,14 @@ tk.CallWrapper = Catcher
 def main( ):
     root = MooseWindow( )
     root.resizable( width = False, height = False )
-    # root.minsize( 800, 800 )
+    _globals.root_ = root
+
     # Handle all menues.
     menus.main(  root )
+
     # Add toolbar
     toolbar.main( root )
+
     # All frames
     canvas.main( root )
     tk.mainloop( )

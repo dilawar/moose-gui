@@ -18,35 +18,45 @@ import sys
 import random
 import os
 import Tkinter as tk
+import logging
 
 
 class MooseCanvas(tk.Frame):
 
     def __init__(self, root):
         tk.Frame.__init__(self, root)
-        self.canvas = tk.Canvas(
-            self,
-            width=400,
-            height=400,
-            background="bisque")
+        self.canvas = tk.Canvas( self
+                , cursor = 'crosshair black red'
+                , width=800, height=600, background="bisque"
+                )
         self.xsb = tk.Scrollbar(
             self,
             orient="horizontal",
             command=self.canvas.xview)
-        self.ysb = tk.Scrollbar(
-            self,
+        self.ysb = tk.Scrollbar( self,
             orient="vertical",
             command=self.canvas.yview)
         self.canvas.configure(
             yscrollcommand=self.ysb.set,
-            xscrollcommand=self.xsb.set)
-        self.canvas.configure(scrollregion=(0, 0, 1000, 1000))
+            xscrollcommand=self.xsb.set
+            )
 
         self.xsb.grid(row=1, column=0, sticky="ew")
         self.ysb.grid(row=0, column=1, sticky="ns")
         self.canvas.grid(row=0, column=0, sticky="nsew")
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+
+        # This is what enables using the mouse:
+        self.canvas.bind("<ButtonPress-1>", self.move_start)
+        self.canvas.bind("<B1-Motion>", self.move_move)
+        # linux scroll
+        self.canvas.bind("<Button-4>", self.zoomerP)
+        self.canvas.bind("<Button-5>", self.zoomerM)
+        # windows scroll
+        self.canvas.bind("<MouseWheel>", self.zoomer)
+        self.canvas.bind( "<Key>", self.keyboard )
+        self.canvas.bind( "<Button-1>", self.mouseCallback )
 
     def plot_random_rects(self):
         """This is a test function. """
@@ -65,14 +75,6 @@ class MooseCanvas(tk.Frame):
             anchor="nw",
             text="Click and drag to move the canvas\nScroll to zoom.")
 
-        # This is what enables using the mouse:
-        self.canvas.bind("<ButtonPress-1>", self.move_start)
-        self.canvas.bind("<B1-Motion>", self.move_move)
-        # linux scroll
-        self.canvas.bind("<Button-4>", self.zoomerP)
-        self.canvas.bind("<Button-5>", self.zoomerM)
-        # windows scroll
-        self.canvas.bind("<MouseWheel>", self.zoomer)
 
     # move
     def move_start(self, event):
@@ -98,9 +100,15 @@ class MooseCanvas(tk.Frame):
         self.canvas.scale("all", event.x, event.y, 0.9, 0.9)
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    a = MooseCanvas(root)
-    a.plot_random_rects()
-    a.pack(fill="both", expand=True)
-    root.mainloop()
+    def mouseCallback(self, event ):
+        logging.info( 'Button pressed %s %s' % ( event.x, event.y ) )
+
+    def keyboard(self, event ):
+        logging.info( 'Key pressed %s' % ( event.char ) )
+
+# if __name__ == "__main__":
+    # root = tk.Tk()
+    # a = MooseCanvas( root )
+    # a.plot_random_rects( )
+    # a.pack(fill="both", expand=True)
+    # root.mainloop()
