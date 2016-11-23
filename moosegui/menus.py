@@ -33,7 +33,7 @@ menu_dict_ = {
 def callback( action, parent ):
     logging.info( "Got action %s" % action )
     if action.lower() == 'exit':
-        parent.quit( )
+        raise SystemExit( "Exit command" )
     else:
         logging.info( "TODO %s" % action )
 

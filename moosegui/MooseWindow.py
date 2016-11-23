@@ -38,4 +38,3 @@ class MooseWindow( tk.Tk ):
         self.state = False
         self.attributes("-fullscreen", False)
         return "break"
-

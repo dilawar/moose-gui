@@ -31,6 +31,10 @@ def iconRead(name):
     # return tk.PhotoImage( file = imgFilePath )
     return ImageTk.PhotoImage(img)
 
+def btnCallback( btn ):
+    if btn.lower( ) == 'exit':
+        raise SystemExit
+    print( btn )
 
 class ToolBar(tk.Frame):
 
@@ -42,7 +46,9 @@ class ToolBar(tk.Frame):
             for tool in tools:
                 i += 1
                 btnImg = iconRead(tool)
-                btn = tk.Button(self, image=btnImg, relief=tk.FLAT)
+                btn = tk.Button(self, image=btnImg
+                        , command = lambda x = tool : btnCallback( x )
+                        )
                 btn.image = btnImg
                 btn.grid(row=0, column=i)
             i += 2
