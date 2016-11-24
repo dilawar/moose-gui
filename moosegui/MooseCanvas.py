@@ -28,10 +28,12 @@ class MooseCanvas( tk.Frame ):
                 , cursor = 'crosshair black red'
                 , width=800, height=600, background="bisque"
                 )
-        self.xsb = tk.Scrollbar( self,
+        '''
+        self.xsb = tk.Scrollbar( self.canvas,
             orient="horizontal", command=self.canvas.xview
             )
-        self.ysb = tk.Scrollbar( self, orient="vertical",
+
+        self.ysb = tk.Scrollbar( self.canvas, orient="vertical",
             command=self.canvas.yview
             )
         self.canvas.configure(
@@ -41,9 +43,9 @@ class MooseCanvas( tk.Frame ):
 
         self.xsb.grid(row=1, column=0, sticky="ew")
         self.ysb.grid(row=0, column=1, sticky="ns")
-        self.canvas.grid(row=0, column=0, sticky="nsew")
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
+        # self.grid_rowconfigure(0, weight=1)
+        # self.grid_columnconfigure(0, weight=1)
+        '''
 
         # This is what enables using the mouse:
         self.canvas.bind("<ButtonPress-1>", self.move_start)
@@ -56,7 +58,7 @@ class MooseCanvas( tk.Frame ):
         # self.canvas.bind( "<Key>", self.keyboard )
         self.canvas.bind( "Move", self.keyboard )
         self.canvas.bind( "<Button-1>", self.mouseCallback )
-        self.canvas.grid( row = 1, column = 1 )
+        self.canvas.grid( row = 1, column = 1, sticky = 'news' )
 
     # move
     def move_start(self, event):

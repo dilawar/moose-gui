@@ -24,8 +24,9 @@ class StatusBar(Frame):
 
     def __init__(self, master):
         Frame.__init__(self, master)
-        self.label = Label(self, bd=1, relief=SUNKEN, anchor=W)
-        # self.label.pack(fill=X)
+        self.label = Label(self, bd = 1, relief = SUNKEN, anchor = W)
+        self.label.config( text = 'LABEL' )
+        self.label.grid( row = 2, column = 0, sticky = 'ew' )
 
     def set(self, format, *args):
         self.label.config(text=format % args)
@@ -51,12 +52,12 @@ def main( parent ):
     w, h = parent.winfo_screenwidth( ), parent.winfo_screenheight( )
     editCanvas = MooseCanvas( parent ) 
     editCanvas.canvas.focus_set( )
-    editCanvas.canvas.bind( 'a', update )
 
     # Add a statusbar 
-    sbar = StatusBar( editCanvas )
-    # editCanvas.pack( fill = 'both', expand = True )
-    sbar.grid( row = 2, column =  0)
+    sbar = StatusBar( parent )
+    sbar.grid( row = 3, column =  1, sticky = 'ew' )
+
+    sbar.bind( '<Button-1>', update )
 
     _globals.statusbar_ = sbar
     _globals.canvas_ = editCanvas 
