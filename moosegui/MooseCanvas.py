@@ -20,22 +20,20 @@ import os
 import Tkinter as tk
 import logging
 
-
-class MooseCanvas(tk.Frame):
+class MooseCanvas( tk.Frame ):
 
     def __init__(self, root):
-        tk.Frame.__init__(self, root)
-        self.canvas = tk.Canvas( self
+        tk.Frame.__init__( self )
+        self.canvas = tk.Canvas( root
                 , cursor = 'crosshair black red'
                 , width=800, height=600, background="bisque"
                 )
-        self.xsb = tk.Scrollbar(
-            self,
-            orient="horizontal",
-            command=self.canvas.xview)
-        self.ysb = tk.Scrollbar( self,
-            orient="vertical",
-            command=self.canvas.yview)
+        self.xsb = tk.Scrollbar( self,
+            orient="horizontal", command=self.canvas.xview
+            )
+        self.ysb = tk.Scrollbar( self, orient="vertical",
+            command=self.canvas.yview
+            )
         self.canvas.configure(
             yscrollcommand=self.ysb.set,
             xscrollcommand=self.xsb.set
@@ -55,26 +53,10 @@ class MooseCanvas(tk.Frame):
         self.canvas.bind("<Button-5>", self.zoomerM)
         # windows scroll
         self.canvas.bind("<MouseWheel>", self.zoomer)
-        self.canvas.bind( "<Key>", self.keyboard )
+        # self.canvas.bind( "<Key>", self.keyboard )
+        self.canvas.bind( "Move", self.keyboard )
         self.canvas.bind( "<Button-1>", self.mouseCallback )
-
-    def plot_random_rects(self):
-        """This is a test function. """
-
-        # Plot some rectangles
-        for n in range(50):
-            x0 = random.randint(0, 900)
-            y0 = random.randint(50, 900)
-            x1 = x0 + random.randint(50, 100)
-            y1 = y0 + random.randint(50, 100)
-            color = ( "red", "orange", "yellow", "green", "blue")[
-                random.randint( 0, 4)]
-            self.canvas.create_rectangle( x0, y0, x1, y1,
-                outline="black", fill=color, activefill="black", tags=n)
-        self.canvas.create_text( 50, 10,
-            anchor="nw",
-            text="Click and drag to move the canvas\nScroll to zoom.")
-
+        self.canvas.grid( row = 1, column = 1 )
 
     # move
     def move_start(self, event):

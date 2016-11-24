@@ -39,30 +39,31 @@ def btnCallback( btn ):
         raise SystemExit
     if btn.lower( ) == 'cube':
         logging.debug( "Drawing cube and changing cursor " )
-        _globals.frame_.config( cursor = 'cross' )
+        _globals.root_.config( cursor = 'wait' )
     print( btn )
 
 class ToolBar(tk.Frame):
 
     def __init__(self, root):
         logging.info("Creating a toolbar")
-        tk.Frame.__init__(self, root, bd=1, relief=tk.RAISED)
+        tk.Frame.__init__(self, root )
         i = 0
         for tools in toolbar:
             for tool in tools:
                 i += 1
                 btnImg = iconRead(tool)
-                btn = tk.Button(self, image=btnImg
+                btn = tk.Button( self
+                        , image=btnImg
                         , command = lambda x = tool : btnCallback( x )
                         )
                 btn.image = btnImg
-                btn.grid(row=0, column=i)
-            i += 2
-            sep = ttk.Separator( self , orient = tk.HORIZONTAL )
-            sep.grid(row=0, column=i, columnspan=1, sticky = "ew" )
+                btn.grid(row=i, column=0)
+            i += 1
+            sep = ttk.Separator( root , orient = tk.VERTICAL )
+            sep.grid(row=i, column=0 )
 
 
 def main(parent):
-    toolbar = ToolBar(parent)  # toolbarFrame )
-    toolbar.pack(side='top', fill='x', expand=True)
+    toolbar = ToolBar( parent ) 
+    toolbar.grid( row = 1, column = 0, sticky = 'ns' )
     _globals.toolbar_ = toolbar

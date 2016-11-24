@@ -20,6 +20,24 @@ import logging
 from moosegui.MooseCanvas import MooseCanvas
 from Tkinter import *
 
+class StatusBar(Frame):
+
+    def __init__(self, master):
+        Frame.__init__(self, master)
+        self.label = Label(self, bd=1, relief=SUNKEN, anchor=W)
+        # self.label.pack(fill=X)
+
+    def set(self, format, *args):
+        self.label.config(text=format % args)
+        self.label.update_idletasks()
+
+    def clear(self):
+        self.label.config(text="")
+        self.label.update_idletasks()
+
+def update( ):
+    logging.info( '.' )
+
 
 def main( parent ):
     """
@@ -32,8 +50,17 @@ def main( parent ):
 
     w, h = parent.winfo_screenwidth( ), parent.winfo_screenheight( )
     editCanvas = MooseCanvas( parent ) 
-    editCanvas.pack( fill = 'both', expand = True )
+    editCanvas.canvas.focus_set( )
+    editCanvas.canvas.bind( 'a', update )
+
+    # Add a statusbar 
+    sbar = StatusBar( editCanvas )
+    # editCanvas.pack( fill = 'both', expand = True )
+    sbar.grid( row = 2, column =  0)
+
+    _globals.statusbar_ = sbar
     _globals.canvas_ = editCanvas 
+
 
 if __name__ == '__main__':
     main()

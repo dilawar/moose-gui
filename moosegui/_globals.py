@@ -24,3 +24,6 @@ canvas_ = None
 
 # Main canvas.
 toolbar_ = None
+
+# Status bar
+statusbar_ = None
