@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #/**********************************************************************
 #** This program is part of 'MOOSE', the
 #** Messaging Object Oriented Simulation Environment.
@@ -22,6 +21,8 @@ Upi Bhalla, Nov 2014: Appended single neuron model.
 This script generates the panels in Figure 6. It takes a long time,
 about 65 minutes to run 30 seconds of simulation time.
 '''
+
+from __future__ import print_function
 
 ## import modules and functions to be used
 import numpy as np

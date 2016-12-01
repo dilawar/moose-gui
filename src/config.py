@@ -127,8 +127,8 @@ def qvalue( qsetting, key ):
     try: 
         val = qval.toString( )
     except Exception as e:
-        val = '%s' % qval
-    return u'%s' % val
+        val = str(qval)
+    return unicode(val)
 
 
 class MooseSetting(dict):

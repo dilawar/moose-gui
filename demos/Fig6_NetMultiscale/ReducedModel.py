@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #/**********************************************************************
 #** This program is part of 'MOOSE', the
 #** Messaging Object Oriented Simulation Environment.
@@ -26,6 +25,8 @@ simulation time. That is, 400 neurons, 1 detailed model with 36
 compartments plus 16 spines each having 2 compartments and 34 molecules,
 and lots of synapses.
 '''
+
+from __future__ import print_function
 
 ## import modules and functions to be used
 import numpy as np
