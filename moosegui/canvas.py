@@ -51,7 +51,7 @@ def main( parent ):
 
     w, h = parent.winfo_screenwidth( ), parent.winfo_screenheight( )
     editCanvas = MooseCanvas( parent ) 
-    editCanvas.canvas.focus_set( )
+    # editCanvas.canvas.focus_set( )
 
     # Add a statusbar 
     sbar = StatusBar( parent )

@@ -41,7 +41,7 @@ class Catcher:
             return apply(self.func, args)
         except SystemExit as msg:
             logging.info( "Existing ... %s" % msg )
-            raise SystemExit, msg
+            raise SystemExit 
         except:
             traceback.print_exc( file = open('moosegui.log', 'a') )
 

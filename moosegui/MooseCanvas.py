@@ -22,12 +22,12 @@ import logging
 
 class MooseCanvas( tk.Frame ):
 
-    def __init__(self, root):
-        tk.Frame.__init__( self )
-        self.canvas = tk.Canvas( root
-                , cursor = 'crosshair black red'
-                , width=800, height=600, background="bisque"
-                )
+    def __init__(self, root = None):
+
+
+        self.canvas = tk.Canvas( root , width=800, height=800 )
+        self.canvas.create_line( 0, 0, 200, 200 );
+
         '''
         self.xsb = tk.Scrollbar( self.canvas,
             orient="horizontal", command=self.canvas.xview
@@ -58,7 +58,8 @@ class MooseCanvas( tk.Frame ):
         # self.canvas.bind( "<Key>", self.keyboard )
         self.canvas.bind( "Move", self.keyboard )
         self.canvas.bind( "<Button-1>", self.mouseCallback )
-        self.canvas.grid( row = 1, column = 1, sticky = 'news' )
+        self.canvas.grid( row = 0, column = 0, sticky = 'news' )
+        # self.canvas.pack( )
 
     # move
     def move_start(self, event):
@@ -90,9 +91,9 @@ class MooseCanvas( tk.Frame ):
     def keyboard(self, event ):
         logging.info( 'Key pressed %s' % ( event.char ) )
 
-# if __name__ == "__main__":
-    # root = tk.Tk()
-    # a = MooseCanvas( root )
+if __name__ == "__main__":
+    root = tk.Tk()
+    a = MooseCanvas( root )
     # a.plot_random_rects( )
-    # a.pack(fill="both", expand=True)
-    # root.mainloop()
+    a.pack(fill="both", expand=True)
+    root.mainloop()
