@@ -59,11 +59,12 @@ class FuncItem(KineticsDisplayItem):
     def __init__(self, mobj, parent):
         super(FuncItem, self).__init__(mobj, parent)
         self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)
-        self.funcImage = QImage('icons/classIcon/Function.png').scaled(15,33)
+        self.funcImage = QImage(
+                os.path.join( config.MOOSE_ICON_DIR, 'Function.png') 
+                ).scaled(15,33)
         self.bg = QtGui.QGraphicsRectItem(self)
         self.bg.setAcceptHoverEvents(True)
         self.gobj = QtGui.QGraphicsPixmapItem(QtGui.QPixmap.fromImage(self.funcImage),self.bg)
-        #self.gobj = QtGui.QGraphicsPixmapItem(QtGui.QPixmap('../icons/classIcon/Function.png'))
         self.gobj.setAcceptHoverEvents(True)
         self.gobj.mobj = self.mobj
         classname = self.mobj.className

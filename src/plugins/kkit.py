@@ -971,7 +971,7 @@ class KineticEditorWidget(KineticsWidget):
                 button.setDefaultAction(action)
                 # set the unicode instead of image by setting
                 # button.setText(unicode(u'\u20de'))
-                Iconpath = os.path.join(config.MOOSE_ICON_DIR, 'classIcon')
+                Iconpath = os.path.join(config.MOOSE_ICON_DIR)
                 _logger.debug( "Reading icons from %s" % Iconpath )
                 button.setIcon( 
                         QtGui.QIcon( 

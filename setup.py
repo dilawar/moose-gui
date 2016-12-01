@@ -15,9 +15,6 @@ __status__           = "Development"
 
 import sys
 import os
-import matplotlib.pyplot as plt
-import numpy as np
-import os
 import sys
 from distutils.core import setup
 
@@ -37,7 +34,7 @@ setup(
         , 'suds' : 'suds'
         },
     package_data = { 
-        'moosegui' : [ 'icons/*', 'icons/classIcon/*', 'colormaps/*' ]
+        'moosegui' : [ 'icons/*', 'colormaps/*' ]
         , 'moosegui.demos' : [ './*' ]
         , 'moosegui.plugins' : [ 'datastore/*', 'list.txt' ]
         },
