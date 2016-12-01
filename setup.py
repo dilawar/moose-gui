@@ -18,6 +18,14 @@ import os
 import sys
 from distutils.core import setup
 
+demofiles = []
+
+demoDir = './demos' 
+for d, sd, fs in os.walk( demoDir ):
+    for f in fs:
+        filepath = os.path.join( d, f ).replace( demoDir, '' ) 
+        demofiles.append( filepath )
+
 setup(
     name = "moosegui",
     version = "1.0.0",
@@ -29,13 +37,13 @@ setup(
         ],
     package_dir = { 
         'moosegui' : 'src'
-        , 'moosegui.demos' : 'demos'
+        , 'moosegui.demos' : '.'
         , 'moosegui.plugins' : 'src/plugins'
         , 'suds' : 'suds'
         },
     package_data = { 
-        'moosegui' : [ 'icons/*', 'colormaps/*' ]
-        , 'moosegui.demos' : [ './*' ]
+        'moosegui' : [ 'icons/*', 'colormaps/*' ] + demofiles
+        , 'moosegui.demos' : [ '*' ] + demofiles
         , 'moosegui.plugins' : [ 'datastore/*', 'list.txt' ]
         },
     author = open('AUTHOR').read(),
