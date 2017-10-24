@@ -70,8 +70,7 @@ class ToolBar(tk.Frame):
             sep = ttk.Separator( root , orient = tk.VERTICAL )
             sep.grid(row=i, column=0 )
 
-
 def main(parent):
     toolbar = ToolBar( parent ) 
-    toolbar.grid( row = 1, column = 0, sticky = 'ns' )
+    toolbar.grid( row = 1, column = 1 )
     _globals.toolbar_ = toolbar

@@ -55,15 +55,17 @@ def main( parent ):
 
     w, h = parent.winfo_screenwidth( ), parent.winfo_screenheight( )
     editCanvas = MooseCanvas( parent ) 
-    # editCanvas.canvas.focus_set( )
 
-    # Add a statusbar 
-    sbar = StatusBar( parent )
-    sbar.grid( row = 3, column =  1, sticky = 'ew' )
+    editCanvas.canvas.focus_set( )
+    editCanvas.canvas.grid( row = 1, column =  3, rowspan = 100, columnspan = 100 )
 
-    sbar.bind( '<Button-1>', update )
+    ## Add a statusbar 
+    #sbar = StatusBar( parent )
+    #sbar.grid( row = 2, column =  2, rowspan = 100, columnspan = 100 )
 
-    _globals.statusbar_ = sbar
+    #sbar.bind( '<Button-1>', update )
+
+    #_globals.statusbar_ = sbar
     _globals.canvas_ = editCanvas 
 
 

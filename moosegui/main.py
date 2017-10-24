@@ -40,7 +40,7 @@ class Catcher:
     def __call__(self, *args):
         try:
             if self.subst:
-                args = apply(self.subst, args)
+                args = self.subst(args)
             return self.func( args)
         except SystemExit as msg:
             logging.info( "Existing ... %s" % msg )
