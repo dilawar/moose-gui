@@ -60,12 +60,10 @@ def main( parent ):
     editCanvas.canvas.grid( row = 1, column =  3, rowspan = 100, columnspan = 100 )
 
     ## Add a statusbar 
-    #sbar = StatusBar( parent )
-    #sbar.grid( row = 2, column =  2, rowspan = 100, columnspan = 100 )
-
-    #sbar.bind( '<Button-1>', update )
-
-    #_globals.statusbar_ = sbar
+    sbar = StatusBar( parent )
+    sbar.grid( row = 101, column =  80, rowspan = 1, columnspan = 20 )
+    sbar.bind( '<Button-1>', update )
+    _globals.statusbar_ = sbar
     _globals.canvas_ = editCanvas 
 
 

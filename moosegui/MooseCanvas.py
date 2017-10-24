@@ -31,9 +31,6 @@ class MooseCanvas( tk.Frame ):
 
 
         self.canvas = tk.Canvas( root , width=800, height=800 )
-        self.canvas.create_line( 0, 0, 200, 200 );
-
-        '''
         self.xsb = tk.Scrollbar( self.canvas,
             orient="horizontal", command=self.canvas.xview
             )
@@ -46,11 +43,10 @@ class MooseCanvas( tk.Frame ):
             xscrollcommand=self.xsb.set
             )
 
-        self.xsb.grid(row=1, column=0, sticky="ew")
-        self.ysb.grid(row=0, column=1, sticky="ns")
+        #self.xsb.grid(row=1, column=0, sticky="ew")
+        #self.ysb.grid(row=0, column=1, sticky="ns")
         # self.grid_rowconfigure(0, weight=1)
         # self.grid_columnconfigure(0, weight=1)
-        '''
 
         # This is what enables using the mouse:
         self.canvas.bind("<ButtonPress-1>", self.move_start)
@@ -68,9 +64,11 @@ class MooseCanvas( tk.Frame ):
 
     # move
     def move_start(self, event):
+        print( event )
         self.canvas.scan_mark(event.x, event.y)
 
     def move_move(self, event):
+        print( event )
         self.canvas.scan_dragto(event.x, event.y, gain=1)
 
     # windows zoom
@@ -90,11 +88,13 @@ class MooseCanvas( tk.Frame ):
         self.canvas.scale("all", event.x, event.y, 0.9, 0.9)
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
-    def mouseCallback(self, event ):
-        logging.info( 'Button pressed %s %s' % ( event.x, event.y ) )
+    def mouseCallback(self, event, data = None ):
+        print( event )
+        #logging.info( 'Button pressed %s %s' % ( event.x, event.y ) )
 
-    def keyboard(self, event ):
-        logging.info( 'Key pressed %s' % ( event.char ) )
+    def keyboard(self, event, data = None ):
+        print( event )
+        #logging.info( 'Key pressed %s' % ( event.char ) )
 
 if __name__ == "__main__":
     root = tk.Tk()
