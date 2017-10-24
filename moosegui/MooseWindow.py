@@ -32,7 +32,6 @@ class MooseWindow( tk.Tk ):
         self.bind( "<F11>", self.toggle_fullscreen )
         self.bind( "<Escape>", self.end_fullscreen )
 
-
     def toggle_fullscreen(self, event=None):
         self.state = not self.state  # Just toggling the boolean
         self.attributes("-fullscreen", self.state)

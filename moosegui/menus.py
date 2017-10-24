@@ -14,6 +14,8 @@ __email__            = "dilawars@ncbs.res.in"
 __status__           = "Development"
 
 import sys
+import functools 
+
 PY_MAJOR = int( sys.version_info.major )
 if PY_MAJOR == 2:
     import Tkinter as tk
@@ -35,8 +37,9 @@ menu_dict_ = {
             , ( "Reac" , ) ]
         }
 
-def callback( action, parent ):
-    logging.info( "Got action %s" % action )
+def callback( action, parent, data=None ):
+    logging.info( "Got action %s" % str(action) )
+    action = action[0]
     if action.lower() == 'exit':
         raise SystemExit( "Exit command" )
     else:
@@ -47,6 +50,7 @@ def main( parent ):
     This function adds required menues 
 
     """
+    global menu_dict_
     menu = tk.Menu( parent )
     for menuName in menus_ :
         logging.info( "Adding menu %s" % menuName )
@@ -54,15 +58,13 @@ def main( parent ):
         menu.add_cascade( label = menuName, menu = thismenu )
         for action in menu_dict_[ menuName ]:
             shortcut, underline = '', 0
-            cmd = action[0]
             if len( action ) > 1:
                 shortcut, underline = action[1], 1
                 shortKey = "<%s>" % action[2]
-                logging.debug( "Bidning key %s to action %s" % (shortKey, cmd))
-                parent.bind( shortKey, lambda e, x=cmd:  callback(x, parent) )
+                parent.bind( shortKey, functools.partial( callback, action, parent) )
 
             thismenu.add_command( label = action[0]
-                , command = lambda x=cmd: callback(x, parent)
+                , command = functools.partial( callback, action, parent  )
                 , underline = underline
                 , accelerator = shortcut
                 )

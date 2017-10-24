@@ -41,12 +41,12 @@ class Catcher:
         try:
             if self.subst:
                 args = apply(self.subst, args)
-            return apply(self.func, args)
+            return self.func( args)
         except SystemExit as msg:
             logging.info( "Existing ... %s" % msg )
             raise SystemExit 
         except:
-            traceback.print_exc( file = open('moosegui.log', 'a') )
+            traceback.print_exc(  )
 
 tk.CallWrapper = Catcher 
 
@@ -64,6 +64,7 @@ def main( ):
     # All frames
     canvas.main( root )
     tk.mainloop( )
+
 
 if __name__ == '__main__':
     main()

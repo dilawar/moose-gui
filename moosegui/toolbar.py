@@ -15,6 +15,7 @@ __status__ = "Development"
 
 import sys
 import os
+import functools
 import logging
 
 try:
@@ -39,7 +40,8 @@ def iconRead(name):
     # return tk.PhotoImage( file = imgFilePath )
     return ImageTk.PhotoImage(img)
 
-def btnCallback( btn ):
+def btnCallback( btn, data = None ):
+    print( btn )
     if btn.lower( ) == 'exit':
         raise SystemExit
     if btn.lower( ) == 'cube':
@@ -55,11 +57,12 @@ class ToolBar(tk.Frame):
         i = 0
         for tools in toolbar:
             for tool in tools:
+                print( tool )
                 i += 1
                 btnImg = iconRead(tool)
                 btn = tk.Button( self
                         , image=btnImg
-                        , command = lambda x = tool : btnCallback( x )
+                        , command = functools.partial( btnCallback, tool )
                         )
                 btn.image = btnImg
                 btn.grid(row=i, column=0)
