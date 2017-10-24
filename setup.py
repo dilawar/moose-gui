@@ -35,6 +35,6 @@ setup(
         author_email = "dilawars@ncbs.res.in",
         maintainer = 'Dilawar Singh',
         maintainer_email = 'dilawars@ncbs.res.in',
-        url = "http://github.com/BhallaLab/moose-gui",
+        url = "http://github.com/dilawar/moose-gui",
         license='GPL',
         )

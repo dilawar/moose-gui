@@ -14,8 +14,13 @@ __email__            = "dilawars@ncbs.res.in"
 __status__           = "Development"
 
 import sys
+PY_MAJOR = int( sys.version_info.major )
+if PY_MAJOR == 2:
+    import Tkinter as tk
+else:
+    import tkinter as tk
+
 import os
-import Tkinter as tk
 import logging
 
 menus_ = [ 'File', 'Insert' ]

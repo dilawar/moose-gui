@@ -15,13 +15,18 @@ __status__ = "Development"
 
 import sys
 import os
-import Tkinter as tk
-import ttk
-import _globals
-
 import logging
 
+try:
+    import Tkinter as tk
+    import ttk
+except Exception as e:
+    import tkinter as tk
+    import tkinter.ttk as ttk
+
 from PIL import Image, ImageTk
+
+import moosegui._globals as _globals
 
 # After each section, put a separator.
 toolbar = [['Cylinder', 'Cube'], ['Pool', 'BufPool'], ['Move', 'Exit']]

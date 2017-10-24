@@ -14,11 +14,15 @@ __status__           = "Development"
 
 import sys
 import os
-import _globals
-
 import logging
+
+import moosegui._globals as _globals
 from moosegui.MooseCanvas import MooseCanvas
-from Tkinter import *
+
+try:
+    from Tkinter import *
+except ImportError as e:
+    from tkinter import *
 
 class StatusBar(Frame):
 

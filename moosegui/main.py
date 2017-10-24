@@ -13,20 +13,23 @@ __email__            = "dilawars@ncbs.res.in"
 __status__           = "Development"
 
 import sys
+
+try:
+    import Tkinter as tk
+except ImportError as e:
+    import tkinter as tk
+
 import os
-
-import menus
-import canvas
-import toolbar 
 import traceback 
-import Tkinter as tk
-import _globals
 
+import moosegui.menus as menus
+import moosegui.canvas as canvas
+import moosegui.toolbar  as toolbar
+import moosegui._globals as _globals
 from moosegui.MooseWindow import MooseWindow 
 
 import logging
 logging.basicConfig( level = logging.DEBUG )
-
 
 class Catcher: 
     def __init__(self, func, subst, widget):

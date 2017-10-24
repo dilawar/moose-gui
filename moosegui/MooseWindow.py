@@ -15,7 +15,11 @@ __status__           = "Development"
 
 import sys
 import os
-import Tkinter as tk
+
+try:
+    import Tkinter as tk
+except ImportError as e:
+    import tkinter as tk
 
 class MooseWindow( tk.Tk ):
     """docstring for MooseWindow"""

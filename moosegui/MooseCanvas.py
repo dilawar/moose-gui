@@ -17,7 +17,12 @@ __status__ = "Development"
 import sys
 import random
 import os
-import Tkinter as tk
+
+try:
+    import Tkinter as tk
+except ImportError as e:
+    import tkinter as tk
+
 import logging
 
 class MooseCanvas( tk.Frame ):
