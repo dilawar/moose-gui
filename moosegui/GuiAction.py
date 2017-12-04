@@ -1,6 +1,7 @@
 """GuiAction.py: 
 
 """
+from __future__ import absolute_import, print_function, division
     
 __author__           = "Dilawar Singh"
 __copyright__        = "Copyright 2017-, Dilawar Singh"
@@ -14,7 +15,7 @@ import os
 import moose
 import re
 import logging
-import sbml
+from moosegui.sbml import SBML
 
 def loadPythonModel( modelfile ):
     return -1
@@ -37,9 +38,10 @@ def loadPythonModel( modelfile ):
 
 def load_SBML( modelfile ):
     logging.info( "Loading %s" % modelfile )
-    sbml.SBML( modelfile )
+    sbml = SBML( modelfile )
     print( 'Successfully parse SBML' )
     sbml.loadIntoMOOSE( )
+    
 
 def loadModel( filepath ):
     """

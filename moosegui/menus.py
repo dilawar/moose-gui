@@ -29,6 +29,8 @@ else:
 
 import os
 import logging
+from moosegui.config import _logger
+import moosegui.canvas as canvas
 import moosegui.GuiAction as act
 
 menus_ = [ 'File', 'Insert' ]
@@ -56,7 +58,6 @@ def callback( action, parent, data=None ):
         act.loadModel( modelFile )
     else:
         logging.info( "TODO %s" % action )
-
 
 
 def main( parent ):

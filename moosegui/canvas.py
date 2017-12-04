@@ -14,15 +14,33 @@ __status__           = "Development"
 
 import sys
 import os
-import logging
-
-import moosegui._globals as _globals
-from moosegui.MooseCanvas import MooseCanvas
-
 try:
     from Tkinter import *
 except ImportError as e:
     from tkinter import *
+
+import moosegui._globals as _globals
+from moosegui.MooseCanvas import MooseCanvas
+
+from config import _logger
+import moosegui.helper as helper
+import moose
+
+
+def draw_model( ):
+    _logger.debug( "Drawing pathway" )
+    g = helper.toNXGraph( )
+    layout = helper.compute_layout( g )
+
+    cvs = _globals.canvas_.canvas
+    # Get canvas size 
+    H, W = 800, 800
+
+    for n in g.nodes( ):
+        x, y = layout[ n ]
+        x, y = x * H, y * W
+        cvs.create_oval( (x,y), (x+10, y+10) )
+
 
 class StatusBar(Frame):
 
@@ -41,7 +59,7 @@ class StatusBar(Frame):
         self.label.update_idletasks()
 
 def update( ):
-    logging.info( '.' )
+    _logger.info( '.' )
 
 
 def main( parent ):
@@ -65,7 +83,6 @@ def main( parent ):
     sbar.bind( '<Button-1>', update )
     _globals.statusbar_ = sbar
     _globals.canvas_ = editCanvas 
-
 
 if __name__ == '__main__':
     main()

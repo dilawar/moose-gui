@@ -21,6 +21,7 @@ import moosegui.menus as menus
 import moosegui.canvas as canvas
 import moosegui.toolbar  as toolbar
 import moosegui._globals as _globals
+import moosegui.GuiAction as guiact
 from moosegui.MooseWindow import MooseWindow 
 
 import logging
@@ -58,6 +59,12 @@ def main( ):
 
     # All frames
     canvas.main( root )
+
+    # Load a test case and draw.
+    # TODO: Testing.
+    guiact.loadModel( './data/BIOMD0000000628.xml' )
+    canvas.draw_model( )
+
     tk.mainloop( )
 
 

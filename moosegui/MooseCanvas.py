@@ -29,7 +29,6 @@ class MooseCanvas( tk.Frame ):
 
     def __init__(self, root = None):
 
-
         self.canvas = tk.Canvas( root , width=800, height=800 )
         self.xsb = tk.Scrollbar( self.canvas,
             orient="horizontal", command=self.canvas.xview
