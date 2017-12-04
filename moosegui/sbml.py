@@ -13,7 +13,7 @@ import sys
 import os
 import libsbml
 import moose
-from config import _logger
+from moosegui.config import _logger
 
 def moose_value( value, unit ):
     if not unit:

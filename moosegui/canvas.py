@@ -22,7 +22,7 @@ except ImportError as e:
 import moosegui._globals as _globals
 from moosegui.MooseCanvas import MooseCanvas
 
-from config import _logger
+from moosegui.config import _logger
 import moosegui.helper as helper
 import moose
 
