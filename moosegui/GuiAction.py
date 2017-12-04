@@ -14,6 +14,7 @@ import os
 import moose
 import re
 import logging
+import sbml
 
 def loadPythonModel( modelfile ):
     return -1
@@ -36,8 +37,9 @@ def loadPythonModel( modelfile ):
 
 def load_SBML( modelfile ):
     logging.info( "Loading %s" % modelfile )
-    
-
+    sbml.SBML( modelfile )
+    print( 'Successfully parse SBML' )
+    sbml.loadIntoMOOSE( )
 
 def loadModel( filepath ):
     """

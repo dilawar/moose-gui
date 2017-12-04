@@ -1,8 +1,11 @@
 """menus.py: 
-
 Menu management.
 
 """
+
+from __future__ import absolute_import, division
+
+
 __author__           = "Dilawar Singh"
 __copyright__        = "Copyright 2016, Dilawar Singh"
 __credits__          = ["NCBS Bangalore"]
@@ -18,14 +21,15 @@ import functools
 PY_MAJOR = int( sys.version_info.major )
 if PY_MAJOR == 2:
     import Tkinter as tk
+    import tkFileDialog as tkfd
 else:
     import tkinter as tk
+    import tkinter.filedialog as tkfg
 
-import tkFileDialog as tkfd
 
 import os
 import logging
-import GuiAction as act
+import moosegui.GuiAction as act
 
 menus_ = [ 'File', 'Insert' ]
 menu_dict_ = { 
@@ -47,9 +51,8 @@ def callback( action, parent, data=None ):
     if action.lower() == 'exit':
         raise SystemExit( "Exit command" )
     elif action == "Load Model":
-        logging.info( "Loading model" )
         modelFile = tkfd.askopenfilename( parent = parent )
-        logging.info( "Got file in %s" % modelFile )
+        logging.info( "Loading model %s" % modelFile )
         act.loadModel( modelFile )
     else:
         logging.info( "TODO %s" % action )
