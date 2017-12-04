@@ -1,8 +1,3 @@
-"""
-Entry point.
-
-"""
-    
 __author__           = "Dilawar Singh"
 __copyright__        = "Copyright 2016, Dilawar Singh"
 __credits__          = ["NCBS Bangalore"]
@@ -41,7 +36,7 @@ class Catcher:
         try:
             if self.subst:
                 args = self.subst(args)
-            return self.func( args)
+            return self.func( *args)
         except SystemExit as msg:
             logging.info( "Existing ... %s" % msg )
             raise SystemExit 

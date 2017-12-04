@@ -3,7 +3,6 @@
 Menu management.
 
 """
-    
 __author__           = "Dilawar Singh"
 __copyright__        = "Copyright 2016, Dilawar Singh"
 __credits__          = ["NCBS Bangalore"]
@@ -22,8 +21,11 @@ if PY_MAJOR == 2:
 else:
     import tkinter as tk
 
+import tkFileDialog as tkfd
+
 import os
 import logging
+import GuiAction as act
 
 menus_ = [ 'File', 'Insert' ]
 menu_dict_ = { 
@@ -38,17 +40,26 @@ menu_dict_ = {
         }
 
 def callback( action, parent, data=None ):
+    """Call function on Menu
+    """
     logging.info( "Got action %s" % str(action) )
     action = action[0]
     if action.lower() == 'exit':
         raise SystemExit( "Exit command" )
+    elif action == "Load Model":
+        logging.info( "Loading model" )
+        modelFile = tkfd.askopenfilename( parent = parent )
+        logging.info( "Got file in %s" % modelFile )
+        act.loadModel( modelFile )
     else:
         logging.info( "TODO %s" % action )
 
+
+
 def main( parent ):
     """
-    This function adds required menues 
-
+    This function adds required menues. All action are handled in callback
+    function.
     """
     global menu_dict_
     menu = tk.Menu( parent )
