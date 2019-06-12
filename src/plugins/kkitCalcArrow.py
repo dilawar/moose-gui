@@ -7,8 +7,8 @@ __email__       =   "hrani@ncbs.res.in"
 __status__      =   "Development"
 __updated__     =   "Jul 27 2017"
 
-from PyQt4.QtGui import QPolygonF
-from PyQt4.QtCore import QLineF,QPointF
+from PyQt5.QtGui import QPolygonF
+from PyQt5.QtCore import QLineF,QPointF
 from math import sin,cos,atan2,radians
 from kkitQGraphics import PoolItem #, ReacItem,EnzItem,CplxItem,ComptItem
 

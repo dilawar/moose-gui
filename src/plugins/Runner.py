@@ -1,9 +1,9 @@
 import math
 import moose
-from PyQt4 import Qt, QtGui, QtCore
-from PyQt4.QtCore import QTimer
-from PyQt4.QtCore import QObject
-from PyQt4.QtCore import pyqtSignal
+from PyQt5 import Qt, QtGui, QtCore
+from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QObject
+from PyQt5.QtCore import pyqtSignal
 
 class Runner(QObject):
     """Helper class to control simulation execution

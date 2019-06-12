@@ -24,7 +24,7 @@ __updated__     =   "Feb 22 2019"
 
 import math
 import sys
-from PyQt4 import QtGui, QtCore, Qt
+from PyQt5 import QtGui, QtCore, Qt
 from default import *
 from moose import *
 from moose import SBML
@@ -37,9 +37,9 @@ from kkitCalcArrow import *
 from kkitOrdinateUtil import *
 import posixpath
 from mtoolbutton import MToolButton
-from PyQt4.QtGui import QWidget
-from PyQt4.QtGui import QGridLayout
-from PyQt4.QtGui import QColor
+from PyQt5.QtGui import QWidget
+from PyQt5.QtGui import QGridLayout
+from PyQt5.QtGui import QColor
 import RunWidget
 from os.path import expanduser
 #from setsolver import *

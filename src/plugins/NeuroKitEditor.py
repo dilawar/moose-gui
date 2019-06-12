@@ -19,18 +19,18 @@ import pprint
 # import NeuroKitEditorWidget
 from . import default
 
-from PyQt4 import QtGui
-from PyQt4 import QtCore
-from PyQt4 import Qt
-from PyQt4.QtGui import QPushButton
-from PyQt4.QtGui import QWidget
-from PyQt4.QtGui import QHBoxLayout
-from PyQt4.QtGui import QGridLayout
-from PyQt4.QtGui import QDialog
-from PyQt4.QtGui import QTableWidget
-from PyQt4.QtGui import QTableWidgetItem
-from PyQt4.QtGui import QCheckBox
-from PyQt4.QtGui import QComboBox
+from PyQt5 import QtGui
+from PyQt5 import QtCore
+from PyQt5 import Qt
+from PyQt5.QtGui import QPushButton
+from PyQt5.QtGui import QWidget
+from PyQt5.QtGui import QHBoxLayout
+from PyQt5.QtGui import QGridLayout
+from PyQt5.QtGui import QDialog
+from PyQt5.QtGui import QTableWidget
+from PyQt5.QtGui import QTableWidgetItem
+from PyQt5.QtGui import QCheckBox
+from PyQt5.QtGui import QComboBox
 
 from .default import *
 from mplugin import *

@@ -19,13 +19,13 @@ __status__      =   "Development"
 import sys
 import os
 from . import SettingsDialog
-from PyQt4 import QtGui, Qt
-from PyQt4.QtGui import QDialog
-from PyQt4.QtGui import QHBoxLayout
-from PyQt4.QtGui import QPixmap
-from PyQt4.QtGui import QIcon
-from PyQt4.QtGui import QPushButton
-from PyQt4.QtGui import QAction
+from PyQt5 import QtGui, Qt
+from PyQt5.QtGui import QDialog
+from PyQt5.QtGui import QHBoxLayout
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QPushButton
+from PyQt5.QtGui import QAction
 
 ICON_DIRECTORY              = "../icons"
 HAND_ICON_FILENAME          = "hand.png"

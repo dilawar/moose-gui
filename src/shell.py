@@ -27,13 +27,13 @@ __revision__=" $Id: shell.py 579 2007-06-13 10:27:57Z dufourko $"
 
 
 import os, sys
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtGui import QTextEdit, QTextCursor
-from PyQt4.QtCore import Qt
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtGui import QTextEdit, QTextCursor
+from PyQt5.QtCore import Qt
 
 # In python3, QString is just python strings.
 try:
-    from PyQt4.QtCore import QString
+    from PyQt5.QtCore import QString
 except ImportError as e:
     # we are using Python3 so QString is not defined
     QtCore.QString = type("")

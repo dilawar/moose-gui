@@ -16,12 +16,12 @@ __status__      =   "Development"
 
 import sys
 import os
-from PyQt4 import QtGui, Qt
-from PyQt4.QtGui import QWidget
-from PyQt4.QtGui import QLabel
-from PyQt4.QtGui import QComboBox
-from PyQt4.QtGui import QGridLayout
-from PyQt4.QtGui import QTabWidget
+from PyQt5 import QtGui, Qt
+from PyQt5.QtGui import QWidget
+from PyQt5.QtGui import QLabel
+from PyQt5.QtGui import QComboBox
+from PyQt5.QtGui import QGridLayout
+from PyQt5.QtGui import QTabWidget
 
 class SettingsWidget(QTabWidget):
     def __init__( self

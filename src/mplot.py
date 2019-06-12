@@ -80,15 +80,15 @@
 __author__ = "Subhasis Ray"
 import sys
 import numpy as np
-from PyQt4 import QtGui, QtCore
-from PyQt4.Qt import Qt
+from PyQt5 import QtGui, QtCore
+from PyQt5.Qt import Qt
 from matplotlib import mlab
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 #from moose import utils
 import moose
-from PyQt4.QtCore import *
+from PyQt5.QtCore import *
 
 class CanvasWidget(FigureCanvas):
     """Widget to draw plots on.
@@ -220,7 +220,7 @@ import os
 from . import config
 import unittest
 
-from PyQt4.QtTest import QTest
+from PyQt5.QtTest import QTest
 
 class CanvasWidgetTests(unittest.TestCase):
     def setUp(self):

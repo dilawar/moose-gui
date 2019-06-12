@@ -17,10 +17,10 @@ import sys
 import os
 from . import SettingsDialog
 
-from PyQt4.QtGui import QWidget
-from PyQt4.QtGui import QScrollArea
-from PyQt4.QtGui import QGridLayout
-from PyQt4.QtGui import QSplitter
+from PyQt5.QtGui import QWidget
+from PyQt5.QtGui import QScrollArea
+from PyQt5.QtGui import QGridLayout
+from PyQt5.QtGui import QSplitter
 
 class RunWidget(QSplitter):
     """ Run view """

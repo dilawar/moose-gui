@@ -11,7 +11,7 @@ import moose
 from kkitQGraphics import * 
 from kkitOrdinateUtil import *
 from kkitUtil import *
-import PyQt4
+import PyQt5
 from setsolver import *
 
 def updateCompartmentSize(qGraCompt):

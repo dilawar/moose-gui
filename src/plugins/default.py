@@ -78,19 +78,19 @@ from moosegui.plugins.Runner import Runner
 from moosegui.global_constants import preferences
 from moosegui.plugins.setsolver import *
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QDoubleValidator
-from PyQt4.QtGui import QToolBar
-from PyQt4.QtGui import QToolButton
-from PyQt4.QtGui import QLabel
-from PyQt4.QtGui import QIcon
-from PyQt4.QtGui import QLineEdit
-from PyQt4.QtGui import QErrorMessage
-from PyQt4.QtGui import QSizeGrip
-from PyQt4.QtGui import QIcon
-from PyQt4.QtGui import QPixmap
-from PyQt4.QtGui import QAction
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QDoubleValidator
+from PyQt5.QtGui import QToolBar
+from PyQt5.QtGui import QToolButton
+from PyQt5.QtGui import QLabel
+from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QLineEdit
+from PyQt5.QtGui import QErrorMessage
+from PyQt5.QtGui import QSizeGrip
+from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QAction
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 #from EventBlocker import EventBlocker
 # from PlotNavigationToolbar import PlotNavigationToolbar
@@ -717,12 +717,12 @@ event = None
 legend = None
 canvas = None
 
-from PyQt4.QtGui import QWidget
-from PyQt4.QtGui import QSizeGrip
-from PyQt4.QtGui import QLayout
-from PyQt4.QtGui import QScrollArea
-from PyQt4.QtGui import QMenu
-from PyQt4.QtCore import pyqtSlot,SIGNAL,SLOT, Signal, pyqtSignal
+from PyQt5.QtGui import QWidget
+from PyQt5.QtGui import QSizeGrip
+from PyQt5.QtGui import QLayout
+from PyQt5.QtGui import QScrollArea
+from PyQt5.QtGui import QMenu
+from PyQt5.QtCore import pyqtSlot,SIGNAL,SLOT, Signal, pyqtSignal
 
 class PlotWidget(QWidget):
     """A wrapper over CanvasWidget to handle additional MOOSE-specific

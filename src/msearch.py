@@ -50,8 +50,8 @@ Widget giving access to wildcardFind function in MOOSE
 """
 import sys
 
-from PyQt4 import QtGui, QtCore
-from PyQt4.Qt import Qt
+from PyQt5 import QtGui, QtCore
+from PyQt5.Qt import Qt
 
 import moose
 

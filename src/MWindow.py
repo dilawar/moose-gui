@@ -66,9 +66,9 @@ import traceback
 import re
 from collections import defaultdict, OrderedDict
 
-from PyQt4 import QtGui, QtCore, Qt
-from PyQt4 import Qt, QtCore, QtGui
-from PyQt4.QtGui import *
+from PyQt5 import QtGui, QtCore, Qt
+from PyQt5 import Qt, QtCore, QtGui
+from PyQt5.QtGui import *
 from MdiArea import MdiArea
 import os
 from moose.chemUtil.add_Delete_ChemicalSolver import *

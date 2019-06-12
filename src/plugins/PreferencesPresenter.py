@@ -1,11 +1,11 @@
 import sys
 import moose
 
-from PyQt4 import Qt, QtGui, QtCore
-from PyQt4.QtCore import QObject
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QColor
-from PyQt4.QtGui import QGroupBox
+from PyQt5 import Qt, QtGui, QtCore
+from PyQt5.QtCore import QObject
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QGroupBox
 from moosegui.plugins.PreferencesView import PreferencesView
 from moosegui.plugins.defines import *
 import json

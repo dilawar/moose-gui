@@ -16,18 +16,18 @@ __updated__     =   "Jul 26 2017"
 
 import sys
 import os
-import PyQt4
-from PyQt4 import QtGui, Qt
-from PyQt4.QtGui import QWidget
-from PyQt4.QtGui import QSizeGrip
-from PyQt4.QtGui import QDockWidget
-from PyQt4.QtGui import QLayout
-from PyQt4.QtGui import QVBoxLayout
-from PyQt4.QtGui import QGridLayout
-from PyQt4.QtGui import QScrollArea
-from PyQt4.QtGui import QToolBar
-from PyQt4.QtGui import QSizeGrip
-from PyQt4.QtGui import QSplitter
+import PyQt5
+from PyQt5 import QtGui, Qt
+from PyQt5.QtGui import QWidget
+from PyQt5.QtGui import QSizeGrip
+from PyQt5.QtGui import QDockWidget
+from PyQt5.QtGui import QLayout
+from PyQt5.QtGui import QVBoxLayout
+from PyQt5.QtGui import QGridLayout
+from PyQt5.QtGui import QScrollArea
+from PyQt5.QtGui import QToolBar
+from PyQt5.QtGui import QSizeGrip
+from PyQt5.QtGui import QSplitter
 
 import moose
 import default
@@ -60,7 +60,7 @@ class PlotWidgetContainer(QWidget):
 
         self._layout        = QVBoxLayout()
         self.graphs         = QSplitter()
-        self.graphs.setOrientation(PyQt4.QtCore.Qt.Vertical)
+        self.graphs.setOrientation(PyQt5.QtCore.Qt.Vertical)
         self.graphsArea     = QScrollArea()
         # self.graphsLayout   = QGridLayout()
         # self.menubar        = self.createMenuBar()

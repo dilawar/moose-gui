@@ -1,5 +1,5 @@
 import os
-from PyQt4 import QtGui, QtCore,Qt
+from PyQt5 import QtGui, QtCore,Qt
 from . import config
 from .mplugin import MoosePluginBase, EditorBase, EditorWidgetBase, PlotBase, RunBase
 import re

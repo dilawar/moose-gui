@@ -49,7 +49,7 @@
 import shutil
 import os
 from . import config
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore
 from . import config
 from .utils import *
         

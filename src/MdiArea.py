@@ -1,5 +1,5 @@
-from PyQt4 import Qt, QtCore, QtGui
-from PyQt4.QtGui import *
+from PyQt5 import Qt, QtCore, QtGui
+from PyQt5.QtGui import *
 import os
 
 APPLICATION_BACKGROUND_PATH = os.path.join( os.path.dirname(os.path.realpath(__file__))

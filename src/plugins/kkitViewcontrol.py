@@ -36,11 +36,11 @@ from moosegui.plugins.constants import *
 from moosegui.plugins.kkitUtil import *
 from moosegui.plugins.setsolver import *
 
-from PyQt4.QtGui import QPixmap, QImage, QPen, QGraphicsPixmapItem, QGraphicsLineItem
-from PyQt4.QtCore import pyqtSignal
+from PyQt5.QtGui import QPixmap, QImage, QPen, QGraphicsPixmapItem, QGraphicsLineItem
+from PyQt5.QtCore import pyqtSignal
 from kkitUtil import  *
 #from setsolver import *
-from PyQt4 import QtSvg
+from PyQt5 import QtSvg
 from moose import utils
 from functools import partial
 
@@ -92,8 +92,8 @@ class GraphicalView(QtGui.QGraphicsView):
             "clone": None,
             "move": None,
             "delete": None}
-        self.setHorizontalScrollBarPolicy(PyQt4.QtCore.Qt.ScrollBarAlwaysOn)
-        self.setVerticalScrollBarPolicy(PyQt4.QtCore.Qt.ScrollBarAlwaysOn)
+        self.setHorizontalScrollBarPolicy(PyQt5.QtCore.Qt.ScrollBarAlwaysOn)
+        self.setVerticalScrollBarPolicy(PyQt5.QtCore.Qt.ScrollBarAlwaysOn)
 
     def setRefWidget(self, path):
         self.viewBaseType = path

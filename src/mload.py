@@ -57,7 +57,7 @@ from .mexception import FileLoadError
 import posixpath
 from os.path import basename
 from os.path import splitext
-from PyQt4 import QtGui, QtCore, Qt
+from PyQt5 import QtGui, QtCore, Qt
 from .plugins.setsolver import *
 from moose.SBML import *
 from plugins.kkitOrdinateUtil import *

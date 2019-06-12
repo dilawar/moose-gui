@@ -6,7 +6,7 @@ import config
 import pickle 
 import posixpath
 
-from PyQt4 import QtGui, QtCore, Qt
+from PyQt5 import QtGui, QtCore, Qt
 
 from moose import *
 import networkx as nx
@@ -477,7 +477,7 @@ class  KineticsWidget(EditorWidgetBase):
         # srcdes which is 'EnzItem' from this,get ChildItems are retrived (b'cos cplx is child of zombieEnz)
         #And cplxItem is passed for updatearrow
 
-        #Note: Here at this point enzItem has just one child which is cplxItem and childItems returns, PyQt4.QtGui.QGraphicsEllipseItem,CplxItem
+        #Note: Here at this point enzItem has just one child which is cplxItem and childItems returns, PyQt5.QtGui.QGraphicsEllipseItem,CplxItem
         #Assuming CplxItem is always[1], but still check if not[0], if something changes in structure one need to keep an eye.
         if (srcdes.childItems()[1],CplxItem):
             self.updateArrow(srcdes.childItems()[1])

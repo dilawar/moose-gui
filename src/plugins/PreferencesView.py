@@ -1,21 +1,21 @@
 
-import PyQt4
-from PyQt4 import Qt, QtGui, QtCore
-from PyQt4.QtCore import pyqtSignal
-from PyQt4.QtGui import QWidget
-from PyQt4.QtGui import QButtonGroup
-from PyQt4.QtGui import QRadioButton
-from PyQt4.QtGui import QVBoxLayout
-from PyQt4.QtGui import QLabel
-from PyQt4.QtGui import QGridLayout
-from PyQt4.QtGui import QLineEdit
-from PyQt4.QtGui import QDoubleValidator
-from PyQt4.QtGui import QComboBox
-from PyQt4.QtGui import QTabWidget
-from PyQt4.QtGui import QPushButton
-from PyQt4.QtGui import QColorDialog
-from PyQt4.QtGui import QColor
-from PyQt4.QtGui import QSizePolicy
+import PyQt5
+from PyQt5 import Qt, QtGui, QtCore
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QWidget
+from PyQt5.QtGui import QButtonGroup
+from PyQt5.QtGui import QRadioButton
+from PyQt5.QtGui import QVBoxLayout
+from PyQt5.QtGui import QLabel
+from PyQt5.QtGui import QGridLayout
+from PyQt5.QtGui import QLineEdit
+from PyQt5.QtGui import QDoubleValidator
+from PyQt5.QtGui import QComboBox
+from PyQt5.QtGui import QTabWidget
+from PyQt5.QtGui import QPushButton
+from PyQt5.QtGui import QColorDialog
+from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QSizePolicy
 import sys
 
 class PreferencesView(QTabWidget):
@@ -72,7 +72,7 @@ class PreferencesView(QTabWidget):
     def create(self):
         # Set up the column titles
         self.setUsesScrollButtons(True)
-        self.setFocusPolicy(PyQt4.QtCore.Qt.NoFocus)
+        self.setFocusPolicy(PyQt5.QtCore.Qt.NoFocus)
         self.addTab( self.createChemicalSettingsTab(),"Chemical")
         self.addTab( self.createElectricalSettingsTab(),"Electrical")
 
@@ -102,7 +102,7 @@ class PreferencesView(QTabWidget):
         for solver in self.chemicalSolvers:
             layout.addWidget(self.chemicalSolvers[solver], 5 + index, 1)
             self.chemicalSolver.addButton(self.chemicalSolvers[solver], index)
-            self.chemicalSolvers[solver].setFocusPolicy(PyQt4.QtCore.Qt.NoFocus)
+            self.chemicalSolvers[solver].setFocusPolicy(PyQt5.QtCore.Qt.NoFocus)
             index += 1
 
         self.chemicalSolver.setExclusive(True)
@@ -128,7 +128,7 @@ class PreferencesView(QTabWidget):
         electricalSettingsTab.setTabShape(QTabWidget.Triangular)
         electricalSettingsTab.setDocumentMode(True)
         electricalSettingsTab.setUsesScrollButtons(True)
-        electricalSettingsTab.setFocusPolicy(PyQt4.QtCore.Qt.NoFocus)
+        electricalSettingsTab.setFocusPolicy(PyQt5.QtCore.Qt.NoFocus)
         return electricalSettingsTab
 
     def createElectricalSimulationSettingsTab(self):
@@ -155,7 +155,7 @@ class PreferencesView(QTabWidget):
         for solver in self.electricalSolvers:
             # layout.addWidget(self.electricalSolvers[solver], 5 + index, 1)
             self.electricalSolver.addButton(self.electricalSolvers[solver], index)
-            self.electricalSolvers[solver].setFocusPolicy(PyQt4.QtCore.Qt.NoFocus)
+            self.electricalSolvers[solver].setFocusPolicy(PyQt5.QtCore.Qt.NoFocus)
             index += 1
 
         self.electricalSolver.setExclusive(True)
@@ -179,7 +179,7 @@ class PreferencesView(QTabWidget):
         self.electricalBaseColorDialog.setOption(QColorDialog.ShowAlphaChannel, True)
         layout.addWidget(self.electricalBaseColorButton, 2, 1)
         self.electricalBaseColorButton.clicked.connect(self.electricalBaseColorDialog.show)
-        self.electricalBaseColorButton.setFocusPolicy(PyQt4.QtCore.Qt.NoFocus)
+        self.electricalBaseColorButton.setFocusPolicy(PyQt5.QtCore.Qt.NoFocus)
         self.electricalBaseColorDialog.colorSelected.connect(
             lambda color: self.electricalBaseColorButton.setStyleSheet(
                         "QPushButton {"
@@ -195,7 +195,7 @@ class PreferencesView(QTabWidget):
         self.electricalPeakColorDialog.setOption(QColorDialog.ShowAlphaChannel, True)
         layout.addWidget(self.electricalPeakColorButton, 4, 1)
         self.electricalPeakColorButton.clicked.connect(self.electricalPeakColorDialog.show)
-        self.electricalPeakColorButton.setFocusPolicy(PyQt4.QtCore.Qt.NoFocus)
+        self.electricalPeakColorButton.setFocusPolicy(PyQt5.QtCore.Qt.NoFocus)
         self.electricalPeakColorDialog.colorSelected.connect(
             lambda color: self.electricalPeakColorButton.setStyleSheet(
                         "QPushButton {"
@@ -208,7 +208,7 @@ class PreferencesView(QTabWidget):
         self.electricalBackgroundColorDialog.setOption(QColorDialog.ShowAlphaChannel, True)
         layout.addWidget(self.electricalBackgroundColorButton, 5, 1)
         self.electricalBackgroundColorButton.clicked.connect(self.electricalBackgroundColorDialog.show)
-        self.electricalBackgroundColorButton.setFocusPolicy(PyQt4.QtCore.Qt.NoFocus)
+        self.electricalBackgroundColorButton.setFocusPolicy(PyQt5.QtCore.Qt.NoFocus)
         self.electricalBackgroundColorDialog.colorSelected.connect(
             lambda color: self.electricalBackgroundColorButton.setStyleSheet(
                         "QPushButton {"

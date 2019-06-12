@@ -47,8 +47,8 @@
 import sys
 import os
 import numpy as np
-from PyQt4 import QtGui, QtCore
-from PyQt4.Qt import Qt
+from PyQt5 import QtGui, QtCore
+from PyQt5.Qt import Qt
 from matplotlib import mlab
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas

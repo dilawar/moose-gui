@@ -27,10 +27,10 @@ __revision__=" $Id: scishell.py 579 2007-06-13 10:27:57Z dufourko $"
 
 
 import os, sys
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import Qt
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtCore import Qt
 
-from PyQt4.Qsci import QsciScintilla, QsciLexerPython, QsciAPIs
+from PyQt5.Qsci import QsciScintilla, QsciLexerPython, QsciAPIs
 
 class History:
   """ Backup and restore history between sessions 

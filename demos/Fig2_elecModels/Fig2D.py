@@ -11,7 +11,7 @@
 
 import moogli
 import moose
-from PyQt4 import Qt, QtCore, QtGui
+from PyQt5 import Qt, QtCore, QtGui
 import sys
 import os
 import rdesigneur as rd

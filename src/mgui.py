@@ -9,8 +9,8 @@ __author__ = 'Subhasis Ray , HarshaRani, Aviral Goel, NCBS Bangalore'
 import sys
 import signal
 
-from PyQt4 import QtGui, QtCore, Qt
-from PyQt4 import Qt, QtCore, QtGui
+from PyQt5 import QtGui, QtCore, Qt
+from PyQt5 import Qt, QtCore, QtGui
 import posixpath 
 
 from . import config

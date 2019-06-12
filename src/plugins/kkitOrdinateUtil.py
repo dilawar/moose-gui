@@ -23,7 +23,7 @@ from networkx.drawing.nx_agraph import graphviz_layout
 import numpy as np
 import networkx as nx
 from kkitUtil import getRandColor,colorCheck,findCompartment, findGroup, findGroup_compt, mooseIsInstance
-from PyQt4.QtGui import QColor
+from PyQt5.QtGui import QColor
 import re
 import moose._moose as moose
 

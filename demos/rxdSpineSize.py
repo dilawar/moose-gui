@@ -17,7 +17,7 @@ import moose
 import sys
 sys.path.append( '../util' )
 import rdesigneur as rd
-from PyQt4 import QtGui
+from PyQt5 import QtGui
 import moogli
 import moogli.extensions.moose
 import matplotlib

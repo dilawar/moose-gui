@@ -47,7 +47,7 @@
 
 import shutil
 import os
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore
 
 def resizeWidthToContents(lineEdit):
     """Resize a QLineEdit object to fit its content."""

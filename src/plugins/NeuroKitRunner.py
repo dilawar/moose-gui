@@ -10,15 +10,15 @@ from mplot import CanvasWidget
 import RunWidget
 from PlotWidgetContainer import PlotWidgetContainer
 from .NeuroKitVisualizer import MorphologySimulator
-from PyQt4 import QtGui, Qt
-from PyQt4.QtGui import QLabel
-from PyQt4.QtGui import QWidget
-from PyQt4.QtGui import QToolBar
-from PyQt4.QtGui import QPushButton
-from PyQt4.QtGui import QGridLayout
-from PyQt4.QtGui import QTextEdit
+from PyQt5 import QtGui, Qt
+from PyQt5.QtGui import QLabel
+from PyQt5.QtGui import QWidget
+from PyQt5.QtGui import QToolBar
+from PyQt5.QtGui import QPushButton
+from PyQt5.QtGui import QGridLayout
+from PyQt5.QtGui import QTextEdit
 import pprint
-# from PyQt4.QtGui import QToolBa
+# from PyQt5.QtGui import QToolBa
 from .default import *
 import moose
 import neuroextractor

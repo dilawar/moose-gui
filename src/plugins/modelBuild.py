@@ -1,4 +1,4 @@
-import PyQt4
+import PyQt5
 import moose
 
 from moosegui.plugins.kkitQGraphics import *

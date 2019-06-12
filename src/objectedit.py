@@ -63,16 +63,16 @@
 #
 
 # Code:
-import PyQt4
-from PyQt4 import QtCore
-from PyQt4 import QtGui
-from PyQt4.QtGui import QTextEdit
-from PyQt4.QtGui import QWidget
-from PyQt4.QtGui import QGridLayout
-from PyQt4.QtGui import QVBoxLayout
-from PyQt4.QtGui import QSizePolicy
-from PyQt4.QtCore import QMargins
-from PyQt4.QtGui import QSplitter
+import PyQt5
+from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5.QtGui import QTextEdit
+from PyQt5.QtGui import QWidget
+from PyQt5.QtGui import QGridLayout
+from PyQt5.QtGui import QVBoxLayout
+from PyQt5.QtGui import QSizePolicy
+from PyQt5.QtCore import QMargins
+from PyQt5.QtGui import QSplitter
 import sys
 from collections import deque
 import traceback
@@ -419,7 +419,7 @@ class ObjectEditView(QtGui.QTableView):
         try:
             colorIndex = self.model().fields.index("Color")
             self.colorButton.clicked.connect(self.colorDialog.show)
-            self.colorButton.setFocusPolicy(PyQt4.QtCore.Qt.NoFocus)
+            self.colorButton.setFocusPolicy(PyQt5.QtCore.Qt.NoFocus)
             self.colorDialog.colorSelected.connect(
                 lambda color: self.colorButton.setStyleSheet(
                             "QPushButton {"
@@ -494,7 +494,7 @@ class ObjectEditDockWidget(QtGui.QDockWidget):
                           )
         textEdit.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         base = QSplitter()
-        base.setOrientation(PyQt4.QtCore.Qt.Vertical)
+        base.setOrientation(PyQt5.QtCore.Qt.Vertical)
         layout = QVBoxLayout()
         layout.addWidget(view)#, 0, 0)
         lineedit = QtGui.QLineEdit("Notes:")

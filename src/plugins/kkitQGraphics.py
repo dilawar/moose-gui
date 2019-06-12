@@ -14,9 +14,9 @@ sep 19: add GroupItem class
 #import sys
 #sys.path.insert(0, '/home/harsha/trunk/gui')
 import config
-from PyQt4 import QtGui, QtCore, Qt
+from PyQt5 import QtGui, QtCore, Qt
 from moose import *
-from PyQt4.QtGui import QPixmap, QImage, QGraphicsPixmapItem
+from PyQt5.QtGui import QPixmap, QImage, QGraphicsPixmapItem
 from constants import *
 from os import path
 

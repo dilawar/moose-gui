@@ -47,8 +47,8 @@
 
 import sys
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.Qt import Qt
+from PyQt5 import QtCore, QtGui
+from PyQt5.Qt import Qt
 from collections import defaultdict
 
 class CheckComboBoxModel(QtGui.QStandardItemModel):

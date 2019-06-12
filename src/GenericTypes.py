@@ -1,6 +1,6 @@
 """GenericTypes
 
-This class fixes the pytho2 and python3 related issues with PyQt4
+This class fixes the pytho2 and python3 related issues with PyQt5
 
 """
     
@@ -16,7 +16,7 @@ __status__           = "Development"
 import sys
 import os
 
-from PyQt4 import QtCore
+from PyQt5 import QtCore
 
 if sys.version_info >= (3, 0):
 

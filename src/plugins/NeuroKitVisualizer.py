@@ -1,16 +1,16 @@
-from PyQt4 import QtGui, Qt, QtCore
-from PyQt4.QtGui import QLabel
-from PyQt4.QtGui import QWidget
-from PyQt4.QtGui import QToolBar
-from PyQt4.QtGui import QPushButton
-from PyQt4.QtGui import QGridLayout
-from PyQt4.QtGui import QTextEdit
-from PyQt4.QtCore import QMimeData
-from PyQt4.QtGui import QDrag
-from PyQt4.QtGui import QPixmap
-from PyQt4.QtGui import QPainter
-from PyQt4.QtGui import QFont
-from PyQt4.QtCore import QPoint
+from PyQt5 import QtGui, Qt, QtCore
+from PyQt5.QtGui import QLabel
+from PyQt5.QtGui import QWidget
+from PyQt5.QtGui import QToolBar
+from PyQt5.QtGui import QPushButton
+from PyQt5.QtGui import QGridLayout
+from PyQt5.QtGui import QTextEdit
+from PyQt5.QtCore import QMimeData
+from PyQt5.QtGui import QDrag
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPainter
+from PyQt5.QtGui import QFont
+from PyQt5.QtCore import QPoint
 
 import moose
 import moogli

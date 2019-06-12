@@ -20,8 +20,8 @@ __status__      =   "Development"
 # from collections import defaultdict
 # import numpy as np
 # import re
-# from PyQt4 import QtGui, QtCore
-# from PyQt4.Qt import Qt
+# from PyQt5 import QtGui, QtCore
+# from PyQt5.Qt import Qt
 # from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 
 # import moose
@@ -36,7 +36,7 @@ from . import NeuroKitEditor
 from . import NeuroKitRunner
 import mplugin
 import moose
-from PyQt4.QtGui import QWidget
+from PyQt5.QtGui import QWidget
 # import NeuroKitPlotter
 # import NeuroKitRunner
 

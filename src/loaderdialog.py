@@ -46,7 +46,7 @@
 # Code:
 
 import sys
-from PyQt4 import QtGui,QtCore,Qt
+from PyQt5 import QtGui,QtCore,Qt
 import moose
 import os
 import posixpath

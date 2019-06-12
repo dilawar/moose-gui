@@ -53,8 +53,8 @@ import sys
 import tempfile
 import logging
 import errno
-from PyQt4.Qt import Qt
-from PyQt4 import QtGui, QtCore
+from PyQt5.Qt import Qt
+from PyQt5 import QtGui, QtCore
 
 # Logger
 import logging

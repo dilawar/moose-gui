@@ -83,8 +83,8 @@ class BioModelsClient(Client):
         except Exception as e:
             print(e)
 
-from PyQt4.Qt import Qt
-from PyQt4 import QtCore, QtGui
+from PyQt5.Qt import Qt
+from PyQt5 import QtCore, QtGui
 
 class BioModelsClientWidget(QtGui.QDialog):
     """This is a widget with a Biomodels Client. It provides simple

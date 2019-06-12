@@ -45,7 +45,7 @@
 
 # Code:
 
-from PyQt4 import QtGui,QtCore,Qt
+from PyQt5 import QtGui,QtCore,Qt
 import moose
 
 class MoosePluginBase(QtCore.QObject):
