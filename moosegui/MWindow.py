@@ -12,7 +12,7 @@ import warnings
 import code
 
 from collections import defaultdict, OrderedDict
-from PyQt5 import QtGui, QtCore, Qt
+from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow, QAction, QApplication
 from PyQt5.QtWidgets import QDockWidget
 
@@ -217,20 +217,21 @@ class MWindow(QMainWindow):
         loadNeuronalModelButton  = QPushButton("Load Neuronal Model")
         layout.setContentsMargins(QtCore.QMargins(20,20,20,20))
 
-        self.menuitems = OrderedDict([("Fig2C" ,            "../moose-examples/paper-2015/Fig2_elecModels/Fig2C.py"),
-                                      ("Fig2D (35s)",       "../moose-examples/paper-2015/Fig2_elecModels/Fig2D.py"),
-                                      ("Fig2E" ,            "../moose-examples/paper-2015/Fig2_elecModels/Fig2E.py"),
-                                      ("Fig3B_Gssa",        "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
-                                      ("Fig3C_Gsl",         "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
-                                      ("Fig3D",             "../moose-examples/paper-2015/Fig3_chemModels/Fig3D.py"),
-                                      ("Fig4B",             "../moose-examples/paper-2015/Fig4_ReacDiff/Fig4B.py"  ),
-                                      ("Fig4K",             "../moose-examples/paper-2015/Fig4_ReacDiff/rxdSpineSize.py"),
-                                      ("Fig5A (20s)",       "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5A.py"),
-                                      ("Fig5BCD (240s)" ,   "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5BCD.py"),
-                                      ("Fig6A (60s)",       "../moose-examples/paper-2015/Fig6_NetMultiscale/Fig6A.py" ),
-                                      ("ReducedModel (200s)",   "../moose-examples/paper-2015/Fig6_NetMultiscale/ReducedModel.py"),
-                                      ("Squid" ,            "../moose-examples/squid/squid_demo.py")
-                                     ])
+        self.menuitems = OrderedDict([
+            ("Fig2C" ,            "../moose-examples/paper-2015/Fig2_elecModels/Fig2C.py"),
+            ("Fig2D (35s)",       "../moose-examples/paper-2015/Fig2_elecModels/Fig2D.py"),
+            ("Fig2E" ,            "../moose-examples/paper-2015/Fig2_elecModels/Fig2E.py"),
+            ("Fig3B_Gssa",        "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
+            ("Fig3C_Gsl",         "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
+            ("Fig3D",             "../moose-examples/paper-2015/Fig3_chemModels/Fig3D.py"),
+            ("Fig4B",             "../moose-examples/paper-2015/Fig4_ReacDiff/Fig4B.py"  ),
+            ("Fig4K",             "../moose-examples/paper-2015/Fig4_ReacDiff/rxdSpineSize.py"),
+            ("Fig5A (20s)",       "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5A.py"),
+            ("Fig5BCD (240s)" ,   "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5BCD.py"),
+            ("Fig6A (60s)",       "../moose-examples/paper-2015/Fig6_NetMultiscale/Fig6A.py" ),
+            ("ReducedModel (200s)",   "../moose-examples/paper-2015/Fig6_NetMultiscale/ReducedModel.py"),
+            ("Squid" ,            "../moose-examples/squid/squid_demo.py")
+            ])
         layout.setContentsMargins(QtCore.QMargins(20,20,20,20))
         layout1 = QHBoxLayout()
         layout1.addWidget(createKineticModelButton)
@@ -399,7 +400,8 @@ class MWindow(QMainWindow):
             _logger.debug( "\tError was %s" % e )
             module = ""
 
-        if fp: fp.close()
+        if fp: 
+            fp.close()
         return module
 
 
@@ -515,8 +517,10 @@ class MWindow(QMainWindow):
             self.setCurrentView('run')
 
         if name == 'kkit':
-            self.objectEditDockWidget.objectNameChanged.connect(self.plugin.getEditorView().getCentralWidget().updateItemSlot)
-            self.objectEditDockWidget.colorChanged.connect(self.plugin.getEditorView().getCentralWidget().updateColorSlot)
+            self.objectEditDockWidget.objectNameChanged.connect(
+                    self.plugin.getEditorView().getCentralWidget().updateItemSlot)
+            self.objectEditDockWidget.colorChanged.connect(
+                    self.plugin.getEditorView().getCentralWidget().updateColorSlot)
         self.setCurrentView('editor')
         freeCursor()
         return self.plugin
