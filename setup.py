@@ -1,8 +1,4 @@
-"""setup.py: 
-
-Install script of moose-gui project.
-
-"""
+# -*- coding: utf-8 -*-
     
 __author__           = "Dilawar Singh"
 __copyright__        = "Copyright 2016, Dilawar Singh"
@@ -16,7 +12,7 @@ __status__           = "Development"
 import sys
 import os
 import sys
-from distutils.core import setup
+from setuptools import setup
 
 demofiles = []
 
@@ -28,7 +24,7 @@ for d, sd, fs in os.walk( demoDir ):
 
 setup(
     name = "moosegui",
-    version = "1.0.0",
+    version = "0.1.0",
     description = "Graphical User Interface of MOOSE simulator",
     long_description = open( 'README.md' ).read(),
     packages = [ "moosegui", 'moosegui.plugins', "moosegui.demos"
@@ -50,5 +46,11 @@ setup(
     maintainer = 'Dilawar Singh',
     maintainer_email = 'dilawars@ncbs.res.in',
     url = "http://github.com/BhallaLab/moose-gui",
-    license='GPL',
+    license='GPLv3',
+    install_requires = [ 'pymoose', 'pyqt5' ],
+    entry_points = {
+        'console_scripts' : [
+            'moosegui = moosegui.mgui:main'
+            ],
+        },
 )
