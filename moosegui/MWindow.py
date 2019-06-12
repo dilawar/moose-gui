@@ -373,33 +373,28 @@ class MWindow(QMainWindow):
                 self.pluginNames = [name for name in self.pluginNames if name]
         return self.pluginNames
 
-    def loadPluginModule(self, name, re=False):
+    def loadPluginModule(self, name, _reload=False):
         """Load a plugin module by name.
 
         First check if the plugin is already loaded. If so return the
         existing one. Otherwise, search load the plugin as a python
         module from {MOOSE_GUI_DIRECTORY}/plugins directory.
 
-        If re is True, the plugin is reloaded.
+        If re is True, the plugin is _reloaded.
 
         """
-        _logger.info( "Loading plugin '%s' from %s" % ( name,
-            config.MOOSE_PLUGIN_DIR )
-            )
-        if (not re) and name in sys.modules:
+        _logger.info("Loading plugin '%s' from %s" % (name, config.MOOSE_PLUGIN_DIR))
+        if (not _reload) and name in sys.modules:
             _logger.debug( "\tThis plugin is already loaded" )
             return sys.modules[name]
 
-        fp, pathname, description = imp.find_module( 
-                name, [ config.MOOSE_PLUGIN_DIR ]
-                )
-        _logger.debug( "Found modules %s, %s" % (pathname, description) )
+        fp, pathname, description = imp.find_module(name, [config.MOOSE_PLUGIN_DIR])
         try:
             module = imp.load_module(name, fp, pathname, description)
         except Exception as e:
-            _logger.warn( "Could not load module %s" % fp )
-            _logger.warn( "\tError was %s" % e )
             module = ""
+            extra = traceback.format_exc()
+            _logger.warn( "Could not load module %s: '%s'" % (fp, extra))
 
         if fp: 
             fp.close()
@@ -443,7 +438,7 @@ class MWindow(QMainWindow):
             self.shellWidget.setVisible(False)
         return self.shellWidget
 
-    def loadPluginClass(self, name, re=False):
+    def loadPluginClass(self, name, _reload=False):
         """Load the plugin class from a plugin module.
 
         A plugin module should have only one subclass of
@@ -453,7 +448,7 @@ class MWindow(QMainWindow):
         if name in self._loadedPlugins:
             return self._loadedPlugins[name]
 
-        pluginModule = self.loadPluginModule(name, re=re)
+        pluginModule = self.loadPluginModule(name, _reload=_reload)
         for classname, classobj in inspect.getmembers(pluginModule, inspect.isclass):
             if issubclass(classobj, mplugin.MoosePluginBase):
                 self._loadedPlugins[name] = classobj

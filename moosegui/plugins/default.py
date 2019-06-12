@@ -16,11 +16,9 @@ from matplotlib.lines import Line2D
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 rcParams.update({'figure.autolayout': True})
 
-import moose
-from moose import utils
-
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSlot, Signal, pyqtSignal
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtGui import QDoubleValidator
 
@@ -33,12 +31,11 @@ from PyQt5.QtWidgets import QLayout
 from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtWidgets import QMenu
 
-from PyQt5.QtCore import pyqtSlot, Signal, pyqtSignal
-
-
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-
+# moose
+import moose
+from moose import utils
 from moose.chemUtil.add_Delete_ChemicalSolver import *
+
 
 # moosegui
 from moosegui.global_constants import preferences
