@@ -1,87 +1,23 @@
-# objectedit.py ---
-#
-# Filename: objectedit.py
+# -*- coding: utf-8 -*-
 # Description:
 # Author: Subhasis Ray
 # Maintainer:
 # Created: Wed Jun 30 11:18:34 2010 (+0530)
-# Version:
-# Last-Updated: Fri Feb 01 11:05:59 2017 (+0530)
-#           By: Harsha
-#     Update #: 
-# URL:
-# Keywords:
-# Compatibility:
-#
-#
 
-# Commentary:
-#
-# This code is for a widget to edit MOOSE objects. We can now track if
-# a field is a Value field and make it editable accordingly. There
-# seems to be no clean way of determining whether the field is worth
-# plotting (without a knowledge of the model/biology there is no way
-# we can tell this). But we can of course check if the field is a
-# numeric one.
-#
-#
-
-# Change log:
-#
-# Wed Jun 30 11:18:34 2010 (+0530) - Originally created by Subhasis
-# Ray, the model and the view
-#
-# Modified/adapted to dh_branch by Chaitanya/Harsharani
-#
-# Thu Apr 18 18:37:31 IST 2013 - Reintroduced into multiscale GUI by
-# Subhasis
-#
-# Fri Apr 19 15:05:53 IST 2013 - Subhasis added undo redo
-# feature. Create ObjectEditModel as part of ObjectEditView.
-# Tue Mar 7 16:10:54 IST 2017 - Harsha now Pool or BufPool can be interchangable
-# by setting/unsetting isbuffered field
-# Fri May 17 23:45:59 2017 (+0530) - Harsha added, notes header,
-# Kd is calculated for the second order reaction and value is displayed
-# Tue Jun 18 12:10:54 IST 2018 - Harsha now group boundary color can be editable from the object editor
-# Mon Sep 10 16:21:00 IST 2018 - When name is edited, the editorTitle gets updated
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 3, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-# Floor, Boston, MA 02110-1301, USA.
-#
-#
-
-# Code:
-import PyQt5
 from PyQt5 import QtCore
 from PyQt5 import QtGui
-from PyQt5.QtGui import QTextEdit
-from PyQt5.QtGui import QWidget
-from PyQt5.QtGui import QGridLayout
-from PyQt5.QtGui import QVBoxLayout
-from PyQt5.QtGui import QSizePolicy
+from PyQt5.QtWidgets import QTextEdit, QWidget, QGridLayout
+from PyQt5.QtWidgets import QVBoxLayout, QSizePolicy, QSplitter
+from PyQt5.QtWidgets import QTableView, QDockWidget
 from PyQt5.QtCore import QMargins
-from PyQt5.QtGui import QSplitter
+
 import sys
 from collections import deque
 import traceback
 
-#sys.path.append('../python')
 import moose
-import defaults
-import config
-#from plugins.kkitUtil import getColor
+import moosegui.defaults as defaults
+import moosegui.config as config
 from moose.chemUtil.chemConnectUtil import getColor
 
 #these fields will be ignored
@@ -375,7 +311,7 @@ class ObjectEditModel(QtCore.QAbstractTableModel):
             return (self.headerdata[col])
         return ""
 
-class ObjectEditView(QtGui.QTableView):
+class ObjectEditView(QTableView):
     """View class for object editor.
 
     This class creates an instance of ObjectEditModel using the moose
@@ -389,7 +325,7 @@ class ObjectEditView(QtGui.QTableView):
     to view.model().undo and view.model().redo slots.
     """
     def __init__(self, mobject, undolen=defaults.OBJECT_EDIT_UNDO_LENGTH, parent=None):
-        QtGui.QTableView.__init__(self, parent)
+        QTableView.__init__(self, parent)
         #self.setEditTriggers(self.DoubleClicked | self.SelectedClicked | self.EditKeyPressed)
         vh = self.verticalHeader()
         vh.setVisible(False)
@@ -445,10 +381,10 @@ class ObjectEditView(QtGui.QTableView):
         self.colorDialog.setCurrentColor(color)
 
     def dataChanged(self, tl, br):
-        QtGui.QTableView.dataChanged(self, tl, br)
+        QTableView.dataChanged(self, tl, br)
         self.viewport().update()
 
-class ObjectEditDockWidget(QtGui.QDockWidget):
+class ObjectEditDockWidget(QDockWidget):
     """A dock widget whose title is set by the current moose
     object. Allows switching the moose object. It stores the created
     view in a dict for future use.
@@ -462,7 +398,7 @@ class ObjectEditDockWidget(QtGui.QDockWidget):
     objectNameChanged = QtCore.pyqtSignal('PyQt_PyObject')
     colorChanged = QtCore.pyqtSignal(object, object)
     def __init__(self, mobj='/', parent=None, flags=None):
-        QtGui.QDockWidget.__init__(self, parent=parent)
+        QDockWidget.__init__(self, parent=parent)
         mobj = moose.element(mobj)
         #self.view = view = ObjectEditView(mobj)
         self.view = view = ObjectEditView(mobj)

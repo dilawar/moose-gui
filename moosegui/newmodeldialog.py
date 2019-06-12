@@ -1,12 +1,19 @@
+# -*- coding: utf-8 -*-
+ 
+import sys
 import os
-from PyQt5 import QtGui, QtCore,Qt
-from . import config
-from .mplugin import MoosePluginBase, EditorBase, EditorWidgetBase, PlotBase, RunBase
+import numpy as np
 import re
 
-class DialogWidget(QtGui.QDialog):
+from PyQt5 import QtGui, QtCore,Qt
+from PyQt5.QtWidgets import QWidget, QDialogButtonBox, QDialog
+
+import moosegui.config as config
+from moosegui.mplugin import MoosePluginBase, EditorBase, EditorWidgetBase, PlotBase, RunBase
+
+class DialogWidget(QDialog):
     def __init__(self,parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        QWidget.__init__(self, parent)
         self.warning = None
         self._currentRadioButton ="kkit"
         self.layout = QtGui.QGridLayout()
@@ -23,11 +30,11 @@ class DialogWidget(QtGui.QDialog):
         # layout.addWidget(self.defaultRadio,2,1)
         # layout.addWidget(self.kkitRadio,2,0)
         self.hbox = QtGui.QHBoxLayout()
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
         self.connect(self.buttonBox, QtCore.SIGNAL('accepted()'), self.validateAccept)
         self.hbox.addWidget(self.buttonBox,1)
 
-        self.buttonBox1 = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Cancel)
+        self.buttonBox1 = QDialogButtonBox(QDialogButtonBox.Cancel)
         self.connect(self.buttonBox1, QtCore.SIGNAL('rejected()'), self.Cancel)
         self.hbox.addWidget(self.buttonBox1,0)
         #self.hbox.setBackgroundColor(Blue)

@@ -1,10 +1,11 @@
-from PyQt5 import Qt, QtCore, QtGui
-from PyQt5.QtGui import *
+from PyQt5.QtGui import QImage
+from PyQt5.QtWidgets import QMdiArea
 import os
 
-APPLICATION_BACKGROUND_PATH = os.path.join( os.path.dirname(os.path.realpath(__file__))
-                                          , "icons/moose_icon_large.png"
-                                          )
+APPLICATION_BACKGROUND_PATH = os.path.join(
+        os.path.dirname(os.path.realpath(__file__))
+        , "icons/moose_icon_large.png"
+        )
 
 
 class MdiArea(QMdiArea):

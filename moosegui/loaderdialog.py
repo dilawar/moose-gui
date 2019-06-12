@@ -1,57 +1,17 @@
-# fileloader.py --- 
-# 
-# Filename: fileloader.py
+# -*- coding: utf-8 -*-
 # Description: 
 # Author: 
 # Maintainer: 
 # Created: Mon Feb 25 15:59:54 2013 (+0530)
-# Version: 
-# Last-Updated: Wed May 22 12:30:14 2013 (+0530)
-#           By: subha
-#     Update #: 106
-# URL: 
-# Keywords: 
-# Compatibility: 
-# 
-# 
-
-# Commentary: 
-# 
-# Dialog for loading model files
-# 
-# 
-
-# Change log:
-# 
-# 
-# 
-# 
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 3, or
-# (at your option) any later version.
-# 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-# Floor, Boston, MA 02110-1301, USA.
-# 
-# 
-
-# Code:
 
 import sys
-from PyQt5 import QtGui,QtCore,Qt
 import moose
 import os
 import posixpath
+from PyQt5 import QtGui, QtCore
+from PyQt5.QtWidgets import QFileDialog
 
-class LoaderDialog(QtGui.QFileDialog):
+class LoaderDialog(QFileDialog):
     # Update ftypes to include new file types 
     ftypes='All Supported Files (*.cspace *.g *.xml *.p);; CSPACE (*.cspace);; GENESIS (*.g);; GENESIS Prototype (*.p);; NeuroML/SBML (*.xml)'
     target_default = '' # The default target when loading a model

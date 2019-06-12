@@ -1,6 +1,4 @@
-# biomodelsclient.py --- 
-# 
-# Filename: biomodelsclient.py
+# -*- coding: utf-8 -*-
 # Description: 
 # Author: Subhasis Ray
 # Maintainer: 
@@ -9,41 +7,6 @@
 # Last-Updated: Wed Dec  11 15:47:32 2010 (+0530)
 #           By: 
 #     Update #: 
-# URL: 
-# Keywords: 
-# Compatibility: 
-# 
-# 
-
-# Commentary: 
-# 
-# This is a client for Biomodels database SOAP service.
-# It imitates the SOAP client written in JAVA
-# availabele at biomodels website.
-
-# Change log:
-# 
-# 
-# 
-# 
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 3, or
-# (at your option) any later version.
-# 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-# Floor, Boston, MA 02110-1301, USA.
-# 
-# 
-
-# Code:
 
 import os
 import pickle
@@ -51,7 +14,7 @@ import moose
 
 from suds.client import Client
 from suds.transport.http import HttpTransport as SudsHttpTransport
-from . import config
+from moosegui import config
 
 BIOMODELS_WSDL_URI = 'http://www.ebi.ac.uk/biomodels-main/services/BioModelsWebServices?wsdl'
 proxyOpts = dict()
@@ -64,12 +27,6 @@ for k,v in list({'http':'http_proxy','https':'https_proxy'}.items()):
         HttpProxy = os.environ[v.upper()].replace('http://', '')
         proxyOpts[k] = HttpProxy[0:HttpProxy.rfind('/',0,len(HttpProxy))]
 
-'''
-class HttpTransport(SudsHttpTransport):
-    """HttpTransport which properly obeys the ``*_proxy`` environment variables."""
-    def u2handlers(self):
-        return []
-'''
 class BioModelsClient(Client):
     def __init__(self, WSDL_URI=BIOMODELS_WSDL_URI):
         """Initialize the client with the available queries listed in
@@ -79,14 +36,14 @@ class BioModelsClient(Client):
         """
         try:
             Client.__init__(self, WSDL_URI,proxy=proxyOpts)
-            #Client.__init__(self, WSDL_URI,transport=HttpTransport())
         except Exception as e:
             print(e)
 
 from PyQt5.Qt import Qt
 from PyQt5 import QtCore, QtGui
+from PyQt5.QtWidgets import QDialog
 
-class BioModelsClientWidget(QtGui.QDialog):
+class BioModelsClientWidget(QDialog):
     """This is a widget with a Biomodels Client. It provides simple
     access to the biomodel queries and gives the user a view of the
     results"""

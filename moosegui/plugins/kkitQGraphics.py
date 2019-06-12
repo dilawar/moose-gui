@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 __author__      =   "HarshaRani"
 __credits__     =   ["Upi Lab"]
@@ -8,19 +9,17 @@ __email__       =   "hrani@ncbs.res.in"
 __status__      =   "Development"
 __updated__     =   "Sep 19 2017"
 
-'''
-sep 19: add GroupItem class
-'''
-#import sys
-#sys.path.insert(0, '/home/harsha/trunk/gui')
-import config
-from PyQt5 import QtGui, QtCore, Qt
-from moose import *
-from PyQt5.QtGui import QPixmap, QImage, QGraphicsPixmapItem
-from constants import *
-from os import path
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QGraphicsPixmapItem, QGraphicsWidget
+from PyQt5.QtWidgets import QGraphicsRectItem
 
-class KineticsDisplayItem(QtGui.QGraphicsWidget):
+from moosegui.plugins.constants import *
+import moosegui.config
+
+from os import path
+from moose import *
+
+class KineticsDisplayItem(QGraphicsWidget):
     """Base class for display elemenets in kinetics layout"""
     name = ITEM
     defaultFontName = "Helvetica"
@@ -75,8 +74,8 @@ class FuncItem(KineticsDisplayItem):
         super(FuncItem, self).__init__(mobj, parent)
         self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True)
         iconmap_file = (path.join(config.settings[config.KEY_ICON_DIR], 'classIcon/Function.png'))
-        self.funcImage = QImage(iconmap_file).scaled(15,33)
-        self.bg = QtGui.QGraphicsRectItem(self)
+        self.funcImage = QtGui.QImage(iconmap_file).scaled(15,33)
+        self.bg = QGraphicsRectItem(self)
         self.bg.setAcceptHoverEvents(True)
         self.gobj = QtGui.QGraphicsPixmapItem(QtGui.QPixmap.fromImage(self.funcImage),self.bg)
         self.gobj.setAcceptHoverEvents(True)
@@ -151,7 +150,7 @@ class PoolItem(KineticsDisplayItem):
     fontMetrics = QtGui.QFontMetrics(font)
     def __init__(self, mobj, parent):
         KineticsDisplayItem.__init__(self, mobj, parent)
-        self.bg = QtGui.QGraphicsRectItem(self)
+        self.bg = QGraphicsRectItem(self)
         self.bg.setAcceptHoverEvents(True)
         self.gobj = QtGui.QGraphicsSimpleTextItem(self.mobj.name, self.bg)
         self.gobj.mobj = self.mobj
@@ -441,7 +440,7 @@ class CplxItem(KineticsDisplayItem):
     name = ITEM    
     def __init__(self, *args, **kwargs):
         KineticsDisplayItem.__init__(self, *args, **kwargs)
-        self.gobj = QtGui.QGraphicsRectItem(0,0, CplxItem.defaultWidth, CplxItem.defaultHeight, self)
+        self.gobj = QGraphicsRectItem(0,0, CplxItem.defaultWidth, CplxItem.defaultHeight, self)
         self.gobj.mobj = self.mobj
         self._conc = self.mobj.conc
         self._n    = self.mobj.n
@@ -468,12 +467,13 @@ class CplxItem(KineticsDisplayItem):
         defaultHeight = CplxItem.defaultHeight*scale
     
         self.gobj.setRect(0,0,defaultWidth,defaultHeight)
-class GRPItem(QtGui.QGraphicsRectItem):
+
+class GRPItem(QGraphicsRectItem):
     #This is used for displaying Grp Item
     name = GROUP
     def __init__(self,parent,x,y,w,h,item):
         self.grpEmitter = QtCore.QObject()
-        QtGui.QGraphicsRectItem.__init__(self,x,y,w,h,parent)
+        QGraphicsRectItem.__init__(self,x,y,w,h,parent)
         self.mobj = item
         self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True);
         self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)
@@ -513,7 +513,7 @@ class GRPItem(QtGui.QGraphicsRectItem):
         
         return QtGui.QGraphicsItem.itemChange(self,change,value)
 
-class ComptItem(QtGui.QGraphicsRectItem):
+class ComptItem(QGraphicsRectItem):
     name = COMPARTMENT
     def __init__(self,parent,x,y,w,h,item):
         self.cmptEmitter = QtCore.QObject()
@@ -535,7 +535,7 @@ class ComptItem(QtGui.QGraphicsRectItem):
         else:
             self.mobj = iParent
         self.layoutWidgetPt = parent
-        QtGui.QGraphicsRectItem.__init__(self,x,y,w,h)
+        QGraphicsRectItem.__init__(self,x,y,w,h)
 
         self.setFlag(QtGui.QGraphicsItem.ItemIsMovable, True);
         self.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)
@@ -566,7 +566,7 @@ class ComptItem(QtGui.QGraphicsRectItem):
         else:
             self.setCursor(QtCore.Qt.SizeAllCursor)
 
-        QtGui.QGraphicsRectItem.hoverMoveEvent(self, event)
+        QGraphicsRectItem.hoverMoveEvent(self, event)
 
     def mousePressEvent(self, event):
         """
@@ -592,7 +592,7 @@ class ComptItem(QtGui.QGraphicsRectItem):
         else:
             self.mousePressArea = None
 
-        QtGui.QGraphicsRectItem.mousePressEvent(self, event)
+        QGraphicsRectItem.mousePressEvent(self, event)
 
     def mouseReleaseEvent(self, event):
         """
@@ -603,7 +603,7 @@ class ComptItem(QtGui.QGraphicsRectItem):
         self.updateResizeHandles()
         self.prepareGeometryChange()
 
-        QtGui.QGraphicsRectItem.mouseReleaseEvent(self, event)
+        QGraphicsRectItem.mouseReleaseEvent(self, event)
 
     def mouseMoveEvent(self, event):
         """
@@ -631,7 +631,7 @@ class ComptItem(QtGui.QGraphicsRectItem):
             self.updateResizeHandles()
             self.prepareGeometryChange()
 
-        QtGui.QGraphicsRectItem.mousePressEvent(self, event)
+        QGraphicsRectItem.mousePressEvent(self, event)
 
     def boundingRect(self):
         """

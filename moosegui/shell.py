@@ -1,24 +1,26 @@
 # -*- python -*-
 #
-#       OpenAlea.Visualea: OpenAlea graphical user interface
+#  OpenAlea.Visualea: OpenAlea graphical user interface
 #
-#       Copyright 2006 INRIA - CIRAD - INRA  
+#  Copyright 2006 INRIA - CIRAD - INRA  
 #
-#       File author(s): Samuel Dufour-Kowalski <samuel.dufour@sophia.inria.fr>
-#                       Christophe Pradal <christophe.prada@cirad.fr>
+#  File author(s): Samuel Dufour-Kowalski <samuel.dufour@sophia.inria.fr>
+#                  Christophe Pradal <christophe.prada@cirad.fr>
 #
-#       Distributed under the CeCILL v2 License.
-#       See accompanying file LICENSE.txt or copy at
-#           http://www.cecill.info/licences/Licence_CeCILL_V2-en.html
+#  Distributed under the CeCILL v2 License.
+#  See accompanying file LICENSE.txt or copy at
+#      http://www.cecill.info/licences/Licence_CeCILL_V2-en.html
 # 
-#       OpenAlea WebSite : http://openalea.gforge.inria.fr
+#  OpenAlea WebSite : http://openalea.gforge.inria.fr
 #
 # Fri Mar 15 15:10:58 IST 2013: This file was obtained from:
 # http://obswww.unige.ch/~revaz/git/old.glups-4.0/glups/shell.py -
+# Wednesday 12 June 2019 08:37:21 PM IST
+#    + Ported to Qt5
 # Subhasis Ray
 
 __doc__="""
-This module implements a QT4 python interpreter widget.
+This module implements a Qt5 python interpreter widget.
 It is inspired bu PyCute : http://gerard.vermeulen.free.fr
 """
 
@@ -26,17 +28,11 @@ __license__= "CeCILL V2"
 __revision__=" $Id: shell.py 579 2007-06-13 10:27:57Z dufourko $"
 
 
-import os, sys
+import os
+import sys
+from PyQt5.QtWidgets import QTextEdit
+from PyQt5.QtGui import QTextCursor
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtGui import QTextEdit, QTextCursor
-from PyQt5.QtCore import Qt
-
-# In python3, QString is just python strings.
-try:
-    from PyQt5.QtCore import QString
-except ImportError as e:
-    # we are using Python3 so QString is not defined
-    QtCore.QString = type("")
 
 class History:
   """ Backup and restore history between sessions 
@@ -73,11 +69,8 @@ def get_shell_class():
     try:
         from .scishell import SciShell
         return SciShell
-    
     except ImportError:
         return PyCutExt
-    
-
 
 class MultipleRedirection:
     """ Dummy file which redirects stream to multiple file """
@@ -129,7 +122,7 @@ class PyCutExt(QTextEdit):
 
         # to exit the main interpreter by a Ctrl-D if PyCute has no parent
         if parent is None:
-            self.eofKey = Qt.Key_D
+            self.eofKey = QtCore.Qt.Key_D
         else:
             self.eofKey = None
 
@@ -140,7 +133,7 @@ class PyCutExt(QTextEdit):
 
         
         # last line + last incomplete lines
-        self.line    = QtCore.QString()
+        self.line    = ""
         self.lines   = []
         # the cursor position in the last line
         self.point   = 0
@@ -282,7 +275,7 @@ class PyCutExt(QTextEdit):
         Simulate a user: lines is a sequence of strings, (Python statements).
         """
         for line in lines:
-            self.line = QtCore.QString(line.rstrip())
+            self.line = line.rstrip()
             self.write(self.line)
             self.write('\n')
             self.__run()
@@ -297,8 +290,8 @@ class PyCutExt(QTextEdit):
         (3) the interpreter fails, finds errors and writes them to sys.stderr
         """
         self.pointer = 0
-        self.history.append(QtCore.QString(self.line))
-        self.H.append(QtCore.QString(self.line)) # Added by yr
+        self.history.append(self.line)
+        self.H.append(self.line)
         try:
             self.lines.append(str(self.line))
         except Exception as e:

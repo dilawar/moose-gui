@@ -6,8 +6,12 @@ check :
 build :
 	python setup.py sdist bdist
 
-install :
+install : uninstall
+	git clean -fxd .
 	python -m pip install . --upgrade --user
 
 test: install
 	( cd /tmp && moosegui )
+
+uninstall :
+	python -m pip uninstall moosegui -y

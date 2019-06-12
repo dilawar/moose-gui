@@ -8,10 +8,13 @@ import imp
 import inspect
 import traceback
 import re
+import warnings
+import code
+
 from collections import defaultdict, OrderedDict
 from PyQt5 import QtGui, QtCore, Qt
-from PyQt5 import Qt, QtCore, QtGui
-from PyQt5.QtGui import *
+from PyQt5.QtWidgets import QMainWindow, QAction, QApplication
+from PyQt5.QtWidgets import QDockWidget
 
 # moose
 import moose
@@ -31,7 +34,7 @@ from moosegui.MdiArea import MdiArea
 from moosegui.plugins.setsolver import *
 from moosegui.plugins.defines import *
 from moosegui.MdiArea import MdiArea
-from moosegui.defines import *
+from moosegui.plugins.defines import *
 import moosegui.examples as demos
 
 # Logger
@@ -54,7 +57,7 @@ def freeCursor():
     app = QtGui.qApp
     app.restoreOverrideCursor()
 
-class MWindow(QtGui.QMainWindow):
+class MWindow(QMainWindow):
     """The main window for MOOSE GUI.
 
     This is the driver class that uses the mplugin API. mplugin based
@@ -87,7 +90,7 @@ class MWindow(QtGui.QMainWindow):
 
     """
     def __init__(self, *args):
-        QtGui.QMainWindow.__init__(self, *args)
+        QMainWindow.__init__(self, *args)
         self.setWindowTitle('MOOSE')
         self.pluginNames = None
         self.plugin = None
@@ -107,13 +110,9 @@ class MWindow(QtGui.QMainWindow):
         self.setDockOptions(self.AnimatedDocks and self.AllowNestedDocks and self.AllowTabbedDocks)
         self.mdiArea = MdiArea()
 
-        self.quitAction = QtGui.QAction('&Quit', self)
-        self.connect(self.quitAction, QtCore.SIGNAL('triggered()'), self.quit)
-        self.quitAction.setShortcut( 
-                QtGui.QApplication.translate(
-                    "MainWindow", "Ctrl+Q" , None , QtGui.QApplication.UnicodeUTF8
-                    )
-                )
+        self.quitAction = QAction('&Quit', self)
+        self.quitAction.triggered.connect(self.quit)
+        self.quitAction.setShortcut("Ctrl+Q")
         self.getMyDockWidgets()
         self.setCentralWidget(self.mdiArea)
 
@@ -147,7 +146,7 @@ class MWindow(QtGui.QMainWindow):
                 freeCursor()
                 reply = QtGui.QMessageBox.information(self,"Model file can not open","At present python file cann\'t be laoded into GUI",QtGui.QMessageBox.Ok)
                 if reply == QtGui.QMessageBox.Ok:
-                    QtGui.QApplication.restoreOverrideCursor()
+                    QApplication.restoreOverrideCursor()
                     return
             if not os.path.exists(cmdfilepath):
                 self.setWindowState(QtCore.Qt.WindowMaximized)
@@ -155,7 +154,7 @@ class MWindow(QtGui.QMainWindow):
                 self.createPopup()
                 reply = QtGui.QMessageBox.information(self,"Model file can not open","File Not Found \n \nCheck filename or filepath\n ",QtGui.QMessageBox.Ok)
                 if reply == QtGui.QMessageBox.Ok:
-                    QtGui.QApplication.restoreOverrideCursor()
+                    QApplication.restoreOverrideCursor()
                     return
             if os.path.isdir(cmdfilepath):
                 self.setWindowState(QtCore.Qt.WindowMaximized)
@@ -412,7 +411,7 @@ class MWindow(QtGui.QMainWindow):
         Currently we only have shell for this."""
         if not hasattr(self, 'dockWidgets') or self.dockWidgets is None:
             self.dockWidgets = {}
-            dockWidget = QtGui.QDockWidget('Python')
+            dockWidget = QDockWidget('Python')
             dockWidget.setWidget(self.getShellWidget())
             self.dockWidgets[dockWidget] = True
             self.addDockWidget(Qt.Qt.BottomDockWidgetArea, dockWidget)
@@ -425,9 +424,13 @@ class MWindow(QtGui.QMainWindow):
         return list(self.dockWidgets.keys())
 
     def getShellWidget(self):
-        """Create an instance of shell widget. This can be either a
+        """
+        Create an instance of shell widget. This can be either a
         QSciQScintialla widget or a PyCute widget (extends QTextArea)
-        if the first is not available"""
+        if the first is not available.
+        """
+
+        #  raise DeprecationWarning("ShellWidget is no longer supported.")
         if not hasattr(self, 'shellWidget') or self.shellWidget is None:
             self.shellWidget = get_shell_class()( 
                     code.InteractiveInterpreter()
@@ -612,7 +615,7 @@ class MWindow(QtGui.QMainWindow):
         # Make dockwidgets from other views invisible and make those
         # from current view visible or add them if not already part of
         # main window.
-        dockWidgets = set([dockWidget for dockWidget in self.findChildren(QtGui.QDockWidget)])
+        dockWidgets = set([dockWidget for dockWidget in self.findChildren(QDockWidget)])
         for dockWidget in dockWidgets:
             if dockWidget not in self.dockWidgets:
                 dockWidget.setVisible(False)
@@ -655,13 +658,13 @@ class MWindow(QtGui.QMainWindow):
             self.fileMenu.clear()
 
         if not hasattr(self, 'newModelAction'):
-            self.newModelAction = QtGui.QAction('New', self)
-            self.newModelAction.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+N", None, QtGui.QApplication.UnicodeUTF8))
+            self.newModelAction = QAction('New', self)
+            self.newModelAction.setShortcut(QApplication.translate("MainWindow", "Ctrl+N", None, QApplication.UnicodeUTF8))
             self.connect(self.newModelAction, QtCore.SIGNAL('triggered()'), self.newModelDialogSlot)
         self.fileMenu.addAction(self.newModelAction)
         if not hasattr(self, 'loadModelAction'):
-            self.loadModelAction = QtGui.QAction('L&oad model', self)
-            self.loadModelAction.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+O", None, QtGui.QApplication.UnicodeUTF8))
+            self.loadModelAction = QAction('L&oad model', self)
+            self.loadModelAction.setShortcut(QApplication.translate("MainWindow", "Ctrl+O", None, QApplication.UnicodeUTF8))
             self.connect(self.loadModelAction, QtCore.SIGNAL('triggered()'), self.loadModelDialogSlot)
         self.fileMenu.addAction(self.loadModelAction)
 
@@ -685,63 +688,63 @@ class MWindow(QtGui.QMainWindow):
             for i in range(0,len(self.menuitems)):
                 k = self.menuitems.popitem(0)
                 if k[0] == "Fig2C (6s)":
-                    self.Fig2Caction = QtGui.QAction('Fig2C (6s)', self)
+                    self.Fig2Caction = QAction('Fig2C (6s)', self)
                     self.Fig2Caction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig2_elecModels/Fig2C.py'))
                     self.subMenu.addAction(self.Fig2Caction)
                 elif k[0] == "Fig2D (35s)":
-                    self.Fig2Daction = QtGui.QAction('Fig2D (35s)', self)
+                    self.Fig2Daction = QAction('Fig2D (35s)', self)
                     self.Fig2Daction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig2_elecModels/Fig2D.py'))
                     self.subMenu.addAction(self.Fig2Daction)
                 elif k[0] == "Fig2E (5s)":
-                    self.Fig2Eaction = QtGui.QAction('Fig2E (5s)', self)
+                    self.Fig2Eaction = QAction('Fig2E (5s)', self)
                     self.Fig2Eaction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig2_elecModels/Fig2E.py'))
                     self.subMenu.addAction(self.Fig2Eaction)
                 elif k[0] == "Fig3B_Gssa (2s)":
-                    self.Fig3B_Gssaaction = QtGui.QAction('Fig3B_Gssa (2s)', self)
+                    self.Fig3B_Gssaaction = QAction('Fig3B_Gssa (2s)', self)
                     self.Fig3B_Gssaaction.triggered.connect(lambda :self.run_genesis_script('../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g',"gssa"))
                     self.subMenu.addAction(self.Fig3B_Gssaaction)
                 elif k[0] == "Fig3C_Gsl (2s)":
-                    self.Fig3C_Gslaction = QtGui.QAction('Fig3C_Gsl (2s)', self)
+                    self.Fig3C_Gslaction = QAction('Fig3C_Gsl (2s)', self)
                     self.Fig3C_Gslaction.triggered.connect(lambda :self.run_genesis_script('../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g',"gsl"))
                     self.subMenu.addAction(self.Fig3C_Gslaction)
                 elif k[0] == "Fig3D (1s)":
-                    self.Fig3Daction = QtGui.QAction('Fig3D (1s)', self)
+                    self.Fig3Daction = QAction('Fig3D (1s)', self)
                     self.Fig3Daction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig3_chemModels/Fig3D.py'))
                     self.subMenu.addAction(self.Fig3Daction)
                 elif k[0] == "Fig4B (10s)":
-                    self.Fig4Baction = QtGui.QAction('Fig4B (10s)', self)
+                    self.Fig4Baction = QAction('Fig4B (10s)', self)
                     self.Fig4Baction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig4_ReacDiff/Fig4B.py'))
                     self.subMenu.addAction(self.Fig4Baction)
                 elif k[0] == "Fig4K":
-                    self.Fig4Kaction = QtGui.QAction('Fig4K', self)
+                    self.Fig4Kaction = QAction('Fig4K', self)
                     self.Fig4Kaction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig4_ReacDiff/rxdSpineSize.py'))
                     self.subMenu.addAction(self.Fig4Kaction)
                 elif k[0] == "Fig5A (20s)":
-                    self.Fig5Aaction = QtGui.QAction('Fig5A (20s)', self)
+                    self.Fig5Aaction = QAction('Fig5A (20s)', self)
                     self.Fig5Aaction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5A.py'))
                     self.subMenu.addAction(self.Fig5Aaction)
                 elif k[0] == "Fig5BCD (240s)":
-                    self.Fig5BCDaction = QtGui.QAction('Fig5BCD (240s)', self)
+                    self.Fig5BCDaction = QAction('Fig5BCD (240s)', self)
                     self.Fig5BCDaction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5BCD.py'))
                     self.subMenu.addAction(self.Fig5BCDaction)
                 elif k[0] == "Fig6A (60s)":
-                    self.Fig6Aaction = QtGui.QAction('Fig6A (60s)', self)
+                    self.Fig6Aaction = QAction('Fig6A (60s)', self)
                     self.Fig6Aaction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig6_NetMultiscale/Fig6A.py'))
                     self.subMenu.addAction(self.Fig6Aaction)
                 elif k[0] == "ReducedModel (200s)":
-                    self.ReducedModelaction = QtGui.QAction('ReducedModel (200s)', self)
+                    self.ReducedModelaction = QAction('ReducedModel (200s)', self)
                     self.ReducedModelaction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig6_NetMultiscale/ReducedModel.py'))
                     self.subMenu.addAction(self.ReducedModelaction)
                 else:
-                    self.Squidaction = QtGui.QAction('Squid', self)
+                    self.Squidaction = QAction('Squid', self)
                     self.Squidaction.triggered.connect(lambda :self.run_python_script('../moose-examples/squid/squid_demo.py'))
                     self.subMenu.addAction(self.Squidaction)  
             self.fileMenu.addMenu(self.subMenu)
 
         if not hasattr(self,'loadedModels'):
-            self.loadedModelAction = QtGui.QAction('Recently Loaded Models',self)
+            self.loadedModelAction = QAction('Recently Loaded Models',self)
             self.loadedModelAction.setCheckable(False)
-            #self.fileMenu.addAction(QtGui.QAction(self.loadedModelAction,checkable=True))
+            #self.fileMenu.addAction(QAction(self.loadedModelAction,checkable=True))
             if bool(self._loadedModels):
                 self.fileMenu.addSeparator()
                 self.fileMenu.addAction(self.loadedModelAction)
@@ -751,8 +754,8 @@ class MWindow(QtGui.QMainWindow):
                 self.fileMenu.addSeparator()
 
         if not hasattr(self,'connectBioModelAction'):
-            self.connectBioModelAction = QtGui.QAction('&Connect BioModels', self)
-            self.connectBioModelAction.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+B", None, QtGui.QApplication.UnicodeUTF8))
+            self.connectBioModelAction = QAction('&Connect BioModels', self)
+            self.connectBioModelAction.setShortcut(QApplication.translate("MainWindow", "Ctrl+B", None, QApplication.UnicodeUTF8))
             self.connect(self.connectBioModelAction, QtCore.SIGNAL('triggered()'), self.connectBioModel)
         self.fileMenu.addAction(self.connectBioModelAction)
         return self.fileMenu
@@ -770,10 +773,10 @@ class MWindow(QtGui.QMainWindow):
         if (not hasattr(self, 'pluginsMenu')) or (self.pluginsMenu is None):
             self.pluginsMenu = QtGui.QMenu('&Plugins')
             mapper = QtCore.QSignalMapper(self)
-            pluginsGroup = QtGui.QActionGroup(self)
+            pluginsGroup = QActionGroup(self)
             pluginsGroup.setExclusive(True)
             for pluginName in self.getPluginNames():
-                action = QtGui.QAction(pluginName, self)
+                action = QAction(pluginName, self)
                 action.setObjectName(pluginName)
                 action.setCheckable(True)
                 mapper.setMapping(action, QtCore.QString(pluginName))
@@ -787,7 +790,7 @@ class MWindow(QtGui.QMainWindow):
             #openRootAction = self.defaultPluginMenu.addAction("/")
             #openRootAction.triggered.connect(lambda : self.setPlugin("default", "/") )
             # if (not hasattr(self, 'loadedModelAction')) or (self.loadedModelAction is None)  :
-            #     self.loadedModelAction = QtGui.QAction("kkit",self)
+            #     self.loadedModelAction = QAction("kkit",self)
             #     self.loadedModelAction.addMenu('test')
             # self.pluginsMenu.addAction(self.loadedModelAction)
             # self.pluginsMenu.addMenu(self.insertkkitMenu)
@@ -805,7 +808,7 @@ class MWindow(QtGui.QMainWindow):
             # for action in actions:
             #     self.insertMenu.addAction(action)
             # self.connect(insertMapper, QtCore.SIGNAL('mapped(const QString&)'), self.tree.insertElementSlot)
-            # self.editAction = QtGui.QAction('Edit', self.treeMenu)
+            # self.editAction = QAction('Edit', self.treeMenu)
             # self.editAction.triggered.connect(self.editCurrentObjectSlot)
             # self.tree.elementInserted.connect(self.elementInsertedSlot)
             # self.treeMenu.addAction(self.editAction)
@@ -868,11 +871,11 @@ class MWindow(QtGui.QMainWindow):
 
     def getViewActions(self):
         if (not hasattr(self, 'viewActions')) or (self.viewActions is None):
-            self.editorViewAction = QtGui.QAction('&Editor view', self)
+            self.editorViewAction = QAction('&Editor view', self)
             self.editorViewAction.triggered.connect(self.openEditorView)
-            #self.plotViewAction = QtGui.QAction('&Plot view', self)
+            #self.plotViewAction = QAction('&Plot view', self)
             #self.plotViewAction.triggered.connect(self.openPlotView)
-            self.runViewAction = QtGui.QAction('&Run view', self)
+            self.runViewAction = QAction('&Run view', self)
             self.runViewAction.triggered.connect(self.openRunView)
             #self.viewActions = [self.editorViewAction, self.plotViewAction, self.runViewAction]
             self.viewActions = [self.editorViewAction, self.runViewAction]
@@ -886,13 +889,13 @@ class MWindow(QtGui.QMainWindow):
 
     def getSubWindowActions(self):
         if not hasattr(self, 'subWindowActions') or self.subWindowActions is None:
-            self.tabbedViewAction = QtGui.QAction('&Tabbed view', self)
+            self.tabbedViewAction = QAction('&Tabbed view', self)
             self.tabbedViewAction.triggered.connect(self.setTabbedView)
-            self.subWindowViewAction = QtGui.QAction('&SubWindow view', self)
+            self.subWindowViewAction = QAction('&SubWindow view', self)
             self.subWindowViewAction.triggered.connect(self.setSubWindowView)
-            self.tileSubWindowsAction = QtGui.QAction('Ti&le subwindows', self)
+            self.tileSubWindowsAction = QAction('Ti&le subwindows', self)
             self.tileSubWindowsAction.triggered.connect(self.mdiArea.tileSubWindows)
-            self.cascadeSubWindowsAction = QtGui.QAction('&Cascade subwindows', self)
+            self.cascadeSubWindowsAction = QAction('&Cascade subwindows', self)
             self.cascadeSubWindowsAction.triggered.connect(self.mdiArea.cascadeSubWindows)
             self.subWindowActions = [self.tabbedViewAction,
                                      self.subWindowViewAction,
@@ -905,17 +908,17 @@ class MWindow(QtGui.QMainWindow):
         widgets
 
         """
-        return [widget.toggleViewAction() for widget in self.findChildren(QtGui.QDockWidget)]
+        return [widget.toggleViewAction() for widget in self.findChildren(QDockWidget)]
 
     def getHelpActions(self):
         if (not hasattr(self, 'helpActions')) or (self.helpActions is None):
-            self.actionAbout = QtGui.QAction('About MOOSE', self)
+            self.actionAbout = QAction('About MOOSE', self)
             self.connect(self.actionAbout, QtCore.SIGNAL('triggered()'), self.showAboutMoose)
-            self.actionBuiltInDocumentation = QtGui.QAction('Built-in documentation', self)
+            self.actionBuiltInDocumentation = QAction('Built-in documentation', self)
             self.connect(self.actionBuiltInDocumentation, QtCore.SIGNAL('triggered()'), self.showBuiltInDocumentation)
-            self.actionGuiBug = QtGui.QAction('Report gui bug', self)
+            self.actionGuiBug = QAction('Report gui bug', self)
             self.connect(self.actionGuiBug, QtCore.SIGNAL('triggered()'), self.reportGuiBug)
-            self.actionCoreBug = QtGui.QAction('Report core bug', self)
+            self.actionCoreBug = QAction('Report core bug', self)
             self.connect(self.actionCoreBug, QtCore.SIGNAL('triggered()'), self.reportCoreBug)
             self.helpActions = [self.actionAbout, self.actionBuiltInDocumentation, self.actionCoreBug,self.actionGuiBug]
         return self.helpActions
@@ -1162,7 +1165,7 @@ class MWindow(QtGui.QMainWindow):
         
         reply = QtGui.QMessageBox.information(self,"Model Info","Model has : \n %s Compartment \t \n %s Group \t \n %s Pool  \t \n %s Function \t \n %s reaction \t \n %s Enzyme \t \n %s StimulusTable" %(noOfCompt, grp, noOfPool, noOfFunc, noOfReac, noOfEnz, noOfStimtab))
         if reply == QtGui.QMessageBox.Ok:
-            QtGui.QApplication.restoreOverrideCursor()
+            QApplication.restoreOverrideCursor()
             return
 
     def checkPlugin(self,dialog):
@@ -1199,7 +1202,7 @@ class MWindow(QtGui.QMainWindow):
                 reply = QtGui.QMessageBox.question(self, "python-libsbml is not found.","\n Read SBML is not possible.\n This can be installed using \n \n pip python-libsbml  or \n apt-get install python-libsbml",
                                            QtGui.QMessageBox.Ok)
                 if reply == QtGui.QMessageBox.Ok:
-                    QtGui.QApplication.restoreOverrideCursor()
+                    QApplication.restoreOverrideCursor()
                     return valid, ret
             else:
                 if ret['loaderror'] != "":
@@ -1212,7 +1215,7 @@ class MWindow(QtGui.QMainWindow):
                             ret,pluginName = self.checkPlugin(dialog)
                             valid,ret = self.dialog_check(ret)
                     else:
-                        QtGui.QApplication.restoreOverrideCursor()
+                        QApplication.restoreOverrideCursor()
                         return valid,ret
                 else:
                     valid = True

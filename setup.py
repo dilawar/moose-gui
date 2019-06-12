@@ -35,9 +35,9 @@ setup(
         , 'suds.umx', 'suds.transport'
         ],
     package_dir = { 
-        'moosegui' : 'src'
+        'moosegui' : 'moosegui'
         , 'moosegui.demos' : '.'
-        , 'moosegui.plugins' : 'src/plugins'
+        , 'moosegui.plugins' : 'moosegui/plugins'
         , 'suds' : 'suds'
         },
     package_data = { 
