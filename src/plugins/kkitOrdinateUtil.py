@@ -64,7 +64,6 @@ def findGroup_compt(melement):
     return melement
 '''
 def populateMeshEntry(meshEntry,parent,types,obj):
-    #print " parent ",parent, "types ",types, " obj ",obj
     try:
         value = meshEntry[element(parent.path)][types]
     except KeyError:
@@ -74,7 +73,6 @@ def populateMeshEntry(meshEntry,parent,types,obj):
         mlist = meshEntry[element(parent.path)][types]
         mlist.append(element(obj))
 def updateMeshObj(modelRoot):
-    print " updateMeshObj "
     meshEntry = {}
     if meshEntry:
         meshEntry.clear()
