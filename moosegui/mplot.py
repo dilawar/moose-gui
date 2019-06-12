@@ -1,94 +1,25 @@
-# mplot.py ---
-#
 # Filename: mplot.py
 # Description:
 # Author:
 # Maintainer:
 # Created: Mon Mar 11 20:24:26 2013 (+0530)
-# Version:
-# Last-Updated: Wed Apr  11 15:32:35 2018 (+0530)
-#           By: Harsha
-#     Update #: 
-# URL:
-# Keywords:
-# Compatibility:
-#
-#
-
-# Commentary:
-#
-# Moose plot widget default implementation. This should be rich enough
-# to suffice for most purposes.
-#
-#
-
-# Change log:
-# 2018 April 11: In chemical model, now pool can be ploted as number or concentration.
-#
-#
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 3, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-# Floor, Boston, MA 02110-1301, USA.
-#
-#
-
-# Code:
-"""
-    *TODO*
-
-    1) Option for default colors, markers, etc.
-
-    2) Option for configuring number of rows and columns of
-    subplots. (I think matplotlib grids will be a bit too much to
-    implement). Problem is this has to be done before actual axes are
-    created (as far as I know). Idea: can we do something like movable
-    widgets example in Qt?
-
-    3) Option for selecting any line or set of lines and change its
-    configuration (as in dataviz).
-
-    4) Association between plots and the data source.
-
-    5) Lots and lots of scipy/numpy/scikits/statsmodels utilities can be added. To
-    start with, we should have
-      a)digital filters
-      b) fft
-      c) curve fitting
-
-    6) For (5), think of another layer of plugins. Think of this as a
-    standalone program. All these facilities should again be
-    pluggable. We do not want to overwhelm novice users with fancy
-    machine-learning stuff. They should be made available only on
-    request.
-        - There is a proposal for data analysis library by Andrew Davison ...
-
-"""
-
 
 __author__ = "Subhasis Ray"
+
 import sys
 import numpy as np
+
 from PyQt5 import QtGui, QtCore
 from PyQt5.Qt import Qt
+
+import matplotlib
+matplotlib.use('Qt5Agg')
 from matplotlib import mlab
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
-#from moose import utils
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+
 import moose
-from PyQt5.QtCore import *
 
 class CanvasWidget(FigureCanvas):
     """Widget to draw plots on.
