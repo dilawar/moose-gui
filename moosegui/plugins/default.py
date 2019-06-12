@@ -4,10 +4,6 @@
 # Author: Subhasis Ray
 # Maintainer:
 # Created: Tue Nov 13 15:58:31 2012 (+0530)
-# Version:
-# Last-Updated: Mon Sep 10 23:35:00 2018 (+0530)
-#           By: Harsha
-#     Update #: 
 
 import sys
 import pickle
@@ -23,7 +19,6 @@ rcParams.update({'figure.autolayout': True})
 import moose
 from moose import utils
 
-
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap
@@ -32,6 +27,14 @@ from PyQt5.QtGui import QDoubleValidator
 from PyQt5.QtWidgets import QToolBar, QToolButton
 from PyQt5.QtWidgets import QLabel, QLineEdit
 from PyQt5.QtWidgets import QErrorMessage, QSizeGrip, QAction
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QSizeGrip
+from PyQt5.QtWidgets import QLayout
+from PyQt5.QtWidgets import QScrollArea
+from PyQt5.QtWidgets import QMenu
+
+from PyQt5.QtCore import pyqtSlot, Signal, pyqtSignal
+
 
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
@@ -338,7 +341,7 @@ class RunView(RunBase):
         self.schedulingDockWidget = QtGui.QDockWidget('Scheduling')
         self.schedulingDockWidget.setFeatures( QtGui.QDockWidget.NoDockWidgetFeatures);
         self.schedulingDockWidget.setWindowFlags(Qt.CustomizeWindowHint)
-        titleWidget = QtGui.QWidget();
+        titleWidget = QWidget();
         self.schedulingDockWidget.setTitleBarWidget(titleWidget)
         widget = SchedulingWidget()
         widget.setDataRoot(self.dataRoot)
@@ -353,7 +356,7 @@ class RunView(RunBase):
         return self.schedulingDockWidget
 
 
-class SchedulingWidget(QtGui.QWidget):
+class SchedulingWidget(QWidget):
     """Widget for scheduling.
 
     Important member fields:
@@ -381,7 +384,7 @@ class SchedulingWidget(QtGui.QWidget):
     continueRun = QtCore.pyqtSignal(float, float, name='continueRun')
 
     def __init__(self, *args, **kwargs):
-        QtGui.QWidget.__init__(self, *args, **kwargs)
+        QWidget.__init__(self, *args, **kwargs)
         self.simulationInterval = None
         self.updateInterval     = None
         self.runTime            = None
@@ -669,13 +672,6 @@ PlotDataSource = namedtuple('PlotDataSource', ['x', 'y', 'z'], verbose=False)
 event = None
 legend = None
 canvas = None
-
-from PyQt5.QtGui import QWidget
-from PyQt5.QtGui import QSizeGrip
-from PyQt5.QtGui import QLayout
-from PyQt5.QtGui import QScrollArea
-from PyQt5.QtGui import QMenu
-from PyQt5.QtCore import pyqtSlot,SIGNAL,SLOT, Signal, pyqtSignal
 
 class PlotWidget(QWidget):
     """A wrapper over CanvasWidget to handle additional MOOSE-specific
@@ -1091,7 +1087,7 @@ class PlotSelectionWidget(QtGui.QScrollArea):
         """An internal widget to display the list of elements and their
         plottable fields in comboboxes."""
         if not hasattr(self, '_plotListWidget'):
-            self._plotListWidget = QtGui.QWidget(self)
+            self._plotListWidget = QWidget(self)
             layout = QtGui.QGridLayout(self._plotListWidget)
             self._plotListWidget.setLayout(layout)
             layout.addWidget(QtGui.QLabel('<h1>Elements matching search criterion will be listed here</h1>'), 0, 0)

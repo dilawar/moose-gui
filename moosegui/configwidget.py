@@ -1,57 +1,19 @@
-# firsttime.py --- 
-# 
-# Filename: firsttime.py
+# -*- coding: utf-8 -*-
+
 # Description: 
 # Author: Subhasis Ray
 # Maintainer: 
 # Created: Sun Jul 11 15:31:00 2010 (+0530)
-# Version: 
-# Last-Updated: Sat Sep 22 15:30:15 2012 (+0530)
-#           By: subha
-#     Update #: 505
-# URL: 
-# Keywords: 
-# Compatibility: 
-# 
-# 
-
-# Commentary: 
-# 
-# Wizard to take the user through selection of some basic
-# configurations for MOOSE gui.
-# 
-# 
-
-# Change log:
-# 
-# 
-# 
-# 
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 3, or
-# (at your option) any later version.
-# 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-# Floor, Boston, MA 02110-1301, USA.
-# 
-# 
-
-# Code:
 
 import shutil
 import os
-from . import config
+
 from PyQt5 import QtGui, QtCore
-from . import config
-from .utils import *
+from PyQt5.QtWidgets import QWidget
+
+from moosegui import config
+from moosegui import config
+from moosegui.utils import *
         
 class ConfigWidget(QtGui.QDialog):
     """Widget to configure MOOSE."""
@@ -76,7 +38,7 @@ class ConfigWidget(QtGui.QDialog):
     def _createGeneralPanel(self):
         if hasattr(self, 'generalPanel'):
             return self.generalPanel
-        self.generalPanel = QtGui.QWidget(self)
+        self.generalPanel = QWidget(self)
         self.generalPanelLabel = QtGui.QLabel(self.generalPanel)
         self.generalPanelLabel.setText('<center>General configuration for MOOSE</center>')
         self.colormapDirLabel = QtGui.QLabel('Colormap directory', 

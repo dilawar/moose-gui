@@ -161,38 +161,10 @@ def settings_action( parent
 
 def sidebar():
     return QtGui.QToolBar()
-    # bar.setOrientation(Qt.Qt.Vertical)
-    # return bar
-    # if left_spacer:
-    #     left_spacer = QWidget()
-    #     left_spacer.setSizePolicy( QtGui.QSizePolicy.Expanding
-    #                              , QtGui.QSizePolicy.Expanding
-    #                              )
-    #     toolbar.addWidget(left_spacer)
-
-    # for action in actions:
-    #     toolbar.addAction(action(toolbar))
-
-    # if right_spacer:
-    #     right_spacer = QWidget()
-    #     right_spacer.setSizePolicy( QtGui.QSizePolicy.Expanding
-    #                               , QtGui.QSizePolicy.Expanding
-    #                               )
-    #     toolbar.addWidget(right_spacer)
-
-    # return toolbar
-
-
-
-
-# def connect_action():
-
-# def settings_action():
-
 
 
 def main():
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     window = QtGui.QMainWindow()
     widget = SettingsDialog.SettingsWidget({
                             'LeakyIaF':['Vm'],
@@ -218,24 +190,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# # spacer widget for left
-# # spacer widget for right
-# # you can't add the same widget to both left and right. you need two different widgets.
-# right_spacer = QtGui.QWidget()
-# right_spacer.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-
-# # here goes the left one
-# # toolbar.addWidget(left_spacer)
-# # some dummy actions
-
-
-
-# ################################################################################
-# # Hand Tool
-# ################################################################################
-
-
-
-
-

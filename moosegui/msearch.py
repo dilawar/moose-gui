@@ -51,11 +51,12 @@ Widget giving access to wildcardFind function in MOOSE
 import sys
 
 from PyQt5 import QtGui, QtCore
+from PyQt5.QtWidgets import QWidget
 from PyQt5.Qt import Qt
 
 import moose
 
-class SearchWidget(QtGui.QWidget):
+class SearchWidget(QWidget):
     """Widget to search MOOSE model tree using wildcards.
     
     SIGNALS:
@@ -66,7 +67,7 @@ class SearchWidget(QtGui.QWidget):
     executed = QtCore.pyqtSignal(list, name='executed')
 
     def __init__(self, *args):
-        QtGui.QWidget.__init__(self, *args)
+        QWidget.__init__(self, *args)
         layout = QtGui.QVBoxLayout()
         self.modeCombo = QtGui.QComboBox()
         self.modeCombo.addItem('Basic', QtCore.QVariant(QtCore.QString('basic')))
@@ -91,7 +92,7 @@ class SearchWidget(QtGui.QWidget):
     def getBasicPanel(self):
         """Create a widget for basic level usage."""
         if not hasattr(self, '_basicPanel'):
-            self._basicPanel = QtGui.QWidget()
+            self._basicPanel = QWidget()
             self.searchRootEdit = QtGui.QLineEdit()
             self.searchRootEdit.returnPressed.connect(self.searchSlot)
             self.searchRootLabel = QtGui.QLabel('Search under')
@@ -131,7 +132,7 @@ class SearchWidget(QtGui.QWidget):
         """Create a panel for advanced users who can enter the search string
         directly."""
         if not hasattr(self, '_advancedPanel'):
-            self._advancedPanel = QtGui.QWidget(self)
+            self._advancedPanel = QWidget(self)
             self._searchEdit = QtGui.QLineEdit()
             self._searchEdit.returnPressed.connect(self.searchSlot)
             self._searchLabel = QtGui.QLabel('Search string:')

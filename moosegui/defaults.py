@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 __credits__     =   ["Upi Lab"]
 __author__      =   "Subhasis"
 __license__     =   "GPL3"
@@ -16,6 +18,7 @@ PLOT_FIELDS={
     'HHChannel2D':['Ik','Gk'],
     'CaConc':['Ca']
     }
+
 FIELD_UNITS={
     'volume':'m3',
     'Kd' : 'mM',

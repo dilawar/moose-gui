@@ -24,47 +24,49 @@ __updated__     =   "Feb 22 2019"
 
 import math
 import sys
+import posixpath
+from os.path import expanduser
+
 from PyQt5 import QtGui, QtCore, Qt
-from default import *
-from moose import *
+from PyQt5.QtWidgets import QWidget, QGridLayout
+from PyQt5.QtGui import QColor
+
+# moosegui
+from moosegui import RunWidget
+from moosegui.mplugin import *
+
+from moosegui.plugins.default import *
+from moosegui.plugins.kkitUtil import *
+from moosegui.plugins.kkitQGraphics import *
+from moosegui.plugins.kkitViewcontrol import *
+from moosegui.plugins.kkitCalcArrow import *
+from moosegui.plugins.kkitOrdinateUtil import *
+from moosegui.plugins.mtoolbutton import MToolButton
+
+# moose
 from moose import SBML
 from moose.genesis.writeKkit import mooseWriteKkit
-from mplugin import *
-from kkitUtil import *
-from kkitQGraphics import *
-from kkitViewcontrol import *
-from kkitCalcArrow import *
-from kkitOrdinateUtil import *
-import posixpath
-from mtoolbutton import MToolButton
-from PyQt5.QtGui import QWidget
-from PyQt5.QtGui import QGridLayout
-from PyQt5.QtGui import QColor
-import RunWidget
-from os.path import expanduser
-#from setsolver import *
 from moose.chemUtil.add_Delete_ChemicalSolver import *
+
 import re
 
 class KkitPlugin(MoosePlugin):
-    """Default plugin for MOOSE GUI"""
+    """
+    Default plugin for MOOSE GUI
+    """
+
     def __init__(self, *args):
-        #print args
         MoosePlugin.__init__(self, *args)
         self.view = None
-        #self.plotView = PlotView(self)
-        #self.getRunView()
-        #self.plotView.dataTable = self.view._centralWidget.dataTable
-        #self.plotView.updateCallback = self.view._centralWidget.legendUpdate
-        #self.view._centralWidget.legendUpdate()
-        #self.dataTable = DataTable(self.dataRoot)
         self.fileinsertMenu = QtGui.QMenu('&File')
+
         if not hasattr(self,'SaveModelAction'):
             #self.fileinsertMenu.addSeparator()
             self.saveModelAction = QtGui.QAction('Save', self)
-            self.saveModelAction.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
+            self.saveModelAction.setShortcut( "Ctrl+S" )
             self.connect(self.saveModelAction, QtCore.SIGNAL('triggered()'), self.SaveModelDialogSlot)
             self.fileinsertMenu.addAction(self.saveModelAction)
+
         self._menus.append(self.fileinsertMenu)
         self.getEditorView()
         
@@ -380,7 +382,7 @@ class  KineticsWidget(EditorWidgetBase):
             #At the time of model building
             # when we want an empty GraphicView while creating new model,
             # then remove all the view and add an empty view
-            if hasattr(self, 'view') and isinstance(self.view, QtGui.QWidget):
+            if hasattr(self, 'view') and isinstance(self.view, QWidget):
                 self.layout().removeWidget(self.view)
             #self.sceneContainer.setSceneRect(-self.width()/2,-self.height()/2,self.width(),self.height())
             #self.view = GraphicalView(self.modelRoot,self.sceneContainer,self.border,self,self.createdItem,minmaxratiodict)
@@ -399,7 +401,7 @@ class  KineticsWidget(EditorWidgetBase):
             # maxmium and minimum coordinates of the objects specified in kkit file.
             #self.mooseObjOntoscene()
             #self.drawLine_arrow()
-            if hasattr(self, 'view') and isinstance(self.view, QtGui.QWidget):
+            if hasattr(self, 'view') and isinstance(self.view, QWidget):
                 self.layout().removeWidget(self.view)
             # self.view = GraphicalView(self.modelRoot,self.sceneContainer,self.border,self,self.createdItem,minmaxratiodict)
             self.view = GraphicalView(self.modelRoot,self.sceneContainer,self.border,self,self.createdItem)
@@ -1195,7 +1197,7 @@ class kineticRunWidget(KineticsWidget):
                 item.returnEllispeSize()
 
 if __name__ == "__main__":
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     size = QtCore.QSize(1024 ,768)
     #modelPath = 'Kholodenko'
     modelPath = 'acc27'
@@ -1222,8 +1224,7 @@ if __name__ == "__main__":
         dt.show()
 
     except IOError as what:
-      (errno, strerror) = what
-      print("Error number",errno,"(%s)" %(strerror))
-      sys.exit(1)
+      print(e)
+      quit(1)
 
     sys.exit(app.exec_())

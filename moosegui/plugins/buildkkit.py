@@ -7,8 +7,8 @@ import pickle
 import posixpath
 
 from PyQt5 import QtGui, QtCore, Qt
+from PyQt5.QtWidgets import QFileDialog, QWidget
 
-from moose import *
 import networkx as nx
 import numpy as np
 
@@ -74,16 +74,16 @@ class KkitEditorView(MooseEditorView):
         self.fileinsertMenu = QtGui.QMenu('&File')
         if not hasattr(self,'SaveModelAction'):
             self.saveModelAction = QtGui.QAction('SaveToSBMLFile', self)
-            self.saveModelAction.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
-            self.connect(self.saveModelAction, QtCore.SIGNAL('triggered()'), self.SaveModelDialogSlot)
+            self.saveModelAction.setShortcut( "Ctrl+S" )
+            self.saveModelAction.triggered.connect(self.SaveModelDialogSlot)
             self.fileinsertMenu.addAction(self.saveModelAction)
+
         self._menus.append(self.fileinsertMenu)
 
     def SaveModelDialogSlot(self):
         type_sbml = 'SBML'
-        print(" here in saveModelDialog")
         filters = {'SBML(*.xml)': type_sbml}
-        filename,filter_ = QtGui.QFileDialog.getSaveFileNameAndFilter(None,'Save File','',';;'.join(filters))
+        filename,filter_ = QFileDialog.getSaveFileNameAndFilter(None,'Save File','',';;'.join(filters))
         extension = ""
         if str(filename).rfind('.') != -1:
             filename = filename[:str(filename).rfind('.')]
@@ -92,7 +92,6 @@ class KkitEditorView(MooseEditorView):
         if filename:
             filename = filename+extension
             if filters[str(filter_)] == 'SBML':
-                print("here",filename," ",self.plugin.modelRoot)
                 moose.writeSBML(str(filename),self.plugin.modelRoot)
     def getToolPanes(self):
         return super(KkitEditorView, self).getToolPanes()
@@ -156,7 +155,7 @@ class  KineticsWidget(EditorWidgetBase):
         if not m:
             # when we want an empty GraphicView while creating new model,
             # then remove all the view and add an empty view
-            if hasattr(self, 'view') and isinstance(self.view, QtGui.QWidget):
+            if hasattr(self, 'view') and isinstance(self.view, QWidget):
                 self.layout().removeWidget(self.view)
             self.view = GraphicalView(self.sceneContainer,self.border,self)
             self.layout().addWidget(self.view)
@@ -222,7 +221,7 @@ class  KineticsWidget(EditorWidgetBase):
             
             # All the moose Object are connected for visualization 
             self.drawLine_arrow(itemignoreZooming=False)
-            if hasattr(self, 'view') and isinstance(self.view, QtGui.QWidget):
+            if hasattr(self, 'view') and isinstance(self.view,QWidget):
                 self.layout().removeWidget(self.view)
             self.view = GraphicalView(self.sceneContainer,self.border,self)
             hLayout = QtGui.QGridLayout(self)
