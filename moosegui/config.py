@@ -16,18 +16,11 @@ from PyQt5 import QtGui, QtCore
 
 # Logger
 import logging
-logging.basicConfig(level=logging.DEBUG,
-    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-    datefmt='%m-%d %H:%M',
-    filename='moosegui.log',
-    filemode='a'
-    )
-console = logging.StreamHandler()
-console.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
-console.setFormatter(formatter)
-_logger = logging.getLogger('')
-_logger.addHandler(console)
+logging.basicConfig( level=logging.INFO
+        , format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
+        , datefmt='%m-%d %H:%M'
+        )
+_logger = logging.getLogger('moosegui')
 
 KEY_UNDO_LENGTH = 'main/undolength'
 KEY_WINDOW_GEOMETRY = 'main/geometry'

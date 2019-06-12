@@ -12,12 +12,9 @@ import numpy as np
 from PyQt5 import QtGui, QtCore
 from PyQt5.Qt import Qt
 
-import matplotlib
-matplotlib.use('Qt5Agg')
-from matplotlib import mlab
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+#from matplotlib.figure import Figure
+#from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+#from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 import moose
 
