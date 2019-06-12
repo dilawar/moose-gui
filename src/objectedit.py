@@ -6,7 +6,7 @@
 # Maintainer:
 # Created: Wed Jun 30 11:18:34 2010 (+0530)
 # Version:
-# Last-Updated: Wed Aug 3 15:55:59 2016 (+0530)
+# Last-Updated: Fri Feb 01 11:05:59 2017 (+0530)
 #           By: Harsha
 #     Update #: 
 # URL:
@@ -26,6 +26,43 @@
 #
 #
 
+# Change log:
+#
+# Wed Jun 30 11:18:34 2010 (+0530) - Originally created by Subhasis
+# Ray, the model and the view
+#
+# Modified/adapted to dh_branch by Chaitanya/Harsharani
+#
+# Thu Apr 18 18:37:31 IST 2013 - Reintroduced into multiscale GUI by
+# Subhasis
+#
+# Fri Apr 19 15:05:53 IST 2013 - Subhasis added undo redo
+# feature. Create ObjectEditModel as part of ObjectEditView.
+# Tue Mar 7 16:10:54 IST 2017 - Harsha now Pool or BufPool can be interchangable
+# by setting/unsetting isbuffered field
+# Fri May 17 23:45:59 2017 (+0530) - Harsha added, notes header,
+# Kd is calculated for the second order reaction and value is displayed
+# Tue Jun 18 12:10:54 IST 2018 - Harsha now group boundary color can be editable from the object editor
+# Mon Sep 10 16:21:00 IST 2018 - When name is edited, the editorTitle gets updated
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 3, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; see the file COPYING.  If not, write to
+# the Free Software Foundation, Inc., 51 Franklin Street, Fifth
+# Floor, Boston, MA 02110-1301, USA.
+#
+#
+
+# Code:
 import PyQt4
 from PyQt4 import QtCore
 from PyQt4 import QtGui
@@ -40,14 +77,14 @@ import sys
 from collections import deque
 import traceback
 
+#sys.path.append('../python')
 import moose
-import numpy as np
+import defaults
+import config
+#from plugins.kkitUtil import getColor
+from moose.chemUtil.chemConnectUtil import getColor
 
-from moosegui import defaults
-from moosegui import config
-from moosegui.plugins.kkitUtil import getColor
-from moosegui.GenericTypes import QVariant
-
+#these fields will be ignored
 extra_fields = ['this',
                 'me',
                 'parent',
@@ -140,12 +177,20 @@ class ObjectEditModel(QtCore.QAbstractTableModel):
             self.fields.append(fieldName)
         #harsha: For signalling models will be pulling out notes field from Annotator
         #        can updates if exist for other types also
-        if ( isinstance(self.mooseObject, moose.PoolBase)
-           #or isinstance(self.mooseObject,moose.ReacBase)
-           or isinstance(self.mooseObject,moose.EnzBase) ) :
-            self.fields.append("Color")
-            # self.fields.append("Notes")
+        if (isinstance (self.mooseObject,moose.ChemCompt) or \
+            isinstance(self.mooseObject,moose.ReacBase)  or \
+            isinstance(moose.element(moose.element(self.mooseObject).parent),moose.EnzBase) \
+           ):
+            pass
+        else:
+             self.fields.append("Color")
+        
         flag = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+        self.fieldFlags[fieldName] = flag
+
+        if ( isinstance(self.mooseObject, moose.ReacBase) ) :
+            self.fields.append("Kd")
+        flag = QtCore.Qt.ItemIsEnabled 
         self.fieldFlags[fieldName] = flag
 
     def rowCount(self, parent):
@@ -199,8 +244,17 @@ class ObjectEditModel(QtCore.QAbstractTableModel):
             
             else:
                 oldValue = self.mooseObject.getField(field)
-                value = type(oldValue)(value)
-                tt = self.mooseObject.setField(field, value)
+                if field != "isBuffered":
+                    value = type(oldValue)(value)
+                    self.mooseObject.setField(field, value)
+                else:
+                    if self.mooseObject.className == "ZombiePool" or self.mooseObject.className =="ZombieBufPool":
+                        QtGui.QMessageBox.warning(None,'Solver is set, Could not set the value','\n Unset the solver by clicking \n run widget -> Preferences -> Exponential Euler->Apply')
+                    else:
+                        if value.lower() in ("yes", "true", "t", "1"):
+                            self.mooseObject.setField(field, True)
+                        else:
+                            self.mooseObject.setField(field, False)
                 self.undoStack.append((index, oldValue))
             if field == 'name':
                 self.emit(QtCore.SIGNAL('objectNameChanged(PyQt_PyObject)'), self.mooseObject)
@@ -210,7 +264,7 @@ class ObjectEditModel(QtCore.QAbstractTableModel):
         return True
 
     def undo(self):
-        print('Undo')
+        print ('Undo')
         if len(self.undoStack) == 0:
             raise Info('No more undo information')
         index, oldvalue, = self.undoStack.pop()
@@ -288,7 +342,18 @@ class ObjectEditModel(QtCore.QAbstractTableModel):
                 try:
                     if (str(field) =="Color" ):
                         return QtGui.QPushButton("Press Me!")
-                    if ( (str(field) != "Notes") and (str(field) != "className")):
+                    if (str(field) =="Kd" ):
+                        #ret = self.mooseObject.getField(str(field))
+                        Kd = 0
+                        
+                        if self.mooseObject.className == "ZombieReac" or self.mooseObject.className == "Reac":
+                            if self.mooseObject.numSubstrates > 1 or self.mooseObject.numProducts > 1:
+                                if self.mooseObject.Kf != 0:
+                                    Kd = self.mooseObject.Kb/self.mooseObject.Kf
+
+                            #Kd = QtCore.QVariant(QtCore.QString(str(ret)))
+                        ret = QtCore.QVariant(QtCore.QString(str(Kd)))
+                    if ( (str(field) != "Notes") and (str(field) != "className") and (str(field) != "Kd")):
                         ret = self.mooseObject.getField(str(field))
                         ret = QtCore.QString(str(ret))
                     elif(str(field) == "className"):
@@ -369,12 +434,12 @@ class ObjectEditView(QtGui.QTableView):
             self.setColor(getColor(self.model().mooseObject.path+'/info')[1])
         except:
             pass
-        print(('Created view with', mobject))
+        print ('Created view with %s' %(mobject))
 
     def setColor(self, color):
         self.colorButton.setStyleSheet(
                     "QPushButton {"
-                +   "background-color: {0}; color: {0};".format(color.name())
+                +   "background-color: {0}; color: {0};".format(color)
                 +   "}"
                                       )
         self.colorDialog.setCurrentColor(color)
@@ -382,8 +447,6 @@ class ObjectEditView(QtGui.QTableView):
     def dataChanged(self, tl, br):
         QtGui.QTableView.dataChanged(self, tl, br)
         self.viewport().update()
-
-
 
 class ObjectEditDockWidget(QtGui.QDockWidget):
     """A dock widget whose title is set by the current moose
@@ -413,7 +476,8 @@ class ObjectEditDockWidget(QtGui.QDockWidget):
         self.setWindowTitle('Edit: %s' % (mobj.path))
         # self.view.colorDialog.colorSelected.connect(self.colorChangedEmit)
 
-
+    # def clearDict(self):
+    #     self.view_dict.clear()
 
     def setObject(self, mobj):
         element = moose.element(mobj)
@@ -433,7 +497,10 @@ class ObjectEditDockWidget(QtGui.QDockWidget):
         base.setOrientation(PyQt4.QtCore.Qt.Vertical)
         layout = QVBoxLayout()
         layout.addWidget(view)#, 0, 0)
-
+        lineedit = QtGui.QLineEdit("Notes:")
+        lineedit.setReadOnly(True)
+        layout.addWidget(lineedit)
+        
         if ( isinstance(mobj, moose.PoolBase)
            or isinstance(mobj,moose.ReacBase)
            or isinstance(mobj,moose.EnzBase)
@@ -462,7 +529,7 @@ class ObjectEditDockWidget(QtGui.QDockWidget):
 
     def emitObjectNameChanged(self, mobj):
         self.objectNameChanged.emit(mobj)
-
+        self.setWindowTitle('Edit:%s'%(mobj.path))
 def main():
     app = QtGui.QApplication(sys.argv)
     mainwin = QtGui.QMainWindow()

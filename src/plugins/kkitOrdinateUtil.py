@@ -1,13 +1,149 @@
+__author__      =   "HarshaRani"
+__credits__     =   ["Upi Lab"]
+__license__     =   "GPL3"
+__version__     =   "1.0.0"
+__maintainer__  =   "HarshaRani"
+__email__       =   "hrani@ncbs.res.in"
+__status__      =   "Development"
+__updated__     =   "Oct 26 2018"
+
+'''
+2018
+Oct 26: xfer molecules are not put into screen
+Sep 28: to zoom the kkit co-ordinates a factor of w=1000 and h=800 is multipled here
+2017
+Oct 18: moved some function to kkitUtil
+getxyCord, etc function are added
+'''
+import collections
 from moose import *
 import numpy as np
+from moose import wildcardFind,element,PoolBase,CplxEnzBase,Annotator,exists
+from networkx.drawing.nx_agraph import graphviz_layout
+import numpy as np
 import networkx as nx
-from collections import Counter
+from kkitUtil import getRandColor,colorCheck,findCompartment, findGroup, findGroup_compt, mooseIsInstance
+from PyQt4.QtGui import QColor
+import re
+import moose._moose as moose
+
+def getxyCord(xcord,ycord,list1):
+    for item in list1:
+        # if isinstance(item,Function):
+        #     objInfo = element(item.parent).path+'/info'
+        # else:
+        #     objInfo = item.path+'/info'
+        if not isinstance(item,Function):
+            objInfo = item.path+'/info'
+            xcord.append(xyPosition(objInfo,'x'))
+            ycord.append(xyPosition(objInfo,'y'))
 
 def xyPosition(objInfo,xory):
     try:
         return(float(element(objInfo).getField(xory)))
     except ValueError:
         return (float(0))
+'''
+def mooseIsInstance(melement, classNames):
+    return element(melement).__class__.__name__ in classNames
+
+
+def findCompartment(melement):
+    while not mooseIsInstance(melement, ["CubeMesh", "CyclMesh"]):
+        melement = melement.parent
+    return melement
+
+def findGroup(melement):
+    while not mooseIsInstance(melement, ["Neutral"]):
+        melement = melement.parent
+    return melement
+
+def findGroup_compt(melement):
+    while not (mooseIsInstance(melement, ["Neutral","CubeMesh", "CyclMesh"])):
+        melement = melement.parent
+    return melement
+'''
+def populateMeshEntry(meshEntry,parent,types,obj):
+    #print " parent ",parent, "types ",types, " obj ",obj
+    try:
+        value = meshEntry[element(parent.path)][types]
+    except KeyError:
+        # Key is not present
+        meshEntry[element(parent.path)].update({types :[element(obj)]})
+    else:
+        mlist = meshEntry[element(parent.path)][types]
+        mlist.append(element(obj))
+def updateMeshObj(modelRoot):
+    print " updateMeshObj "
+    meshEntry = {}
+    if meshEntry:
+        meshEntry.clear()
+    else:
+        meshEntry = {}
+
+    objPar = collections.OrderedDict()
+    for compt in wildcardFind(modelRoot+'/##[ISA=ChemCompt]'):
+        groupColor = []
+        try:
+            value = meshEntry[element(compt)]
+        except KeyError:
+            # Compt  is not present
+            meshEntry[element(compt)] = {}
+            objPar[element(compt)] = element('/')
+
+        for grp in wildcardFind(compt.path+'/##[TYPE=Neutral]'):
+            test = [x for x in wildcardFind(element(grp).path+'/#') if x.className in ["Pool","Reac","Enz"]]
+            grp_cmpt = findGroup_compt(grp.parent)    
+
+            try:
+                value = meshEntry[element(grp)]
+            except KeyError:
+                # Grp is not present
+                meshEntry[element(grp)] = {}
+                objPar[element(grp)] = element(grp_cmpt)
+
+    for compt in wildcardFind(modelRoot+'/##[ISA=ChemCompt]'):
+        for m in wildcardFind(compt.path+'/##[ISA=PoolBase]'):
+            grp_cmpt = findGroup_compt(m)
+            if isinstance(element(grp_cmpt),Neutral):
+                if isinstance(element(m.parent),EnzBase):
+                    populateMeshEntry(meshEntry,grp_cmpt,"cplx",m)
+                else:
+                    populateMeshEntry(meshEntry,grp_cmpt,"pool",m)
+            else:
+                if isinstance(element(m.parent),EnzBase):
+                    populateMeshEntry(meshEntry,compt,"cplx",m)
+                else:
+                    populateMeshEntry(meshEntry,compt,"pool",m)
+        
+        for r in wildcardFind(compt.path+'/##[ISA=ReacBase]'):
+            rgrp_cmpt = findGroup_compt(r)
+            if isinstance(element(rgrp_cmpt),Neutral):
+                populateMeshEntry(meshEntry,rgrp_cmpt,"reaction",r)
+            else:
+                populateMeshEntry(meshEntry,compt,"reaction",r)
+        
+        for e in wildcardFind(compt.path+'/##[ISA=EnzBase]'):
+            egrp_cmpt = findGroup_compt(e)
+            if isinstance(element(egrp_cmpt),Neutral):
+                populateMeshEntry(meshEntry,egrp_cmpt,"enzyme",e)
+            else:
+                populateMeshEntry(meshEntry,compt,"enzyme",e)
+
+        for f in wildcardFind(compt.path+'/##[ISA=Function]'):
+            fgrp_cmpt = findGroup_compt(f)
+            if isinstance(element(fgrp_cmpt),Neutral):
+                populateMeshEntry(meshEntry,fgrp_cmpt,"function",f)
+            else:
+                populateMeshEntry(meshEntry,compt,"function",f)
+
+        for t in wildcardFind(compt.path+'/##[ISA=StimulusTable]'):
+            tgrp_cmpt = findGroup_compt(t)
+            if isinstance(element(tgrp_cmpt),Neutral):
+                populateMeshEntry(meshEntry,tgrp_cmpt,"stimTab",t)
+            else:
+                populateMeshEntry(meshEntry,compt,"stimTab",t)
+    return(objPar,meshEntry)
 
 def setupMeshObj(modelRoot):
     ''' Setup compartment and its members pool,reaction,enz cplx under self.meshEntry dictionaries \ 
@@ -20,6 +156,117 @@ def setupMeshObj(modelRoot):
     ymin = 0.0
     ymax = 1.0
     positionInfoExist = True
+    meshEntry = {}
+    if meshEntry:
+        meshEntry.clear()
+    else:
+        meshEntry = {}
+    xcord = []
+    ycord = []
+    n = 1
+    objPar = collections.OrderedDict()
+    
+    for compt in wildcardFind(modelRoot+'/##[ISA=ChemCompt]'):
+        groupColor = []
+        try:
+            value = meshEntry[element(compt)]
+        except KeyError:
+            # Compt  is not present
+            meshEntry[element(compt)] = {}
+            objPar[element(compt)] = element('/')
+
+        for grp in wildcardFind(compt.path+'/##[TYPE=Neutral]'):
+            test = [x for x in wildcardFind(element(grp).path+'/#') if x.className in ["Pool","Reac","Enz"]]
+            #if len(test) >1:
+            grpinfo = Annotator(element(grp).path+'/info')
+            validatecolor = colorCheck(grpinfo.color,"bg")
+            validatedgrpcolor = str(QColor(validatecolor).name())
+
+            groupColor.append(validatedgrpcolor)
+            grp_cmpt = findGroup_compt(grp.parent)    
+
+            try:
+                value = meshEntry[element(grp)]
+            except KeyError:
+                # Grp is not present
+                meshEntry[element(grp)] = {}
+                objPar[element(grp)] = element(grp_cmpt)
+                # if n > 1:
+                #     validatecolor = colorCheck(grpinfo.color,"bg")
+                #     validatedgrpcolor = str(QColor(validatecolor).name())
+                #     if validatedgrpcolor in groupColor:
+                #         print " inside "
+                #         c = getRandColor()
+                #         print " c ",c, c.name()
+                #         grpinfo.color = str(c.name())
+                #         groupColor.append(str(c.name()))
+                # print " groupColor ",grpinfo,grpinfo.color, groupColor
+                # n =n +1
+    for compt in wildcardFind(modelRoot+'/##[ISA=ChemCompt]'):
+        for m in wildcardFind(compt.path+'/##[ISA=PoolBase]'):
+            if not re.search("xfer",m.name):
+                grp_cmpt = findGroup_compt(m)
+                xcord.append(xyPosition(m.path+'/info','x'))
+                ycord.append(xyPosition(m.path+'/info','y'))
+                if isinstance(element(grp_cmpt),Neutral):
+                    if isinstance(element(m.parent),EnzBase):
+                        populateMeshEntry(meshEntry,grp_cmpt,"cplx",m)
+                    else:
+                        populateMeshEntry(meshEntry,grp_cmpt,"pool",m)
+                else:
+                    if isinstance(element(m.parent),EnzBase):
+                        populateMeshEntry(meshEntry,compt,"cplx",m)
+                    else:
+                        populateMeshEntry(meshEntry,compt,"pool",m)
+        
+        for r in wildcardFind(compt.path+'/##[ISA=ReacBase]'):
+            rgrp_cmpt = findGroup_compt(r)
+            xcord.append(xyPosition(r.path+'/info','x'))
+            ycord.append(xyPosition(r.path+'/info','y'))
+            if isinstance(element(rgrp_cmpt),Neutral):
+                populateMeshEntry(meshEntry,rgrp_cmpt,"reaction",r)
+            else:
+                populateMeshEntry(meshEntry,compt,"reaction",r)
+        
+        for e in wildcardFind(compt.path+'/##[ISA=EnzBase]'):
+            egrp_cmpt = findGroup_compt(e)
+            xcord.append(xyPosition(e.path+'/info','x'))
+            ycord.append(xyPosition(e.path+'/info','y'))
+
+            if isinstance(element(egrp_cmpt),Neutral):
+                populateMeshEntry(meshEntry,egrp_cmpt,"enzyme",e)
+            else:
+                populateMeshEntry(meshEntry,compt,"enzyme",e)
+
+        for f in wildcardFind(compt.path+'/##[ISA=Function]'):
+            fgrp_cmpt = findGroup_compt(f)
+            if isinstance(element(fgrp_cmpt),Neutral):
+                populateMeshEntry(meshEntry,fgrp_cmpt,"function",f)
+            else:
+                populateMeshEntry(meshEntry,compt,"function",f)
+
+        for t in wildcardFind(compt.path+'/##[ISA=StimulusTable]'):
+            tgrp_cmpt = findGroup_compt(t)
+            xcord.append(xyPosition(t.path+'/info','x'))
+            ycord.append(xyPosition(t.path+'/info','y'))
+            if isinstance(element(tgrp_cmpt),Neutral):
+                populateMeshEntry(meshEntry,tgrp_cmpt,"stimTab",t)
+            else:
+                populateMeshEntry(meshEntry,compt,"stimTab",t)
+    
+    xmin = min(xcord)
+    xmax = max(xcord)
+    ymin = min(ycord)
+    ymax = max(ycord)
+    positionInfoExist = not(len(np.nonzero(xcord)[0]) == 0 and len(np.nonzero(ycord)[0]) == 0)
+    return(objPar,meshEntry,xmin,xmax,ymin,ymax,positionInfoExist)
+'''
+def setupMeshObj(modelRoot):
+    # Setup compartment and its members pool,reaction,enz cplx under self.meshEntry dictionaries \ 
+    # self.meshEntry with "key" as compartment, 
+    # value is key2:list where key2 represents moose object type,list of objects of a perticular type
+    # e.g self.meshEntry[meshEnt] = { 'reaction': reaction_list,'enzyme':enzyme_list,'pool':poollist,'cplx': cplxlist }
+    
     meshEntry = {}
     if meshEntry:
         meshEntry.clear()
@@ -47,17 +294,8 @@ def setupMeshObj(modelRoot):
             for m in mol_cpl:
                 if isinstance(element(m.parent),CplxEnzBase):
                     cplxlist.append(m)
-                    objInfo = m.parent.path+'/info'
                 elif isinstance(element(m),moose.PoolBase):
                     mollist.append(m)
-                    objInfo =m.path+'/info'
-                xcord.append(xyPosition(objInfo,'x'))
-                ycord.append(xyPosition(objInfo,'y')) 
-
-            getxyCord(xcord,ycord,funclist)
-            getxyCord(xcord,ycord,enzlist)
-            getxyCord(xcord,ycord,realist)
-            getxyCord(xcord,ycord,tablist)
 
             meshEntry[meshEnt] = {'enzyme':enzlist,
                                   'reaction':realist,
@@ -66,32 +304,22 @@ def setupMeshObj(modelRoot):
                                   'table':tablist,
                                   'function':funclist
                                   }
-            xmin = min(xcord)
-            xmax = max(xcord)
-            ymin = min(ycord)
-            ymax = max(ycord)
-            positionInfoExist = not(len(np.nonzero(xcord)[0]) == 0 \
-                and len(np.nonzero(ycord)[0]) == 0)
-    return(meshEntry,xmin,xmax,ymin,ymax,positionInfoExist)
+
+        for mert in [mollist,enzlist,realist,tablist]:
+            for merts in mert:
+                objInfo = merts.path+'/info'
+                if exists(objInfo):
+                    xcord.append(element(objInfo).x)
+                    ycord.append(element(objInfo).y)
+    return(meshEntry,xcord,ycord)
 
 def sizeHint(self):
     return QtCore.QSize(800,400)
-
-def getxyCord(xcord,ycord,list1):
-    for item in list1:
-        # if isinstance(item,Function):
-        #     objInfo = moose.element(item.parent).path+'/info'
-        # else:
-        #     objInfo = item.path+'/info'
-        if not isinstance(item,Function):
-            objInfo = item.path+'/info'
-            xcord.append(xyPosition(objInfo,'x'))
-            ycord.append(xyPosition(objInfo,'y'))
-
+'''
 def setupItem(modelPath,cntDict):
-    '''This function collects information of what is connected to what. \
-    eg. substrate and product connectivity to reaction's and enzyme's \
-    sumtotal connectivity to its pool are collected '''
+    # This function collects information of what is connected to what. \
+    # eg. substrate and product connectivity to reaction's and enzyme's \
+    # sumtotal connectivity to its pool are collected 
     #print " setupItem"
     sublist = []
     prdlist = []
@@ -112,7 +340,7 @@ def setupItem(modelPath,cntDict):
                 uniqItem,countuniqItem = countitems(items,'prd')
                 prdNo = uniqItem
                 if (len(subNo) == 0 or len(prdNo) == 0):
-                    print("Substrate Product is empty ",path, " ",items)
+                    print ("Substrate Product is empty ",path, " ",items)
                     
                 for prd in uniqItem:
                     prdlist.append((element(prd),'p',countuniqItem[prd]))
@@ -145,20 +373,6 @@ def setupItem(modelPath,cntDict):
                     prdlist.append((element(funcpar),'stp',countuniqItem[funcpar]))
                 cntDict[items] = sublist,prdlist
 
-        # elif baseObj == 'Function':
-        #     #ZombieSumFunc adding inputs
-        #     inputlist = []
-        #     outputlist = []
-        #     funplist = []
-        #     nfunplist = []
-        #     for items in wildcardFind(path):
-        #         for funplist in moose.element(items).neighbors['valueOut']:
-        #             for func in funplist:
-        #                 funcx = moose.element(items.path+'/x[0]')
-        #                 uniqItem,countuniqItem = countitems(funcx,'input')
-        #                 for inPut in uniqItem:
-        #                     inputlist.append((inPut,'st',countuniqItem[inPut]))
-        #             cntDict[func] = inputlist
         else:
             for tab in wildcardFind(path):
                 tablist = []
@@ -169,33 +383,58 @@ def setupItem(modelPath,cntDict):
 
 def countitems(mitems,objtype):
     items = []
-    #print "mitems in countitems ",mitems,objtype
     items = element(mitems).neighbors[objtype]
     uniqItems = set(items)
-    countuniqItems = Counter(items)
+    #countuniqItemsauto = Counter(items)
+    countuniqItems = dict((i, items.count(i)) for i in items)
     return(uniqItems,countuniqItems)
 
+def recalculatecoordinatesforKkit(mObjlist,xcord,ycord):
+    positionInfoExist = not(len(np.nonzero(xcord)[0]) == 0 \
+                        and len(np.nonzero(ycord)[0]) == 0)
+
+    if positionInfoExist:
+        #Here all the object has been taken now recalculate and reassign back x and y co-ordinates
+        xmin = min(xcord)
+        xmax = max(xcord)
+        ymin = min(ycord)
+        ymax = max(ycord)
+        for merts in mObjlist:
+            objInfo = merts.path+'/info'
+            if moose.exists(objInfo):
+                Ix = (xyPosition(objInfo,'x')-xmin)/(xmax-xmin)
+                Iy = (ymin-xyPosition(objInfo,'y'))/(ymax-ymin)
+                element(objInfo).x = Ix*1000
+                element(objInfo).y = Iy*800  
+        
+def xyPosition(objInfo,xory):
+    try:
+        return(float(element(objInfo).getField(xory)))
+    except ValueError:
+        return (float(0))
+
+                                    
 def autoCoordinates(meshEntry,srcdesConnection):
-    xmin = 0.0
-    xmax = 1.0
-    ymin = 0.0
-    ymax = 1.0
+   
     G = nx.Graph()
-    for cmpt,memb in list(meshEntry.items()):
-        for enzObj in find_index(memb,'enzyme'):
-            #G.add_node(enzObj.path)
-            G.add_node(enzObj.path,label='',shape='ellipse',color='',style='filled',fontname='Helvetica',fontsize=12,fontcolor='blue')
-    for cmpt,memb in list(meshEntry.items()):
-        for poolObj in find_index(memb,'pool'):
-            #G.add_node(poolObj.path)
-            G.add_node(poolObj.path,label = poolObj.name,shape = 'box',color = '',style = 'filled',fontname = 'Helvetica',fontsize = 12,fontcolor = 'blue')
-        for cplxObj in find_index(memb,'cplx'):
-            G.add_node(cplxObj.path)
-            G.add_node(cplxObj.path,label = cplxObj.name,shape = 'box',color = '',style = 'filled',fontname = 'Helvetica',fontsize = 12,fontcolor = 'blue')
-            #G.add_edge((cplxObj.parent).path,cplxObj.path)
-        for reaObj in find_index(memb,'reaction'):
-            #G.add_node(reaObj.path)
-            G.add_node(reaObj.path,label='',shape='circle',color='')
+    for cmpt,memb in meshEntry.items():
+        if memb in ["enzyme"]:
+            for enzObj in find_index(memb,'enzyme'):
+                #G.add_node(enzObj.path)
+                G.add_node(enzObj.path,label='',shape='ellipse',color='',style='filled',fontname='Helvetica',fontsize=12,fontcolor='blue')
+    for cmpt,memb in meshEntry.items():
+        #if memb.has_key
+        if memb in ["pool","cplx","reaction"]:
+            for poolObj in find_index(memb,'pool'):
+                #G.add_node(poolObj.path)
+                G.add_node(poolObj.path,label = poolObj.name,shape = 'box',color = '',style = 'filled',fontname = 'Helvetica',fontsize = 9,fontcolor = 'blue')
+            for cplxObj in find_index(memb,'cplx'):
+                G.add_node(cplxObj.path)
+                G.add_node(cplxObj.path,label = cplxObj.name,shape = 'box',color = '',style = 'filled',fontname = 'Helvetica',fontsize = 12,fontcolor = 'blue')
+                #G.add_edge((cplxObj.parent).path,cplxObj.path)
+            for reaObj in find_index(memb,'reaction'):
+                #G.add_node(reaObj.path)
+                G.add_node(reaObj.path,label='',shape='circle',color='')
         
     for inn,out in list(srcdesConnection.items()):
         if (inn.className =='ZombieReac'): arrowcolor = 'green'
@@ -203,47 +442,44 @@ def autoCoordinates(meshEntry,srcdesConnection):
         else: arrowcolor = 'blue'
         if isinstance(out,tuple):
             if len(out[0])== 0:
-                print(inn.className + ':' +inn.name + "  doesn't have input message")
+                print (inn.className + ':' +inn.name + "  doesn't have input message")
             else:
                 for items in (items for items in out[0] ):
                     G.add_edge(element(items[0]).path,inn.path)
             if len(out[1]) == 0:
-                print(inn.className + ':' + inn.name + "doesn't have output mssg")
+                print (inn.className + ':' + inn.name + "doesn't have output mssg")
             else:
                 for items in (items for items in out[1] ):
                     G.add_edge(inn.path,element(items[0]).path)
         elif isinstance(out,list):
             if len(out) == 0:
-                print("Func pool doesn't have sumtotal")
+                print ("Func pool doesn't have sumtotal")
             else:
                 for items in (items for items in out ):
                     G.add_edge(element(items[0]).path,inn.path)
-    
-    #nx.draw(G,pos=nx.spring_layout(G))
-    #position = nx.spring_layout(G)
-    #import matplotlib.pyplot as plt
-    #plt.savefig('/home/harsha/Trash/Trash_SBML/test.png')
-    position = nx.graphviz_layout(G, prog = 'dot')
-    #agraph = nx.to_agraph(G)
-    #agraph.draw("test.png", format = 'png', prog = 'dot')
-    xcord = []
-    ycord = []
-    
-    for item in list(position.items()):
+    position = graphviz_layout(G)
+    xcord, ycord = [],[]
+    for item in position.items():
         xy = item[1]
-        ann = moose.Annotator(item[0]+'/info')
-        ann.x = xy[0]
-        xcord.append(xy[0])
-        ann.y = xy[1]
-        ycord.append(xy[1])
+        xroundoff = round(xy[0],0)
+        yroundoff = round(xy[1],0)
+        xcord.append(xroundoff)
+        ycord.append(yroundoff)
     
-    if xcord and ycord:
-        xmin = min(xcord)
-        xmax = max(xcord)
-        ymin = min(ycord)
-        ymax = max(ycord)    	    
-    return(xmin,xmax,ymin,ymax,position)
-
+    xmin = min(xcord)
+    xmax = max(xcord)
+    ymin = min(ycord)
+    ymax = max(ycord)
+    for item in position.items():
+        xy = item[1]
+        anno = Annotator(item[0]+'/info')
+        Ax = (xy[0]-xmin)/(xmax-xmin)
+        Ay = (xy[1]-ymin)/(ymax-ymin)
+        #anno.x = round(Ax,1)
+        #anno.y = round(Ay,1)
+        #not roundingoff to max and min the co-ordinates for bigger model would overlay the co-ordinates
+        anno.x = xy[0]
+        anno.y = xy[1]
 def find_index(value, key):
     """ Value.get(key) to avoid expection which would raise if empty value in dictionary for a given key """
     if value.get(key) != None:

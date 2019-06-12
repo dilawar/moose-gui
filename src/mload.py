@@ -2,12 +2,12 @@
 #
 # Filename: mload.py
 # Description:
-# Author:
-# Maintainer:
+# Author: Subhasis
+# Maintainer:HarshaRani
 # Created: Fri Feb  8 09:38:40 2013 (+0530)
 # Version:
-# Last-Updated: Wed May 22 12:16:35 2013 (+0530)
-#           By: subha
+# Last-Updated: Wed Oct 5 15:16:35 2017 (+0530)
+#           By: HarshaRani
 #     Update #: 213
 # URL:
 # Keywords:
@@ -44,7 +44,12 @@
 #
 
 # Code:
-
+'''
+Oct 5 : check is made for kkit model
+        -- Atleast one compartment should exists
+        -- Atleast 2 pool should exists
+Oct 4 : clean up for python3
+'''
 import moose
 from moose import neuroml
 from . import mtypes
@@ -55,7 +60,9 @@ from os.path import splitext
 from PyQt4 import QtGui, QtCore, Qt
 from .plugins.setsolver import *
 from moose.SBML import *
-
+from plugins.kkitOrdinateUtil import *
+import moose._moose as moose
+import moose.utils as mutils
 def loadGenCsp(target,filename,solver="gsl"):
     target = target.replace(" ", "")
     path = '/'+target
@@ -66,7 +73,7 @@ def loadGenCsp(target,filename,solver="gsl"):
         moose.delete(mpath)
     modelpath1 = moose.Neutral('%s' %(target))
     modelpath = moose.Neutral('%s/%s' %(modelpath1.path,"model"))
-    model = moose.loadModel(filename, modelpath.path,solver)
+    model = mutils.loadModel(filename, modelpath.path,solver)
     
     if not moose.exists(modelpath1.path+'/data'):
         graphspath = moose.Neutral('%s/%s' %(modelpath1.path,"data"))
@@ -117,7 +124,10 @@ def loadFile(filename, target, solver="gsl", merge=True):
 
     modelroot: root element of the model, None if could not be located - as is the case with Python scripts
     """
+    loaderror = ""
     num = 1
+    libsfound = True
+    model = '/'
     newTarget = target
     while moose.exists(newTarget):
         newTarget = target + "-" + str(num)
@@ -127,13 +137,13 @@ def loadFile(filename, target, solver="gsl", merge=True):
     with open(filename, 'rb') as infile:
         istext = mtypes.istextfile(infile)
     if not istext:
-        print('Cannot handle any binary formats yet')
+        print ('Cannot handle any binary formats yet')
         return None
-    parent, child = posixpath.split(target)
-    p = moose.Neutral(parent)
-    if not merge and p.path != '/':
-        for ch in p.children:
-            moose.delete(ch)
+    # parent, child = posixpath.split(target)
+    # p = moose.Neutral(parent)
+    # if not merge and p.path != '/':
+    #     for ch in p.children:
+    #         moose.delete(ch)
     try:
         modeltype = mtypes.getType(filename)
         subtype = mtypes.getSubtype(filename, modeltype)
@@ -146,16 +156,47 @@ def loadFile(filename, target, solver="gsl", merge=True):
     if modeltype == 'genesis':
         if subtype == 'kkit' or subtype == 'prototype':
             model,modelpath = loadGenCsp(target,filename,solver)
+            xcord,ycord = [],[]
             if moose.exists(moose.element(modelpath).path):
-                moose.Annotator(moose.element(modelpath).path+'/info').modeltype = "kkit"
-            else:
-                print(" path doesn't exists")
-            moose.le(modelpath)
+                process = True
+                compt = len(moose.wildcardFind(modelpath+'/##[ISA=CubeMesh]'))
+                if not compt:
+                    loaderror = "Model has no compartment, atleast one compartment should exist to display the widget"
+                    process = False
+                else:
+                    p = len(moose.wildcardFind(modelpath+'/##[ISA=PoolBase]'))
+                    if p < 2:
+                        loaderror = "Model has no pool, atleast two pool should exist to display the widget"
+                        process = False
+            if process:
+                if moose.exists(moose.element(modelpath).path):
+                    mObj = moose.wildcardFind(moose.element(modelpath).path+'/##[ISA=PoolBase]'+','+
+                                              moose.element(modelpath).path+'/##[ISA=ReacBase]'+','+
+                                              moose.element(modelpath).path+'/##[ISA=EnzBase]'+','+
+                                              moose.element(modelpath).path+'/##[ISA=StimulusTable]')
+                    for p in mObj:
+                        if not isinstance(moose.element(p.parent),moose.CplxEnzBase):
+                            xcord.append(moose.element(p.path+'/info').x)
+                            ycord.append(moose.element(p.path+'/info').y)
+                    recalculatecoordinatesforKkit(mObj,xcord,ycord)
+
+                    for ememb in moose.wildcardFind(moose.element(modelpath).path+'/##[ISA=EnzBase]'):
+                        objInfo = ememb.path+'/info'
+                        #Enzyme's textcolor (from kkit) will be bgcolor (in moose)
+                        if moose.exists(objInfo):
+                            bgcolor = moose.element(objInfo).color
+                            moose.element(objInfo).color = moose.element(objInfo).textColor
+                            moose.element(objInfo).textColor = bgcolor
+                    moose.Annotator(moose.element(modelpath).path+'/info').modeltype = "kkit"
+                else:
+                    print (" path doesn't exists")
+                #moose.le(modelpath)
         else:
-            print('Only kkit and prototype files can be loaded.')
-    
+            print ('Only kkit and prototype files can be loaded.')
+        
     elif modeltype == 'cspace':
             model,modelpath = loadGenCsp(target,filename)
+            
             if moose.exists(modelpath):
                 moose.Annotator((moose.element(modelpath).path+'/info')).modeltype = "cspace"
             addSolver(modelpath,'gsl')
@@ -184,13 +225,21 @@ def loadFile(filename, target, solver="gsl", merge=True):
 
             # moose.move("cells/", cell.path)
         elif subtype == 'sbml':
-            if target != '/':
-                if moose.exists(target):
-                    moose.delete(target)
-            model = mooseReadSBML(filename,target)
-            if moose.exists(moose.element(model).path):
-                moose.Annotator(moose.element(model).path+'/info').modeltype = "sbml"
-            addSolver(target,'gsl')
+            foundLibSBML_ = False
+            try:
+                import libsbml
+                foundLibSBML_ = True
+            except ImportError:
+                pass
+            if foundLibSBML_:
+                if target != '/':
+                    if moose.exists(target):
+                        moose.delete(target)
+                model,loaderror = mooseReadSBML(filename,target)
+                if moose.exists(moose.element(model).path):
+                    moose.Annotator(moose.element(model).path+'/info').modeltype = "sbml"
+                addSolver(target,'gsl')
+            libsfound = foundLibSBML_
     else:
         raise FileLoadError('Do not know how to handle this filetype: %s' % (filename))
     moose.setCwe(pwe) # The MOOSE loadModel changes the current working element to newly loaded model. We revert that behaviour
@@ -200,8 +249,9 @@ def loadFile(filename, target, solver="gsl", merge=True):
     # app.restoreOverrideCursor()
     return {'modeltype': modeltype,
             'subtype': subtype,
-            'model': model}
-
+            'model': model,
+            'foundlib' : libsfound,
+            'loaderror' : loaderror}
 
 
 #

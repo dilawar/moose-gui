@@ -1,3 +1,11 @@
+__credits__     =   ["Upi Lab"]
+__author__      =   "Subhasis"
+__license__     =   "GPL3"
+__version__     =   "1.0.0"
+__maintainer__  =   "Subhasis", "HarshaRani","Aviral Goel"
+__email__       =   "goel.aviral@gmail.com"
+__status__      =   "Development"
+__updated__     =   "Jul 26 2017"
 
 PLOT_FIELDS={
     'LeakyIaF':['Vm'],
@@ -10,8 +18,12 @@ PLOT_FIELDS={
     }
 FIELD_UNITS={
     'volume':'m3',
-    'Km':'mM',
+    'Kd' : 'mM',
+    'Km' :'mM',
     'kcat':'s-1',
+    'k1' :'1/# s',
+    'k2' :'s-1',
+    'k3' :'s-1',
     'Vm':'V',
     'conc':'mM',
     'concInit':'mM',

@@ -1,21 +1,65 @@
-"""MWindow.py: 
+# mgui.py ---
+#
+# Filename: mgui.py
+# Description:
+# Author: "Subhasis", "HarshaRani","Aviral Goel"
+# Maintainer: HarshaRani
+# Created: Mon Nov 12 09:38:09 2012 (+0530)
+# Version:
+# Last-Updated: Fri Sep 20 00:54:33 2018 (+0530)
+#           By: Harsha
+#     Update #:
+# URL:
+# Keywords:
+# Compatibility:
+#
+#
 
-Moose Main Window Class.
+# Commentary:
+#
+# The gui driver
+#
+#
 
-"""
-    
-__copyright__        = "Copyright 2016, Me"
-__credits__          = ["NCBS Bangalore"]
-__license__          = "GNU GPL"
-__version__          = "1.0.0"
-__maintainer__       = "Me"
-__email__            = ""
-__status__           = "Development"
+# Change log:
+#
+#
+#
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 3, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; see the file COPYING.  If not, write to
+# the Free Software Foundation, Inc., 51 Franklin Street, Fifth
+# Floor, Boston, MA 02110-1301, USA.
+#
+#
 
-import sys
-import signal
-import os
-import code
+''''
+2018
+Sep 20 : Lot of duplicate code removed
+         Function call made when filename or filepath is passed in command line
+Sep 19 : From the cmd line if a directory is passed, then Gui opens up the dialog file for the folder, 
+         window is resized to maximum width, clean warning message if filename or path is wrong
+         Added model info QmessageBox
+Sep 7  : popup is closed if exist
+2017
+Aug 31 : Pass file from the command to load into gui
+       : added dsolver in disableModel function is used to unset the solver for the model
+         into moose-gui which are not to be run.
+
+Oct 5  : clean up with round trip of dialog_exe
+
+'''
+# Code:
 import imp
 import inspect
 import traceback
@@ -25,6 +69,12 @@ from collections import defaultdict, OrderedDict
 from PyQt4 import QtGui, QtCore, Qt
 from PyQt4 import Qt, QtCore, QtGui
 from PyQt4.QtGui import *
+from MdiArea import MdiArea
+import os
+from moose.chemUtil.add_Delete_ChemicalSolver import *
+#from setsolver import *
+from defines import *
+from collections import OrderedDict
 
 import moose
 from moose import utils
@@ -132,7 +182,81 @@ class MWindow(QtGui.QMainWindow):
         self.setPlugin('default', '/')
         self.plugin.getEditorView().getCentralWidget().parent().close()
         self.popup = None
-        self.createPopup()
+        cmdfilepath = ""
+        try:
+            sys.argv[1]
+        except:
+            pass
+        else:
+            cmdfilepath = os.path.abspath(sys.argv[1])
+
+        try:
+            sys.argv[2]
+        except:
+            solver = 'gsl'
+        else:
+            solver = os.path.abspath(sys.argv[2])
+
+        if cmdfilepath:
+            filepath,fileName = os.path.split(cmdfilepath)
+            modelRoot,extension = os.path.splitext(fileName)
+            if extension == '.py':
+                self.setWindowState(QtCore.Qt.WindowMaximized)
+                self.show()
+                self.createPopup()
+                freeCursor()
+                reply = QtGui.QMessageBox.information(self,"Model file can not open","At present python file cann\'t be laoded into GUI",QtGui.QMessageBox.Ok)
+                if reply == QtGui.QMessageBox.Ok:
+                    QtGui.QApplication.restoreOverrideCursor()
+                    return
+            if not os.path.exists(cmdfilepath):
+                self.setWindowState(QtCore.Qt.WindowMaximized)
+                self.show()
+                self.createPopup()
+                reply = QtGui.QMessageBox.information(self,"Model file can not open","File Not Found \n \nCheck filename or filepath\n ",QtGui.QMessageBox.Ok)
+                if reply == QtGui.QMessageBox.Ok:
+                    QtGui.QApplication.restoreOverrideCursor()
+                    return
+            if os.path.isdir(cmdfilepath):
+                self.setWindowState(QtCore.Qt.WindowMaximized)
+                self.show()
+                self.loadModelDialogFunc(cmdfilepath)
+                
+            else:
+                filePath = filepath+'/'+fileName
+                ret = loadFile(str(filePath), '%s' % (modelRoot), solver, merge=False)
+                #self.objectEditSlot('/',False)
+                self.objectEditSlot(ret['model'].path,False)
+                pluginLookup = '%s/%s' % (ret['modeltype'], ret['subtype'])
+                try:
+                    pluginName = subtype_plugin_map['%s/%s' % (ret['modeltype'], ret['subtype'])]
+                except KeyError:
+                    pluginName = 'default'
+                self.loadedModelsAction(ret['model'].path,pluginName)
+                if len(self._loadedModels)>5:
+                    self._loadedModels.pop(0)
+
+                if not moose.exists(ret['model'].path+'/info'):
+                        moose.Annotator(ret['model'].path+'/info')
+
+                modelAnno = moose.Annotator(ret['model'].path+'/info')
+                if ret['subtype']:
+                    modelAnno.modeltype = ret['subtype']
+                else:
+                    modelAnno.modeltype = ret['modeltype']
+                #modelAnno.dirpath = str(dialog.directory().absolutePath())
+                if moose.exists(ret['model'].path + "/data"):
+                    self.data   = moose.element(ret['model'].path + "/data")
+                    self.data   = moose.Neutral(ret['model'].path + "/data")
+
+                modelAnno.dirpath = str(filepath)
+                self.setPlugin(pluginName, ret['model'].path)
+                self.setWindowState(QtCore.Qt.WindowMaximized)
+                self.show()
+                if pluginName == 'kkit':
+                    self.displaymodelInfo(ret)
+        else: 
+            self.createPopup()
 
     def createPopup(self):
         self.popup = dialog = QDialog(self)
@@ -154,7 +278,20 @@ class MWindow(QtGui.QMainWindow):
         loadNeuronalModelButton  = QPushButton("Load Neuronal Model")
         layout.setContentsMargins(QtCore.QMargins(20,20,20,20))
 
-        self.menuitems = demos.examples_ 
+        self.menuitems = OrderedDict([("Fig2C" ,            "../moose-examples/paper-2015/Fig2_elecModels/Fig2C.py"),
+                                      ("Fig2D (35s)",       "../moose-examples/paper-2015/Fig2_elecModels/Fig2D.py"),
+                                      ("Fig2E" ,            "../moose-examples/paper-2015/Fig2_elecModels/Fig2E.py"),
+                                      ("Fig3B_Gssa",        "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
+                                      ("Fig3C_Gsl",         "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
+                                      ("Fig3D",             "../moose-examples/paper-2015/Fig3_chemModels/Fig3D.py"),
+                                      ("Fig4B",             "../moose-examples/paper-2015/Fig4_ReacDiff/Fig4B.py"  ),
+                                      ("Fig4K",             "../moose-examples/paper-2015/Fig4_ReacDiff/rxdSpineSize.py"),
+                                      ("Fig5A (20s)",       "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5A.py"),
+                                      ("Fig5BCD (240s)" ,   "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5BCD.py"),
+                                      ("Fig6A (60s)",       "../moose-examples/paper-2015/Fig6_NetMultiscale/Fig6A.py" ),
+                                      ("ReducedModel (200s)",   "../moose-examples/paper-2015/Fig6_NetMultiscale/ReducedModel.py"),
+                                      ("Squid" ,            "../moose-examples/squid/squid_demo.py")
+                                     ])
         layout.setContentsMargins(QtCore.QMargins(20,20,20,20))
         layout1 = QHBoxLayout()
         layout1.addWidget(createKineticModelButton)
@@ -170,7 +307,32 @@ class MWindow(QtGui.QMainWindow):
             _logger.debug( "Adding button for %s" % k[0] )
             t = k[0]
             button = QPushButton(k[0])
-            button.setToolTip( demos.description_[ t ] )
+            if k[0] == "Fig2E":
+                button.setToolTip("<span style=\"color:black;\">Illustrates loading a model from an SWC file, inserting  channels, and running it</span>")
+            elif k[0] == "Fig2D (35s)":
+                button.setToolTip("<span style=\"color:black;\">Illustrates loading a model from an SWC file, inserting  spines, and running it</span>")
+            elif k[0] == "Fig2C":
+                button.setToolTip("<span style=\"color:black;\">Illustrates building a panel of multiscale models to test neuronal plasticity in different contexts</span>")    
+            elif k[0] == "Fig3B_Gssa":
+                button.setToolTip("<span style=\"color:black;\">Loades Repressilator model into Gui with Gssa solver and runs the model</span>")
+            elif k[0] == "Fig3C_Gsl":
+                button.setToolTip("<span style=\"color:black;\">Loades Repressilator model into Gui with Gsl solver and runs the model</span>")
+            elif k[0] == "Fig3D":
+                button.setToolTip("<span style=\"color:black;\">This example implements a reaction-diffusion like system which is bistable and propagates losslessly</span>")
+            elif k[0] == "Fig4B":
+                button.setToolTip("<span style=\"color:black;\">This program builds a multiscale model with a few spines inserted into a simplified cellular morphology. Each spine has a signaling model in it too. The program doesn't run the model, it just displays it in 3D</span>")
+            elif k[0] == "Fig4K":
+                button.setToolTip("<span style=\"color:black;\">Builds a cell with spines and a propagating reaction wave</span>")
+            elif k[0] == "Fig5A (20s)":
+                button.setToolTip("<span style=\"color:black;\">Illustrates building a panel of multiscale models to test neuronal plasticity in different contexts</span>")
+            elif k[0] == "Fig5BCD (240s)":
+                button.setToolTip("<span style=\"color:black;\">Illustrates building a panel of multiscale models to test neuronal plasticity in different contexts</span>")
+            elif k[0] == "Fig6A (60s)":
+                button.setToolTip("<span style=\"color:black;\">This LIF network with Ca plasticity is based on: Memory Maintenance in Synapses with Calcium-Based Plasticity in the Presence of Background Activity PLOS Computational Biology, 2014</span>")
+            elif k[0] == "ReducedModel (200s)":
+                button.setToolTip("<span style=\"color:black;\">This is the Reduced version of LIF network with Ca plasticity model based on: Memory Maintenance in Synapses with Calcium-Based Plasticity in the Presence of Background Activity PLOS Computational Biology, 2014</span>")
+            elif k[0] == "Squid":
+                button.setToolTip("<span style=\"color:black;\">squid Demo</span>")
             if k[0] in ["Fig2E","Fig2D (35s)","Fig2C"]:
                 layout2.addWidget(button)
             elif k[0] in ["Fig3B_Gssa","Fig3C_Gsl","Fig3D"]:
@@ -179,7 +341,7 @@ class MWindow(QtGui.QMainWindow):
                 layout4.addWidget(button)
             elif k[0] in ["Fig5A (20s)","Fig5BCD (240s)"]:
                 layout5.addWidget(button)
-            elif k[0] in ["Fig6A (60s)","Reduced6 (200s)"]:
+            elif k[0] in ["Fig6A (60s)","ReducedModel (200s)"]:
                 layout6.addWidget(button)
             elif k[0] in ["Squid"]:
                 layout7.addWidget(button)
@@ -214,6 +376,7 @@ class MWindow(QtGui.QMainWindow):
             self.popup.hide()
         abspath = os.path.abspath(filepath)
         directory, modulename = os.path.split(abspath)
+
         modelName = os.path.splitext(modulename)[0]
         ret = mload.loadFile(str(abspath),'%s' %(modelName),solver,merge=False)
         self.setPlugin("kkit", ret["model"].path)
@@ -379,7 +542,8 @@ class MWindow(QtGui.QMainWindow):
         
                 if compts:
                     #setCompartmentSolver(self._loadedModels[i][0],"gsl")
-                    addSolver(self._loadedModels[i][0],"gsl")
+                    mooseAddChemSolver(self._loadedModels[i][0],"gsl")
+                    #addSolver(self._loadedModels[i][0],"gsl")
                 else:
                     c.tickDt[7] = self._loadedModels[i][3]
                     c.tickDt[8] = self._loadedModels[i][4]
@@ -410,7 +574,6 @@ class MWindow(QtGui.QMainWindow):
         if name == 'kkit':
             self.objectEditDockWidget.objectNameChanged.connect(self.plugin.getEditorView().getCentralWidget().updateItemSlot)
             self.objectEditDockWidget.colorChanged.connect(self.plugin.getEditorView().getCentralWidget().updateColorSlot)
-
         self.setCurrentView('editor')
         freeCursor()
         return self.plugin
@@ -484,7 +647,8 @@ class MWindow(QtGui.QMainWindow):
         self.plugin.setCurrentView(view)
         if view =='run':
             #Harsha: This will clear out object editor's objectpath and make it invisible
-            self.objectEditSlot('/',False)
+            #self.objectEditSlot('/',False)
+            self.objectEditDockWidget.setVisible(False)
 
         targetView = None
         newSubWindow = True
@@ -560,6 +724,79 @@ class MWindow(QtGui.QMainWindow):
             self.loadModelAction.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+O", None, QtGui.QApplication.UnicodeUTF8))
             self.connect(self.loadModelAction, QtCore.SIGNAL('triggered()'), self.loadModelDialogSlot)
         self.fileMenu.addAction(self.loadModelAction)
+
+        if not hasattr(self, 'Paper_2015'):
+            self.menuitems = OrderedDict([
+                                        ("Fig2C (6s)" ,     "../moose-examples/paper-2015/Fig2_elecModels/Fig2C.py"),
+                                        ("Fig2D (35s)",     "../moose-examples/paper-2015/Fig2_elecModels/Fig2D.py"),
+                                        ("Fig2E (5s)" ,     "../moose-examples/paper-2015/Fig2_elecModels/Fig2E.py"),
+                                        ("Fig3B_Gssa (2s)", "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
+                                        ("Fig3C_Gsl (2s)",  "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
+                                        ("Fig3D (1s)",      "../moose-examples/paper-2015/Fig3_chemModels/Fig3D.py"),
+                                        ("Fig4B (10s)",     "../moose-examples/paper-2015/Fig4_ReacDiff/Fig4B.py"  ),
+                                        ("Fig4K",           "../moose-examples/paper-2015/Fig4_ReacDiff/rxdSpineSize.py"),
+                                        ("Fig5A (20s)",     "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5A.py"),
+                                        ("Fig5BCD (240s)" , "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5BCD.py"),
+                                        ("Fig6A (60s)",     "../moose-examples/paper-2015/Fig6_NetMultiscale/Fig6A.py" ),
+                                        ("ReducedModel (200s)", "../moose-examples/paper-2015/Fig6_NetMultiscale/ReducedModel.py"),
+                                        ("Squid" ,          "../moose-examples/squid/squid_demo.py")
+                                     ])
+            self.subMenu = QtGui.QMenu('Demos')
+            for i in range(0,len(self.menuitems)):
+                k = self.menuitems.popitem(0)
+                if k[0] == "Fig2C (6s)":
+                    self.Fig2Caction = QtGui.QAction('Fig2C (6s)', self)
+                    self.Fig2Caction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig2_elecModels/Fig2C.py'))
+                    self.subMenu.addAction(self.Fig2Caction)
+                elif k[0] == "Fig2D (35s)":
+                    self.Fig2Daction = QtGui.QAction('Fig2D (35s)', self)
+                    self.Fig2Daction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig2_elecModels/Fig2D.py'))
+                    self.subMenu.addAction(self.Fig2Daction)
+                elif k[0] == "Fig2E (5s)":
+                    self.Fig2Eaction = QtGui.QAction('Fig2E (5s)', self)
+                    self.Fig2Eaction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig2_elecModels/Fig2E.py'))
+                    self.subMenu.addAction(self.Fig2Eaction)
+                elif k[0] == "Fig3B_Gssa (2s)":
+                    self.Fig3B_Gssaaction = QtGui.QAction('Fig3B_Gssa (2s)', self)
+                    self.Fig3B_Gssaaction.triggered.connect(lambda :self.run_genesis_script('../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g',"gssa"))
+                    self.subMenu.addAction(self.Fig3B_Gssaaction)
+                elif k[0] == "Fig3C_Gsl (2s)":
+                    self.Fig3C_Gslaction = QtGui.QAction('Fig3C_Gsl (2s)', self)
+                    self.Fig3C_Gslaction.triggered.connect(lambda :self.run_genesis_script('../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g',"gsl"))
+                    self.subMenu.addAction(self.Fig3C_Gslaction)
+                elif k[0] == "Fig3D (1s)":
+                    self.Fig3Daction = QtGui.QAction('Fig3D (1s)', self)
+                    self.Fig3Daction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig3_chemModels/Fig3D.py'))
+                    self.subMenu.addAction(self.Fig3Daction)
+                elif k[0] == "Fig4B (10s)":
+                    self.Fig4Baction = QtGui.QAction('Fig4B (10s)', self)
+                    self.Fig4Baction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig4_ReacDiff/Fig4B.py'))
+                    self.subMenu.addAction(self.Fig4Baction)
+                elif k[0] == "Fig4K":
+                    self.Fig4Kaction = QtGui.QAction('Fig4K', self)
+                    self.Fig4Kaction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig4_ReacDiff/rxdSpineSize.py'))
+                    self.subMenu.addAction(self.Fig4Kaction)
+                elif k[0] == "Fig5A (20s)":
+                    self.Fig5Aaction = QtGui.QAction('Fig5A (20s)', self)
+                    self.Fig5Aaction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5A.py'))
+                    self.subMenu.addAction(self.Fig5Aaction)
+                elif k[0] == "Fig5BCD (240s)":
+                    self.Fig5BCDaction = QtGui.QAction('Fig5BCD (240s)', self)
+                    self.Fig5BCDaction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5BCD.py'))
+                    self.subMenu.addAction(self.Fig5BCDaction)
+                elif k[0] == "Fig6A (60s)":
+                    self.Fig6Aaction = QtGui.QAction('Fig6A (60s)', self)
+                    self.Fig6Aaction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig6_NetMultiscale/Fig6A.py'))
+                    self.subMenu.addAction(self.Fig6Aaction)
+                elif k[0] == "ReducedModel (200s)":
+                    self.ReducedModelaction = QtGui.QAction('ReducedModel (200s)', self)
+                    self.ReducedModelaction.triggered.connect(lambda :self.run_python_script('../moose-examples/paper-2015/Fig6_NetMultiscale/ReducedModel.py'))
+                    self.subMenu.addAction(self.ReducedModelaction)
+                else:
+                    self.Squidaction = QtGui.QAction('Squid', self)
+                    self.Squidaction.triggered.connect(lambda :self.run_python_script('../moose-examples/squid/squid_demo.py'))
+                    self.subMenu.addAction(self.Squidaction)  
+            self.fileMenu.addMenu(self.subMenu)
 
         if not hasattr(self,'loadedModels'):
             self.loadedModelAction = QtGui.QAction('Recently Loaded Models',self)
@@ -865,6 +1102,11 @@ class MWindow(QtGui.QMainWindow):
         self.objectEditDockWidget.setObject(mobj)
         self.objectEditDockWidget.setVisible(visible)
 
+    # def objectEditClearSlot(self):
+    #     #clearning the views which is stored
+    #     self.objectEditDockWidget.clearDict()
+
+
     def loadedModelsAction(self,modelPath,pluginName):
         for model in self._loadedModels:
             self.disableModel(model[0])
@@ -894,6 +1136,9 @@ class MWindow(QtGui.QMainWindow):
             if moose.exists(compt[0].path+'/gsolve'):
                 gsolve = moose.Gsolve( compt[0].path+'/gsolve' )
                 gsolve.tick = -1
+            if moose.exists(compt[0].path+'/dsolve'):
+                dsolve = moose.Dsolve(compt[0].path+'/dsolve')
+                dsolve.tick = -1
             if moose.exists(compt[0].path+'/stoich'):
                 stoich = moose.Stoich( compt[0].path+'/stoich' )
                 stoich.tick = -1
@@ -905,6 +1150,15 @@ class MWindow(QtGui.QMainWindow):
                 solver.tick = -1
         for table in moose.wildcardFind( modelPath+'/data/graph#/#' ):
             table.tick = -1
+
+    def loadModelDialogFunc(self,directorypassed):
+        """ This is from command line the filepath and file name is passed
+        """
+        dialog = LoaderDialog(self,
+                               self.tr('Load model from file'),directorypassed)
+        
+        if dialog.exec_():
+            self.passtoPluginCheck(dialog)
 
     def loadModelDialogSlot(self):
         """Start a file dialog to choose a model file.
@@ -924,42 +1178,52 @@ class MWindow(QtGui.QMainWindow):
         by looking into the model file for a regular expression)
 
         """
-        if self.popup is not None:
+        if self.popup:
             self.popup.close()
         activeWindow = None # This to be used later to refresh the current widget with newly loaded model
         dialog = LoaderDialog(self,
                               self.tr('Load model from file'))
-
         if dialog.exec_():
-            valid = False
-            ret = []
-            ret,pluginName = self.checkPlugin(dialog)
+            self.passtoPluginCheck(dialog)
+
+    def passtoPluginCheck(self, dialog):
+        valid = False
+        ret = []
+        ret,pluginName = self.checkPlugin(dialog)
+        valid,ret = self.dialog_check(ret)
+
+        if valid == True:
+            modelAnno = moose.Annotator(ret['model'].path+'/info')
+            if ret['subtype']:
+                modelAnno.modeltype = ret['subtype']
+            else:
+                modelAnno.modeltype = ret['modeltype']
+            modelAnno.dirpath = str(dialog.directory().absolutePath())
+            self.loadedModelsAction(ret['model'].path,pluginName)
+            self.setPlugin(pluginName, ret['model'].path)
+            
             if pluginName == 'kkit':
-                compt = moose.wildcardFind(ret['model'].path+'/##[ISA=ChemCompt]')
-                if not len(compt):
-                    reply = QtGui.QMessageBox.question(self, "Model is empty","Model has no compartment, atleast one compartment should exist to display the widget\n Do you want another file",
-                                               QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-                    if reply == QtGui.QMessageBox.Yes:
-                        dialog = LoaderDialog(self,self.tr('Load model from file'))
-                        if dialog.exec_():
-                            ret,pluginName = self.checkPlugin(dialog)
-                            ret,valid = self.dialog_check(ret)
-                    else:
-                        QtGui.QApplication.restoreOverrideCursor()        
-                        return
-                else:
-                    valid = True
-            if valid == True:
-                modelAnno = moose.Annotator(ret['model'].path+'/info')
-                if ret['subtype']:
-                    modelAnno.modeltype = ret['subtype']
-                else:
-                    modelAnno.modeltype = ret['modeltype']
-                modelAnno.dirpath = str(dialog.directory().absolutePath())
-                self.loadedModelsAction(ret['model'].path,pluginName)
-                self.setPlugin(pluginName, ret['model'].path)
-                if pluginName == 'kkit':
-                    QtCore.QCoreApplication.sendEvent(self.plugin.getEditorView().getCentralWidget().view, QtGui.QKeyEvent(QtCore.QEvent.KeyPress, Qt.Qt.Key_A, Qt.Qt.NoModifier))
+                self.displaymodelInfo(ret)
+    
+    def displaymodelInfo(self,ret):
+        QtCore.QCoreApplication.sendEvent(self.plugin.getEditorView().getCentralWidget().view, QtGui.QKeyEvent(QtCore.QEvent.KeyPress, Qt.Qt.Key_A, Qt.Qt.NoModifier))
+        
+        noOfCompt = len(moose.wildcardFind(ret['model'].path+'/##[ISA=ChemCompt]'))
+        grp = 0
+        for c in moose.wildcardFind(ret['model'].path+'/##[ISA=ChemCompt]'):
+            noOfGrp   = moose.wildcardFind(moose.element(c).path+'/#[TYPE=Neutral]')
+            grp = grp+len(noOfGrp)
+
+        noOfPool  = len(moose.wildcardFind(ret['model'].path+'/##[ISA=PoolBase]'))
+        noOfFunc  = len(moose.wildcardFind(ret['model'].path+'/##[ISA=Function]'))
+        noOfReac  = len(moose.wildcardFind(ret['model'].path+'/##[ISA=ReacBase]'))
+        noOfEnz   = len(moose.wildcardFind(ret['model'].path+'/##[ISA=EnzBase]'))
+        noOfStimtab  = len(moose.wildcardFind(ret['model'].path+'/##[ISA=StimulusTable]'))
+        
+        reply = QtGui.QMessageBox.information(self,"Model Info","Model has : \n %s Compartment \t \n %s Group \t \n %s Pool  \t \n %s Function \t \n %s reaction \t \n %s Enzyme \t \n %s StimulusTable" %(noOfCompt, grp, noOfPool, noOfFunc, noOfReac, noOfEnz, noOfStimtab))
+        if reply == QtGui.QMessageBox.Ok:
+            QtGui.QApplication.restoreOverrideCursor()
+            return
 
     def checkPlugin(self,dialog):
         fileNames = dialog.selectedFiles()
@@ -973,37 +1237,50 @@ class MWindow(QtGui.QMainWindow):
             self.objectEditSlot('/',False)
             #if subtype is None, in case of cspace then pluginLookup = /cspace/None
             #     which will not call kkit plugin so cleaning to /cspace
-            pluginLookup = '%s/%s' % (ret['modeltype'], ret['subtype'])
+            #pluginLookup = '%s/%s' % (ret['modeltype'], ret['subtype'])
             try:
                 pluginName = subtype_plugin_map['%s/%s' % (ret['modeltype'], ret['subtype'])]
             except KeyError:
                 pluginName = 'default'
-            print(('Loaded model', ret['model'].path))
+            if ret['foundlib']:
+                print ('Loaded model %s' %(ret['model']))
             return ret,pluginName
 
     def dialog_check(self,ret):
+        valid = False
         pluginLookup = '%s/%s' % (ret['modeltype'], ret['subtype'])
         try:
             pluginName = subtype_plugin_map['%s/%s' % (ret['modeltype'], ret['subtype'])]
         except KeyError:
             pluginName = 'default'
+
         if pluginName == 'kkit':
-            compt = moose.wildcardFind(ret['model'].path+'/##[ISA=ChemCompt]')
-            if not len(compt):
-                reply = QtGui.QMessageBox.question(self, "Model is empty","Model has no compartment, atleast one compartment should exist to display the widget\n Do you want another file",
-                                           QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-                if reply == QtGui.QMessageBox.Yes:
-                    dialog = LoaderDialog(self,self.tr('Load model from file'))
-                    if dialog.exec_():
-                        ret,pluginName = self.checkPlugin(dialog)
-                else:
-                    QtGui.QApplication.restoreOverrideCursor()        
-                    return
+            if (ret['subtype'] == 'sbml' and ret['foundlib'] == False):
+                reply = QtGui.QMessageBox.question(self, "python-libsbml is not found.","\n Read SBML is not possible.\n This can be installed using \n \n pip python-libsbml  or \n apt-get install python-libsbml",
+                                           QtGui.QMessageBox.Ok)
+                if reply == QtGui.QMessageBox.Ok:
+                    QtGui.QApplication.restoreOverrideCursor()
+                    return valid, ret
             else:
-                return ret,True
+                if ret['loaderror'] != "":
+                    reply = QtGui.QMessageBox.question(self, "Model can't be loaded", ret['loaderror']+" \n \n Do you want another file",
+                                               QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+                    if reply == QtGui.QMessageBox.Yes:
+                        dialog = LoaderDialog(self,self.tr('Load model from file'))
+                        if dialog.exec_():
+                            pluginName = None
+                            ret,pluginName = self.checkPlugin(dialog)
+                            valid,ret = self.dialog_check(ret)
+                    else:
+                        QtGui.QApplication.restoreOverrideCursor()
+                        return valid,ret
+                else:
+                    valid = True
+        return valid,ret
 
     def newModelDialogSlot(self):
-        if self.popup is not None:
+        #Harsha: Create a new dialog widget for model building
+        if self.popup:
             self.popup.close()
         newModelDialog = DialogWidget()
         if newModelDialog.exec_():
