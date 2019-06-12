@@ -1,82 +1,21 @@
-# mgui.py ---
-#
-# Filename: mgui.py
-# Description:
+# -*- coding: utf-8 -*-
+
 # Author: "Subhasis", "HarshaRani","Aviral Goel"
 # Maintainer: HarshaRani
 # Created: Mon Nov 12 09:38:09 2012 (+0530)
-# Version:
-# Last-Updated: Fri Sep 20 00:54:33 2018 (+0530)
-#           By: Harsha
-#     Update #:
-# URL:
-# Keywords:
-# Compatibility:
-#
-#
 
-# Commentary:
-#
-# The gui driver
-#
-#
-
-# Change log:
-#
-#
-#
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 3, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-# Floor, Boston, MA 02110-1301, USA.
-#
-#
-
-''''
-2018
-Sep 20 : Lot of duplicate code removed
-         Function call made when filename or filepath is passed in command line
-Sep 19 : From the cmd line if a directory is passed, then Gui opens up the dialog file for the folder, 
-         window is resized to maximum width, clean warning message if filename or path is wrong
-         Added model info QmessageBox
-Sep 7  : popup is closed if exist
-2017
-Aug 31 : Pass file from the command to load into gui
-       : added dsolver in disableModel function is used to unset the solver for the model
-         into moose-gui which are not to be run.
-
-Oct 5  : clean up with round trip of dialog_exe
-
-'''
-# Code:
 import imp
 import inspect
 import traceback
 import re
 from collections import defaultdict, OrderedDict
-
 from PyQt5 import QtGui, QtCore, Qt
 from PyQt5 import Qt, QtCore, QtGui
 from PyQt5.QtGui import *
-from MdiArea import MdiArea
-import os
-from moose.chemUtil.add_Delete_ChemicalSolver import *
-#from setsolver import *
-from defines import *
-from collections import OrderedDict
 
+# moose
 import moose
+from moose.chemUtil.add_Delete_ChemicalSolver import *
 from moose import utils
 
 from moosegui import config 
@@ -91,8 +30,9 @@ from moosegui.biomodelsclient import BioModelsClientWidget
 from moosegui.MdiArea import MdiArea
 from moosegui.plugins.setsolver import *
 from moosegui.plugins.defines import *
+from moosegui.MdiArea import MdiArea
+from moosegui.defines import *
 import moosegui.examples as demos
-
 
 # Logger
 _logger = config._logger

@@ -16,7 +16,10 @@ from setuptools import setup
 
 demofiles = []
 
-demoDir = './demos' 
+version_ = '0.1.0'
+
+demoDir = os.path.join(os.path.dirname(__file__), 'demos')
+
 for d, sd, fs in os.walk( demoDir ):
     for f in fs:
         filepath = os.path.join( d, f ).replace( demoDir, '' ) 
@@ -24,7 +27,7 @@ for d, sd, fs in os.walk( demoDir ):
 
 setup(
     name = "moosegui",
-    version = "0.1.0",
+    version = version_,
     description = "Graphical User Interface of MOOSE simulator",
     long_description = open( 'README.md' ).read(),
     packages = [ "moosegui", 'moosegui.plugins', "moosegui.demos"

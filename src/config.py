@@ -1,59 +1,17 @@
-# config.py ---
-#
+# -*- coding: utf-8 -*-
+
 # Filename: config.py
 # Description:
 # Author: Subhasis Ray
 # Maintainer:
 # Created: Sat Feb 13 16:07:56 2010 (+0530)
 # Version:
-# Last-Updated: Wed Nov 12 19:10:08 2014 (+0530)
-#           By: Subhasis Ray
-#     Update #: 369
-# URL:
-# Keywords:
-# Compatibility:
-#
-#
-
-# Commentary:
-#
-# Provides keys for accessing per-user settings.
-# Provides initialization of several per-user variables for MooseGUI.
-# As part of initialization, creates `~/.moose` and `~/moose`
-# directories.
-#
-#
-
-# Change log:
-#
-# 2012-09-22 13:49:36 (+0530) Subha: cleaned up the initialization
-#
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 3, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-# Floor, Boston, MA 02110-1301, USA.
-#
-#
-
-# Code:
 
 import os
 import sys
 import tempfile
 import logging
 import errno
-from PyQt5.Qt import Qt
 from PyQt5 import QtGui, QtCore
 
 # Logger
@@ -123,12 +81,7 @@ def qvalue( qsetting, key ):
     """ Return value as unicode from QSetting object.
     Calling toString is not compatible with python3.
     """
-    qval = qsetting.value( key )
-    try: 
-        val = qval.toString( )
-    except Exception as e:
-        val = str(qval)
-    return unicode(val)
+    return qsetting.value( key )
 
 
 class MooseSetting(dict):
@@ -187,6 +140,5 @@ class MooseSetting(dict):
 
     def itervalues(self):
         return ( qvalue(self.qsettings, key) for key in self.qsettings.allKeys())
-
 
 settings = MooseSetting()

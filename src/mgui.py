@@ -9,12 +9,13 @@ __author__ = 'Subhasis Ray , HarshaRani, Aviral Goel, NCBS Bangalore'
 import sys
 import signal
 
+from PyQt5.QtWidgets import QApplication
 from PyQt5 import QtGui, QtCore, Qt
 from PyQt5 import Qt, QtCore, QtGui
 import posixpath 
 
-from . import config
-from . import MWindow as MWindow
+from moosegui import config
+from moosegui import MWindow as MWindow
 
 app_ = None
 
@@ -26,7 +27,7 @@ def signal_handler( *args  ):
 def main():
     # create the GUI application
     global app_
-    app_ = QtGui.QApplication(sys.argv)
+    app_ = QApplication(sys.argv)
     signal.signal( signal.SIGINT, signal_handler )
     QtGui.qApp = app_
     mWindow =  MWindow.MWindow()
@@ -39,5 +40,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-#
-# moosegui.py ends here
