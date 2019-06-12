@@ -1,9 +1,7 @@
-from __future__ import print_function 
-
 # -*- coding: utf-8 -*-
 
-
-"""Sidebar for plugins. The sidebar comprises of actions.
+"""
+Sidebar for plugins. The sidebar comprises of actions.
 Currently mode, connect and settings are defined.
 """
 
@@ -18,14 +16,14 @@ __status__      =   "Development"
 
 import sys
 import os
-from . import SettingsDialog
 from PyQt5 import QtGui, Qt
-from PyQt5.QtGui import QDialog
-from PyQt5.QtGui import QHBoxLayout
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtGui import QIcon
-from PyQt5.QtGui import QPushButton
-from PyQt5.QtGui import QAction
+from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QAction
+from PyQt5.QtGui import QPixmap, QIcon
+
+from moosegui import SettingsDialog
 
 ICON_DIRECTORY              = "../icons"
 HAND_ICON_FILENAME          = "hand.png"

@@ -1,38 +1,24 @@
-
 # -*- coding: utf-8 -*-
 
-
-"""
-"""
-__credits__     =   ["Upi Lab"]
 __author__      =   "Aviral Goel"
+__credits__     =   ["Upi Lab"]
 __license__     =   "GPL3"
-__version__     =   "1.0.0"
 __maintainer__  =   "Aviral Goel", "HarshaRani"
 __email__       =   "goel.aviral@gmail.com"
-__status__      =   "Development"
-__updated__     =   "Jul 26 2017"
 
 
 import sys
 import os
-import PyQt5
 from PyQt5 import QtGui, Qt
-from PyQt5.QtGui import QWidget
-from PyQt5.QtGui import QSizeGrip
-from PyQt5.QtGui import QDockWidget
-from PyQt5.QtGui import QLayout
-from PyQt5.QtGui import QVBoxLayout
-from PyQt5.QtGui import QGridLayout
-from PyQt5.QtGui import QScrollArea
-from PyQt5.QtGui import QToolBar
-from PyQt5.QtGui import QSizeGrip
-from PyQt5.QtGui import QSplitter
+from PyQt5.QtWidgets import QWidget, QSizeGrip
+from PyQt5.QtWidgets import QDockWidget, QLayout, QVBoxLayout
+from PyQt5.QtWidgets import QGridLayout, QScrollArea, QToolBar
+from PyQt5.QtWidgets import QSizeGrip, QSplitter
+
+from moosegui import default
+from moosegui import sidebar
 
 import moose
-import default
-from . import sidebar
-# from default import PlotWidget
 
 ELECTRICAL = 0
 CHEMICAL = 1

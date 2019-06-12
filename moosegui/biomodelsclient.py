@@ -12,9 +12,14 @@ import os
 import pickle
 import moose
 
+
+from PyQt5.Qt import Qt
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtWidgets import QDialog, QWidget
+
+from moosegui import config
 from suds.client import Client
 from suds.transport.http import HttpTransport as SudsHttpTransport
-from moosegui import config
 
 BIOMODELS_WSDL_URI = 'http://www.ebi.ac.uk/biomodels-main/services/BioModelsWebServices?wsdl'
 proxyOpts = dict()
@@ -39,9 +44,6 @@ class BioModelsClient(Client):
         except Exception as e:
             print(e)
 
-from PyQt5.Qt import Qt
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QDialog
 
 class BioModelsClientWidget(QDialog):
     """This is a widget with a Biomodels Client. It provides simple
@@ -60,10 +62,10 @@ class BioModelsClientWidget(QDialog):
                             ('Model Ids by Publication', 'getModelsIdByPublication'),
                             ('Model Ids by Taxonomy', 'getModelsIdByTaxonomy'),]
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        QWidget.__init__(self, parent)
         self.setWindowTitle('Connect to BioModels')
         self.client = BioModelsClient()
-        self.queryPanel = QtGui.QWidget(self)
+        self.queryPanel = QWidget(self)
         self.queryModelLabel = QtGui.QLabel('Get ', self.queryPanel)
         self.queryModelCombo = QtGui.QComboBox(self.queryPanel)
         self.queryLineEdit = QtGui.QLineEdit(self.queryPanel)
@@ -83,7 +85,7 @@ class BioModelsClientWidget(QDialog):
         layout.addWidget(self.queryPanel)
         layout.addWidget(self.resultsPanel)
         
-        self.queryPanel1 = QtGui.QWidget(self)
+        self.queryPanel1 = QWidget(self)
         self.importButton = QtGui.QPushButton('Import',self.queryPanel1)
         self.importButton.setEnabled(False)
         self.closeButton = QtGui.QPushButton('Close',self.queryPanel1)
