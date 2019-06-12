@@ -30,7 +30,8 @@ class Text( type("") ):
     @ivar escaped: The (optional) XML special character escaped flag.
     @type escaped: bool
     """
-    __slots__ = ('lang', 'escaped')
+
+    slots = ['lang', 'escaped']
 
     @classmethod
     def __valid(cls, *args):
@@ -91,12 +92,12 @@ class Text( type("") ):
 
     def __getstate__(self):
         state = {}
-        for k in self.__slots__:
+        for k in self.slots:
             state[k] = getattr(self, k)
         return state
 
     def __setstate__(self, state):
-        for k in self.__slots__:
+        for k in self.slots:
             setattr(self, k, state[k])
 
 

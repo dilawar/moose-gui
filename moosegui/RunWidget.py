@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Sidebar for plugins. The sidebar comprises of actions.
 Currently mode, connect and settings are defined.
@@ -5,7 +7,6 @@ Currently mode, connect and settings are defined.
 """
 
 __author__      =   "Aviral Goel"
-__credits__     =   ["Upi Lab"]
 __license__     =   "GPL3"
 __version__     =   "1.0.0"
 __maintainer__  =   "Aviral Goel"
@@ -15,12 +16,13 @@ __status__      =   "Development"
 
 import sys
 import os
-from . import SettingsDialog
 
-from PyQt5.QtGui import QWidget
-from PyQt5.QtGui import QScrollArea
-from PyQt5.QtGui import QGridLayout
-from PyQt5.QtGui import QSplitter
+from PyQt5.QtWidgets import QScrollArea
+from PyQt5.QtWidgets import QGridLayout
+from PyQt5.QtWidgets import QSplitter
+from PyQt5.QtWidgets import QWidget
+
+from moosegui import SettingsDialog
 
 class RunWidget(QSplitter):
     """ Run view """

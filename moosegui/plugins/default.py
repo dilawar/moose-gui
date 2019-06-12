@@ -1,6 +1,5 @@
-# default.py ---
-#
-# Filename: default.py
+# -*- coding: utf-8 -*-
+
 # Description:
 # Author: Subhasis Ray
 # Maintainer:
@@ -9,49 +8,7 @@
 # Last-Updated: Mon Sep 10 23:35:00 2018 (+0530)
 #           By: Harsha
 #     Update #: 
-# URL:
-# Keywords:
-# Compatibility:
-#
-#
 
-# Commentary:
-#
-# The default placeholder plugin for MOOSE
-#
-#
-
-# Change log:
-#
-#
-#
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 3, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-# Floor, Boston, MA 02110-1301, USA.
-#
-#
-
-# Code:
-'''
-2018
-Sep 10: replace addSolver to mooseAddChemSolver from moose.chemUtil's
-2013
-Oct 5: could not recreate if object already exist in moose which was allowed earlier
-        now if object exist need to use element which is cleaned here
-
-'''
 import sys
 import pickle
 import os
@@ -60,43 +17,39 @@ import numpy as np
 
 from matplotlib import rcParams
 from matplotlib.lines import Line2D
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 rcParams.update({'figure.autolayout': True})
 
 import moose
 from moose import utils
 
-import moosegui.mtree as mtree
+
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QDoubleValidator
+
+from PyQt5.QtWidgets import QToolBar, QToolButton
+from PyQt5.QtWidgets import QLabel, QLineEdit
+from PyQt5.QtWidgets import QErrorMessage, QSizeGrip, QAction
+
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+
+from moose.chemUtil.add_Delete_ChemicalSolver import *
+
+# moosegui
+from moosegui.global_constants import preferences
 from moosegui.mtoolbutton import MToolButton
 from moosegui.msearch import SearchWidget
 from moosegui.checkcombobox import CheckComboBox
-from moosegui import config
 from moosegui.mplugin import MoosePluginBase, EditorBase, EditorWidgetBase, PlotBase, RunBase
 from moosegui.PlotWidgetContainer import PlotWidgetContainer
 from moosegui.plugins.kkitUtil import getColor
 from moosegui.plugins.Runner import Runner
 from moosegui.global_constants import preferences
 from moosegui.plugins.setsolver import *
-
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QDoubleValidator
-from PyQt5.QtGui import QToolBar
-from PyQt5.QtGui import QToolButton
-from PyQt5.QtGui import QLabel
-from PyQt5.QtGui import QIcon
-from PyQt5.QtGui import QLineEdit
-from PyQt5.QtGui import QErrorMessage
-from PyQt5.QtGui import QSizeGrip
-from PyQt5.QtGui import QIcon
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtGui import QAction
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
-#from EventBlocker import EventBlocker
-# from PlotNavigationToolbar import PlotNavigationToolbar
-from global_constants import preferences
-#from setsolver import *
-from moose.chemUtil.add_Delete_ChemicalSolver import *
+from moosegui import config
+from moosegui import mtree
 
 ELECTRICAL_MODEL = 0
 CHEMICAL_MODEL   = 1

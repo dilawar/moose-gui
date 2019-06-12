@@ -1,15 +1,19 @@
+# -*- coding: utf-8 -*-
+
 import sys
-import moose
+import json
+import os
 
 from PyQt5 import Qt, QtGui, QtCore
 from PyQt5.QtCore import QObject
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QColor
-from PyQt5.QtGui import QGroupBox
+from PyQt5.QtWidgets import QGroupBox
+
+import moose
+
 from moosegui.plugins.PreferencesView import PreferencesView
 from moosegui.plugins.defines import *
-import json
-import os
 
 PREFERENCES_FILEPATH = os.path.join( os.path.dirname(os.path.abspath(__file__))
                                    , "datastore/preferences.json"

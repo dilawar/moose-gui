@@ -8,7 +8,8 @@ from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QTextEdit, QWidget, QGridLayout
 from PyQt5.QtWidgets import QVBoxLayout, QSizePolicy, QSplitter
-from PyQt5.QtWidgets import QTableView, QDockWidget
+from PyQt5.QtWidgets import QTableView, QDockWidget, QPushButton
+from PyQt5.QtWidgets import QColorDialog
 from PyQt5.QtCore import QMargins
 
 import sys
@@ -277,7 +278,7 @@ class ObjectEditModel(QtCore.QAbstractTableModel):
             elif (role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole):
                 try:
                     if (str(field) =="Color" ):
-                        return QtGui.QPushButton("Press Me!")
+                        return QPushButton("Press Me!")
                     if (str(field) =="Kd" ):
                         #ret = self.mooseObject.getField(str(field))
                         Kd = 0
@@ -334,8 +335,8 @@ class ObjectEditView(QTableView):
         self.setAlternatingRowColors(True)
         self.resizeColumnsToContents()
         self.setModel(ObjectEditModel(mobject, undolen=undolen))
-        self.colorButton = QtGui.QPushButton()
-        self.colorDialog = QtGui.QColorDialog()
+        self.colorButton = QPushButton()
+        self.colorDialog = QColorDialog()
         self.textEdit    = QTextEdit()
         try:
             notesIndex = self.model().fields.index("Notes")

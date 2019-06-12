@@ -9,12 +9,13 @@ import inspect
 import traceback
 import re
 import warnings
+import sys
 import code
 
 from collections import defaultdict, OrderedDict
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, Qt
 from PyQt5.QtWidgets import QMainWindow, QAction, QApplication
-from PyQt5.QtWidgets import QDockWidget
+from PyQt5.QtWidgets import QDockWidget, QMdiArea
 
 # moose
 import moose
@@ -116,7 +117,7 @@ class MWindow(QMainWindow):
         self.getMyDockWidgets()
         self.setCentralWidget(self.mdiArea)
 
-        self.mdiArea.setViewMode(QtGui.QMdiArea.TabbedView)
+        self.mdiArea.setViewMode(QMdiArea.TabbedView)
         self.mdiArea.subWindowActivated.connect(self.switchSubwindowSlot)
         self.setPlugin('default', '/')
         self.plugin.getEditorView().getCentralWidget().parent().close()
@@ -397,7 +398,7 @@ class MWindow(QMainWindow):
             module = imp.load_module(name, fp, pathname, description)
         except Exception as e:
             _logger.warn( "Could not load module %s" % fp )
-            _logger.debug( "\tError was %s" % e )
+            _logger.warn( "\tError was %s" % e )
             module = ""
 
         if fp: 
@@ -886,10 +887,10 @@ class MWindow(QMainWindow):
         return self.viewActions
 
     def setTabbedView(self):
-        self.mdiArea.setViewMode(QtGui.QMdiArea.TabbedView)
+        self.mdiArea.setViewMode(QMdiArea.TabbedView)
 
     def setSubWindowView(self):
-        self.mdiArea.setViewMode(QtGui.QMdiArea.SubWindowView)
+        self.mdiArea.setViewMode(QMdiArea.SubWindowView)
 
     def getSubWindowActions(self):
         if not hasattr(self, 'subWindowActions') or self.subWindowActions is None:

@@ -9,7 +9,7 @@ import moose
 import os
 import posixpath
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QApplication
 
 class LoaderDialog(QFileDialog):
     # Update ftypes to include new file types 
@@ -19,25 +19,7 @@ class LoaderDialog(QFileDialog):
         self.modelpath = None
         super(LoaderDialog, self).__init__(*args)
         self.setNameFilter(self.tr(self.ftypes))
-        self.setNameFilterDetailsVisible(True)
-        self.setReadOnly(True)
         self.setFileMode(self.ExistingFile)
-        # self.targetPanel = QtGui.QFrame()
-        # self.targetLabel = QtGui.QLabel('Model name')
-        # self.targetText = QtGui.QLineEdit(self.target_default)
-        # form = QtGui.QFormLayout()
-        # form.addRow(self.targetLabel, self.targetText)
-        # self.modelChoiceBox = QtGui.QGroupBox('Model name')
-        # self.replaceExistingButton = QtGui.QRadioButton('&Replace current model')
-        # self.mergeExistingButton = QtGui.QRadioButton('&Keep current model')
-        # self.replaceExistingButton.setChecked(True)
-        # vbox = QtGui.QVBoxLayout()
-        # vbox.addWidget(self.replaceExistingButton)
-        # vbox.addWidget(self.mergeExistingButton)
-        # self.modelChoiceBox.setLayout(vbox)
-        # self.targetPanel.setLayout(form)
-        # self.layout().addWidget(self.targetPanel)
-        # self.layout().addWidget(self.modelChoiceBox)
         self.fileSelected.connect(self.fileSelectedSlot)
         
     def fileSelectedSlot(self, fpath):
@@ -59,7 +41,7 @@ class LoaderDialog(QFileDialog):
 
 
 if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     QtGui.qApp = app
     mw = LoaderDialog()
     mw.show()

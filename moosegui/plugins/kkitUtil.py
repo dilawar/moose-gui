@@ -18,7 +18,8 @@ Oct 18  some of the function moved to this file from kkitOrdinateUtils
 '''
 from moose import Annotator,element,ChemCompt
 from kkitQGraphics import PoolItem, ReacItem,EnzItem,CplxItem,GRPItem,ComptItem
-from PyQt5 import QtCore,QtGui,QtSvg
+
+from PyQt5 import QtCore, QtGui, QtSvg
 from PyQt5.QtGui import QColor
 from moosegui import config
 
