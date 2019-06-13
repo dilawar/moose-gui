@@ -1,0 +1,3 @@
+[submodule "drawsbml"]
+	path = drawsbml
+	url = git@github.com:dilawar/drawsbml
