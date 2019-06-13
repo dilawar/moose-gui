@@ -25,8 +25,10 @@ class MoosePluginBase(QtCore.QObject):
     and getViews() functions.
 
     """
+
     modelRootChanged = QtCore.pyqtSignal(object, name='modelRootChanged')
     dataRootChanged = QtCore.pyqtSignal(object, name='dataRootChanged')
+
     def __init__(self, root='/', mainwindow=None):
         """Create a plugin object whose model is the tree rooted at
         `root` and whose widgets will be displayed in `mainwindow`.

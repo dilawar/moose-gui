@@ -12,9 +12,11 @@ from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtWidgets import QSplitter
 
+# MOOSE gui
+from moosegui import sidebar
 from moosegui.plugins import default
-from moosegui.plugins import sidebar
 
+# MOOSE
 import moose
 
 ELECTRICAL = 0

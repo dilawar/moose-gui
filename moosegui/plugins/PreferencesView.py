@@ -1,41 +1,41 @@
 # -*- coding: utf-8 -*-
 
-import PyQt5
-from PyQt5 import Qt, QtGui, QtCore
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QButtonGroup, QRadioButton
-from PyQt5.QtWidgets import QVBoxLayout, QLineEdit, QGridLayout
-from PyQt5.QtWidgets import QLineEdit, QComboBox, QLabel
-from PyQt5.QtWidgets import QTabWidget, QPushButton, QColorDialog
-from PyQt5.QtWidgets import QColorDialog, QSizePolicy
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtGui import QColor
-from PyQt5.QtGui import QDoubleValidator
 import sys
+import logging
+
+from PyQt5 import Qt, QtCore
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QWidget, QButtonGroup, QRadioButton, QApplication
+from PyQt5.QtWidgets import QLineEdit, QGridLayout
+from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QTabWidget, QPushButton, QColorDialog
+#  from PyQt5.QtWidgets import QSizePolicy
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import QDoubleValidator
 
 class PreferencesView(QTabWidget):
-
-    closed                  =  pyqtSignal()
+    closed  =  pyqtSignal()
 
     def __init__(self, parent = None):
         super(PreferencesView, self).__init__(parent)
 
-        self.setWindowTitle("Preferences")
-        # self.setFixedSize(self.maximumSize())
-        # self.setMinimumSize(self.maximumSize())
-        # self.setMaximumSize(self.maximumSize())
+        # If QApplication does not exists then don't do anything.
+        if QApplication.instance() is None:
+            logging.warn("No QApplication exists. Won't do anything.")
+            return -1
 
-        # self.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed))
+        self.setWindowTitle("Preferences")
         self.chemicalSimulationDt               =   self.createFloatingPointEditor()
         self.chemicalDiffusionDt                =   self.createFloatingPointEditor()
         self.chemicalPlotUpdateInterval         =   self.createFloatingPointEditor()
         self.chemicalDefaultSimulationRuntime   =   self.createFloatingPointEditor()
         self.chemicalGuiUpdateInterval          =   self.createFloatingPointEditor()
         self.chemicalSolver                     =   QButtonGroup()
-        self.chemicalSolvers                    =   {   "Exponential Euler" :  QRadioButton("Exponential Euler")
-                                                      , "Gillespie"         :  QRadioButton("Gillespie")
-                                                      , "Runge Kutta"       :  QRadioButton("Runge Kutta")
-                                                    }
+        self.chemicalSolvers                    =   { 
+                "Exponential Euler" :  QRadioButton("Exponential Euler")
+                , "Gillespie"         :  QRadioButton("Gillespie")
+                , "Runge Kutta"       :  QRadioButton("Runge Kutta")
+                }
         self.chemicalSimulationApply                      =   QPushButton("Apply")
         self.chemicalSimulationCancel                     =   QPushButton("Cancel")
         self.electricalSimulationDt             =   self.createFloatingPointEditor()
@@ -43,9 +43,10 @@ class PreferencesView(QTabWidget):
         self.electricalDefaultSimulationRuntime =   self.createFloatingPointEditor()
         self.electricalGuiUpdateInterval        =   self.createFloatingPointEditor()
         self.electricalSolver                   =   QButtonGroup()
-        self.electricalSolvers                    = { "Gillespie"       :   QRadioButton("Gillespie")
-                                                    , "Runge Kutta"     :   QRadioButton("Runge Kutta")
-                                                    }
+        self.electricalSolvers                    = { 
+                "Gillespie"       :   QRadioButton("Gillespie")
+                , "Runge Kutta"     :   QRadioButton("Runge Kutta")
+                }
         self.electricalSimulationApply          =   QPushButton("Apply")
         self.electricalSimulationCancel         =   QPushButton("Cancel")
         self.electricalVisualizationApply       =   QPushButton("Apply")
@@ -67,9 +68,9 @@ class PreferencesView(QTabWidget):
     def create(self):
         # Set up the column titles
         self.setUsesScrollButtons(True)
-        self.setFocusPolicy(PyQt5.QtCore.Qt.NoFocus)
-        self.addTab( self.createChemicalSettingsTab(),"Chemical")
-        self.addTab( self.createElectricalSettingsTab(),"Electrical")
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.addTab( self.createChemicalSettingsTab(), "Chemical")
+        self.addTab( self.createElectricalSettingsTab(), "Electrical")
 
     def createChemicalSettingsTab(self):
         chemicalSettingsTab = QWidget()
@@ -97,7 +98,7 @@ class PreferencesView(QTabWidget):
         for solver in self.chemicalSolvers:
             layout.addWidget(self.chemicalSolvers[solver], 5 + index, 1)
             self.chemicalSolver.addButton(self.chemicalSolvers[solver], index)
-            self.chemicalSolvers[solver].setFocusPolicy(PyQt5.QtCore.Qt.NoFocus)
+            self.chemicalSolvers[solver].setFocusPolicy(QtCore.Qt.NoFocus)
             index += 1
 
         self.chemicalSolver.setExclusive(True)
@@ -123,11 +124,10 @@ class PreferencesView(QTabWidget):
         electricalSettingsTab.setTabShape(QTabWidget.Triangular)
         electricalSettingsTab.setDocumentMode(True)
         electricalSettingsTab.setUsesScrollButtons(True)
-        electricalSettingsTab.setFocusPolicy(PyQt5.QtCore.Qt.NoFocus)
+        electricalSettingsTab.setFocusPolicy(QtCore.Qt.NoFocus)
         return electricalSettingsTab
 
     def createElectricalSimulationSettingsTab(self):
-
         widget = QWidget()
         layout = QGridLayout()
         widget.setLayout(layout)
@@ -150,7 +150,7 @@ class PreferencesView(QTabWidget):
         for solver in self.electricalSolvers:
             # layout.addWidget(self.electricalSolvers[solver], 5 + index, 1)
             self.electricalSolver.addButton(self.electricalSolvers[solver], index)
-            self.electricalSolvers[solver].setFocusPolicy(PyQt5.QtCore.Qt.NoFocus)
+            self.electricalSolvers[solver].setFocusPolicy(QtCore.Qt.NoFocus)
             index += 1
 
         self.electricalSolver.setExclusive(True)
@@ -174,7 +174,7 @@ class PreferencesView(QTabWidget):
         self.electricalBaseColorDialog.setOption(QColorDialog.ShowAlphaChannel, True)
         layout.addWidget(self.electricalBaseColorButton, 2, 1)
         self.electricalBaseColorButton.clicked.connect(self.electricalBaseColorDialog.show)
-        self.electricalBaseColorButton.setFocusPolicy(PyQt5.QtCore.Qt.NoFocus)
+        self.electricalBaseColorButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.electricalBaseColorDialog.colorSelected.connect(
             lambda color: self.electricalBaseColorButton.setStyleSheet(
                         "QPushButton {"
@@ -190,7 +190,7 @@ class PreferencesView(QTabWidget):
         self.electricalPeakColorDialog.setOption(QColorDialog.ShowAlphaChannel, True)
         layout.addWidget(self.electricalPeakColorButton, 4, 1)
         self.electricalPeakColorButton.clicked.connect(self.electricalPeakColorDialog.show)
-        self.electricalPeakColorButton.setFocusPolicy(PyQt5.QtCore.Qt.NoFocus)
+        self.electricalPeakColorButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.electricalPeakColorDialog.colorSelected.connect(
             lambda color: self.electricalPeakColorButton.setStyleSheet(
                         "QPushButton {"
@@ -203,7 +203,7 @@ class PreferencesView(QTabWidget):
         self.electricalBackgroundColorDialog.setOption(QColorDialog.ShowAlphaChannel, True)
         layout.addWidget(self.electricalBackgroundColorButton, 5, 1)
         self.electricalBackgroundColorButton.clicked.connect(self.electricalBackgroundColorDialog.show)
-        self.electricalBackgroundColorButton.setFocusPolicy(PyQt5.QtCore.Qt.NoFocus)
+        self.electricalBackgroundColorButton.setFocusPolicy(QtCore.Qt.NoFocus)
         self.electricalBackgroundColorDialog.colorSelected.connect(
             lambda color: self.electricalBackgroundColorButton.setStyleSheet(
                         "QPushButton {"

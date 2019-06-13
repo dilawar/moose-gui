@@ -101,19 +101,19 @@ class GraphicalView(QGraphicsView):
                 else constants.GROUP_BOUNDARY
 
     def resetState(self):
-        self.state = { "press"      :   { "mode"     :  constants.INconstants.VALID
-            , "item"     :  None
-            , "sign"     :  None
-            , "pos"      :  None
-            , "scenepos" :  None
-            }
-            , "move"       :   { "happened": False
+        self.state = { 
+                "press" : { 
+                    "mode":  constants.INVALID
+                    , "item"     :  None
+                    , "sign"     :  None
+                    , "pos"      :  None
+                    , "scenepos" :  None }
+                , "move" : { "happened": False }
+                , "release" : { "mode"    : constants.INVALID
+                    , "item" : None
+                    , "sign" : None
+                    }
                 }
-            , "release"    :   { "mode"    : constants.INconstants.VALID
-                , "item"    : None
-                , "sign"    : None
-                }
-            }
 
 
     def resolveItem(self, items, position):
@@ -124,9 +124,10 @@ class GraphicalView(QGraphicsView):
         comptInteriorfound = False
         comptBoundary = []
 
-        # If clicked , moved and dropped then drop object should not take polygonItem it shd take Goup or compartment 
-        #(this is checked is self.state["move"]), else qpolygonItem then deleting the connection b/w 2 objects
-        #move is True the
+        # If clicked , moved and dropped then drop object should not take
+        # polygonItem it shd take Goup or compartment
+        # (this is checked is self.state["move"]), else qpolygonItem then
+        # deleting the connection b/w 2 objects move is True.
         for item in items:
             if isinstance(item, QtSvg.QGraphicsSvgItem):
                 return (item, constants.CONNECTOR)
@@ -137,23 +138,21 @@ class GraphicalView(QGraphicsView):
                     return (item, constants.CONNECTION)
 
         for item in items:
-            if hasattr(item, "name"):
-                if item.name == constants.ITEM:
-                    return (item, constants.ITEM)
-                if item.name == constants.GROUP:
-                    gsolution = (item, self.resolveGroupInteriorAndBoundary(item, position))
-                    if gsolution[1] == constants.GROUP_BOUNDARY:
-                        return gsolution
-                    elif gsolution[1] == constants.constants.GROUP_INTERIOR:
-                        groupInteriorfound = True
-                        groupList.append(gsolution)
-                if item.name == constants.COMPARTMENT:
-                    csolution = (item, self.resolveCompartmentInteriorAndBoundary(item, position))
-                    if csolution[1] == constants.COMPARTMENT_BOUNDARY:
-                        return csolution
-                    # elif csolution[1] == constants.COMPARTMENT_INTERIOR:
-                    #     comptInteriorfound = True
-                    #     comptBoundary.append(csolution)
+            if not hasattr(item, "name"):
+                continue
+            if item.name == constants.ITEM:
+                return item, constants.ITEM
+            if item.name == constants.GROUP:
+                gsolution = (item, self.resolveGroupInteriorAndBoundary(item, position))
+                if gsolution[1] == constants.GROUP_BOUNDARY:
+                    return gsolution
+                elif gsolution[1] == constants.constants.GROUP_INTERIOR:
+                    groupInteriorfound = True
+                    groupList.append(gsolution)
+            if item.name == constants.COMPARTMENT:
+                csolution = (item, self.resolveCompartmentInteriorAndBoundary(item, position))
+                if csolution[1] == constants.COMPARTMENT_BOUNDARY:
+                    return csolution
         
         if groupInteriorfound:
             if comptInteriorfound:
@@ -183,10 +182,13 @@ class GraphicalView(QGraphicsView):
             self.state["press"]["type"] = itemType
             self.state["press"]["pos"]  = event.pos()
             if  isinstance(item, QtSvg.QGraphicsSvgItem):
-                ##This is kept for reference, so that if object (P,R,E,Tab,Fun) is moved outside the compartment,
-                #then it need to be pull back to original position
+                # This is kept for reference, so that if object (P,R,E,Tab,Fun)
+                # is moved outside the compartment, then it need to be pull back
+                # to original position
                 self.state["press"]["scenepos"]  = item.parent().scenePos() 
-            if itemType == constants.COMPARTMENT_INTERIOR or itemType == constants.GROUP_BOUNDARY  or itemType == constants.constants.GROUP_INTERIOR:
+            if itemType == constants.COMPARTMENT_INTERIOR \
+                    or itemType == constants.GROUP_BOUNDARY \
+                    or itemType == constants.constants.GROUP_INTERIOR:
                 self.removeConnector()
 
             elif itemType == constants.ITEM:
@@ -206,14 +208,11 @@ class GraphicalView(QGraphicsView):
                             list(self.layoutPt.qGraGrp.values()), kkitUtil.moveMin, self.layoutPt
                             )
                         )
-
-                #popupmenu.addAction("CloneGroup" ,lambda : handleCollisions(comptList, moveMin, self.layoutPt ))
                 popupmenu.exec_(self.mapToGlobal(event.pos()))
 
             elif itemType == constants.COMPARTMENT_BOUNDARY:
                 if len(list(self.layoutPt.qGraCompt.values())) > 1:
                     popupmenu = QMenu('PopupMenu', self)
-                    # popupmenu.addAction("DeleteCmpt", lambda : self.deleteCmpt(item,self.layoutPt))
                     popupmenu.addAction("LinearLayout"
                             , lambda : kkitUtil.handleCollisions( 
                                 list(self.layoutPt.qGraCompt.values()), kkitUtil.moveX, self.layoutPt
@@ -232,7 +231,8 @@ class GraphicalView(QGraphicsView):
             self.state["move"]["happened"] = False
             return
         if self.move:
-            #This part of the code is when rubberband selection is done and move option is selected
+            # This part of the code is when rubberband selection is done and
+            # move option is selected
             initial = self.mapToScene(self.state["press"]["pos"])
             final = self.mapToScene(event.pos())
             displacement = final - initial

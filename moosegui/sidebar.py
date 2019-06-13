@@ -16,14 +16,14 @@ __status__      =   "Development"
 
 import sys
 import os
-from PyQt5 import QtGui, Qt
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtWidgets import QHBoxLayout
-from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtWidgets import QAction
+from PyQt5.QtWidgets import QAction, QToolBar
 from PyQt5.QtGui import QPixmap, QIcon
 
 from moosegui import SettingsDialog
+from moosegui import config
+_logger = config._logger
 
 ICON_DIRECTORY              = "../icons"
 HAND_ICON_FILENAME          = "hand.png"
@@ -44,33 +44,33 @@ def create_action( parent
     pixmap = QPixmap(icon_path)
     icon = QIcon(pixmap)
     action  = QAction(icon, text, parent)
-    # action.setIcon(icon)
-    # action.setIconText(text)
     action.triggered.connect(callback)
     action.setCheckable(checkable)
     action.setChecked(checked)
     return action
 
+def do_nothing(event, msg):
+    _logger.debug( "do_nothing: %s" % msg )
 
 def mode_action( parent
-               , callback   = (lambda event: print("Mode Clicked!"))
-               , text       = "Mode"
-               , checkable  = True
-               , checked    = True
-               , icon_path  = os.path.join( ICON_DIRECTORY
-                                          , HAND_ICON_FILENAME
-                                          )
-               ):
+        , callback   = lambda ev: do_nothing(ev, "Action clicked")
+        , text       = "Mode"
+        , checkable  = True
+        , checked    = True
+        , icon_path  = os.path.join( ICON_DIRECTORY
+            , HAND_ICON_FILENAME
+            )
+        ):
     return create_action( parent
-                        , callback
-                        , text
-                        , checkable
-                        , checked
-                        , icon_path
-                        )
+            , callback
+            , text
+            , checkable
+            , checked
+            , icon_path
+            )
 
 def add_graph_action( parent
-                   , callback   = (lambda event: print("Add Graph Clicked!"))
+                   , callback   = lambda event: do_nothing(event, "Add Graph Clicked!")
                    , text       = "Add Graph"
                    , checkable  = False
                    , checked    = False
@@ -87,7 +87,7 @@ def add_graph_action( parent
                         )
 
 def delete_graph_action( parent
-                      , callback   = (lambda event: print("Delete Graph Clicked!"))
+                      , callback   = lambda event: do_nothing(event, "Delete Graph Clicked!")
                       , text       = "Delete Graph"
                       , checkable  = False
                       , checked    = False
@@ -104,7 +104,7 @@ def delete_graph_action( parent
                         )
 
 def list_action( parent
-               , callback   = (lambda event: print("List Clicked!"))
+               , callback   = lambda event: do_nothing(event, "List Clicked!")
                , text       = "Show List"
                , checkable  = False
                , checked    = False
@@ -121,60 +121,52 @@ def list_action( parent
                         )
 
 def connector_action( parent
-                    , callback   = (lambda event: print("Connector Clicked!"))
-                    , text       = "Mode"
-                    , checkable  = True
-                    , checked    = False
-                    , icon_path  = os.path.join( ICON_DIRECTORY
-                                               , CONNECTOR_ICON_FILENAME
-                                               )
-                    ):
+        , callback   = lambda event: do_nothing(event, "Connector Clicked!")
+        , text       = "Mode"
+        , checkable  = True
+        , checked    = False
+        , icon_path  = os.path.join( ICON_DIRECTORY , CONNECTOR_ICON_FILENAME)
+        ):
     return create_action( parent
-                        , callback
-                        , text
-                        , checkable
-                        , checked
-                        , icon_path
-                        )
+            , callback
+            , text
+            , checkable
+            , checked
+            , icon_path
+            )
 
 def settings_action( parent
-                   , callback   = (lambda event: print("Settings Clicked"))
-                   , text       = "Mode"
-                   , checkable  = False
-                   , checked    = False
-                   , icon_path  = os.path.join( ICON_DIRECTORY
-                                              , WRENCH_ICON_FILENAME
-                                              )
-                   ):
+        , callback   = (lambda event: do_nothing(event, "Settings Clicked"))
+        , text       = "Mode"
+        , checkable  = False
+        , checked    = False
+        , icon_path  = os.path.join(ICON_DIRECTORY, WRENCH_ICON_FILENAME)
+        ):
     return create_action( parent
-                        , callback
-                        , text
-                        , checkable
-                        , checked
-                        , icon_path
-                        )
-
-
-           #   actions
-           # , left_spacer  = False
-           # , right_spacer = False
+            , callback
+            , text
+            , checkable
+            , checked
+            , icon_path
+            )
 
 def sidebar():
-    return QtGui.QToolBar()
+    return QToolBar()
 
 
 def main():
+    from PyQt5.QtWidgets import QApplication, QMainWindow
     app = QApplication(sys.argv)
-    window = QtGui.QMainWindow()
+    window = QMainWindow()
     widget = SettingsDialog.SettingsWidget({
-                            'LeakyIaF':['Vm'],
-                            'Compartment':['Vm','Im'],
-                            'HHChannel':['Ik','Gk'],
-                            'ZombiePool':['n','conc'],
-                            'ZombieBufPool':['n','conc'],
-                            'HHChannel2D':['Ik','Gk'],
-                            'CaConc':['Ca']
-                            })
+        'LeakyIaF':['Vm'],
+        'Compartment':['Vm','Im'],
+        'HHChannel':['Ik','Gk'],
+        'ZombiePool':['n','conc'],
+        'ZombieBufPool':['n','conc'],
+        'HHChannel2D':['Ik','Gk'],
+        'CaConc':['Ca']
+        })
     d = QDialog()
     l = QHBoxLayout()
     d.setLayout(l)
@@ -186,7 +178,6 @@ def main():
     window.addToolBar(bar)
     window.show()
     sys.exit(app.exec_())
-
 
 if __name__ == "__main__":
     main()

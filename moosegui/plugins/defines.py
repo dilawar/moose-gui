@@ -1,8 +1,6 @@
 """defines.py: 
-
 Various clocks used in moose.
 """
-    
 
 ELECTRICAL_SIMULATION_DT_CLOCKS         = [1,2,3,4,5,6,7]
 ELECTRICAL_PLOT_UPDATE_INTERVAL_CLOCKS  = [8]

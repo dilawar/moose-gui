@@ -4,11 +4,10 @@ import sys
 import json
 import os
 
-from PyQt5 import Qt, QtGui, QtCore
+from PyQt5 import Qt
 from PyQt5.QtCore import QObject
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QGroupBox
 
 import moose
 
@@ -21,7 +20,6 @@ PREFERENCES_FILEPATH = os.path.join(
         )
 
 class PreferencesPresenter(QObject):
-
     electricalSimulationIntervalChanged         =   pyqtSignal(float)
     electricalPlotUpdateIntervalChanged         =   pyqtSignal(float)
     electricalDefaultSimulationRuntimeChanged   =   pyqtSignal(float)
@@ -444,7 +442,8 @@ class PreferencesPresenter(QObject):
 
 
 def main():
-    app     = QtGui.QApplication(sys.argv)
+    from PyQt5.QtWidgets import QApplication
+    app = QApplication(sys.argv)
     preferences  = PreferencesPresenter()
     preferences.view.show()
     sys.exit(app.exec_())

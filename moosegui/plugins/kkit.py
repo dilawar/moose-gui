@@ -16,6 +16,7 @@ import math
 
 from PyQt5 import QtGui, QtCore, Qt
 from PyQt5.QtWidgets import QWidget, QGridLayout, QFileDialog
+from PyQt5.QtWidgets import QMenu, QAction, QGraphicsScene
 from PyQt5.QtGui import QColor
 
 # moosegui
@@ -39,13 +40,13 @@ class KkitPlugin(MoosePlugin):
     def __init__(self, *args):
         MoosePlugin.__init__(self, *args)
         self.view = None
-        self.fileinsertMenu = QtGui.QMenu('&File')
+        self.fileinsertMenu = QMenu('&File')
 
         if not hasattr(self,'SaveModelAction'):
             #self.fileinsertMenu.addSeparator()
-            self.saveModelAction = QtGui.QAction('Save', self)
+            self.saveModelAction = QAction('Save', self)
             self.saveModelAction.setShortcut( "Ctrl+S" )
-            self.connect(self.saveModelAction, QtCore.SIGNAL('triggered()'), self.SaveModelDialogSlot)
+            self.saveModelAction.triggered.connect(self.SaveModelDialogSlot)
             self.fileinsertMenu.addAction(self.saveModelAction)
 
         self._menus.append(self.fileinsertMenu)
@@ -117,11 +118,8 @@ class KkitPlugin(MoosePlugin):
 
     def getEditorView(self):
         if not hasattr(self, 'editorView'):
-            #self.editorView = KkitEditorView(self, self.dataTable)
             self.editorView = KkitEditorView(self)
             self.editorView.getCentralWidget().editObject.connect(self.mainWindow.objectEditSlot)
-            #self.editorView.GrViewresize(self)
-            #self.editorView.connect(self,QtCore.SIGNAL("resize(QResizeEvent)"),self.editorView.GrViewresize)
             self.currentView = self.editorView
         return self.editorView
 
@@ -167,7 +165,6 @@ class AnotherKkitRunView(RunView):
         self.schedular.runner.simulationProgressed.connect(self.kkitRunView.getCentralWidget().updateValue)
         self.schedular.runner.simulationProgressed.connect(self.kkitRunView.getCentralWidget().changeBgSize)
         self.schedular.runner.simulationReset.connect(self.kkitRunView.getCentralWidget().resetColor)
-        # self.schedular.runner.simulationReset.connect(self.setSolver)
         self.schedular.preferences.applyChemicalSettings.connect(self.setSolverFromSettings)
         compt = moose.wildcardFind(self.modelRoot+'/##[ISA=ChemCompt]')
         ann = moose.Annotator(self.modelRoot+'/info')
@@ -217,26 +214,12 @@ class AnotherKkitRunView(RunView):
             self.createCentralWidget()
         return self._centralWidget
 
-class KkitRunView(MooseEditorView):
 
-    #def __init__(self, plugin,dataTable):
+class KkitRunView(MooseEditorView):
     def __init__(self, plugin):
         MooseEditorView.__init__(self, plugin)
-        #self.dataTable =dataTable
         self.plugin = plugin
-    '''
-    def getToolPanes(self):
-        return super(KkitRunView, self).getToolPanes()
 
-    def getLibraryPane(self):
-        return super(KkitRunView, self).getLibraryPane()
-
-    def getOperationsWidget(self):
-        return super(KkitRunView, self).getOperationsPane()
-
-    def getToolBars(self):
-        return self._toolBars
-    '''
     def getCentralWidget(self):
         if self._centralWidget is None:
             self._centralWidget = KineticRunWidget(self.plugin)
@@ -244,8 +227,8 @@ class KkitRunView(MooseEditorView):
             self._centralWidget.setModelRoot(self.plugin.modelRoot)
         return self._centralWidget
 
-class KkitEditorView(MooseEditorView):
 
+class KkitEditorView(MooseEditorView):
     def __init__(self, plugin):
         MooseEditorView.__init__(self, plugin)
 
@@ -284,8 +267,8 @@ class  KineticsWidget(mplugin.EditorWidgetBase):
         self.itemignoreZooming = False
         if hasattr(self,'sceneContainer'):
             self.sceneContainer.clear()
-        self.sceneContainer = QtGui.QGraphicsScene(self)
-        self.sceneContainer.setItemIndexMethod(QtGui.QGraphicsScene.NoIndex)
+        self.sceneContainer = QGraphicsScene(self)
+        self.sceneContainer.setItemIndexMethod(QGraphicsScene.NoIndex)
         self.sceneContainer.setBackgroundBrush(QColor(230,220,219,120))
     
     def getsceneCord(self):
@@ -314,7 +297,7 @@ class  KineticsWidget(mplugin.EditorWidgetBase):
                 self.view.setAcceptDrops(True)
             elif isinstance(self, KineticRunWidget):
                 self.view.setRefWidget("runView")
-            self.connect(self.view, QtCore.SIGNAL("dropped"), self.objectEditSlot)
+            self.view.dropped.connect(self.objectEditSlot)
             hLayout = QGridLayout(self)
             self.setLayout(hLayout)
             hLayout.addWidget(self.view,0,0)
@@ -331,7 +314,7 @@ class  KineticsWidget(mplugin.EditorWidgetBase):
                 self.drawLine_arrow()
                 self.view.setRefWidget("editorView")
                 self.view.setAcceptDrops(True)
-                self.connect(self.view, QtCore.SIGNAL("dropped"), self.objectEditSlot)
+                self.view.dropped.connect(self.objectEditSlot)
                 hLayout = QGridLayout(self)
                 self.setLayout(hLayout)
                 hLayout.addWidget(self.view)
@@ -510,15 +493,24 @@ class  KineticsWidget(mplugin.EditorWidgetBase):
             # also if there is a cross-group connection, then
             # childrenBoundrect() will take the QPolygonItem position
             rectcompt = v.childrenBoundingRect()
-            v.setRect(rectcompt.x()-10,rectcompt.y()-10,(rectcompt.width()+20),(rectcompt.height()+20))
-            v.setPen(QtGui.QPen(Qt.QColor(grpcolor), self.comptPen, Qt.Qt.SolidLine, Qt.Qt.RoundCap, Qt.Qt.RoundJoin))
+            v.setRect(rectcompt.x()-10, rectcompt.y()-10
+                    , rectcompt.width()+20, rectcompt.height()+20)
+            v.setPen(QtGui.QPen(Qt.QColor(grpcolor), self.comptPen
+                , Qt.Qt.SolidLine, Qt.Qt.RoundCap, Qt.Qt.RoundJoin))
     
     def comptChildrenBoundingRect(self):
         for k, v in self.qGraCompt.items():
             # compartment's rectangle size is calculated depending on children
             rectcompt = kkitUtil.calculateChildBoundingRect(v)
             v.setRect(rectcompt.x()-10,rectcompt.y()-10,(rectcompt.width()+20),(rectcompt.height()+20))
-            v.setPen(QtGui.QPen(Qt.QColor(66,66,66,100), self.comptPen, Qt.Qt.SolidLine, Qt.Qt.RoundCap, Qt.Qt.RoundJoin))
+            v.setPen(
+                    QtGui.QPen(Qt.QColor(66,66,66,100)
+                        , self.comptPen
+                        , Qt.Qt.SolidLine
+                        , Qt.Qt.RoundCap
+                        , Qt.Qt.RoundJoin
+                        )
+                    )
             
     def createCompt(self,key):
         self.new_Compt = kkitQGraphics.ComptItem(self,0,0,0,0,key)
@@ -567,10 +559,11 @@ class  KineticsWidget(mplugin.EditorWidgetBase):
         
 
     def positioninfo(self,iteminfo):
-        '''By this time, model loaded from kkit,cspace,SBML would have info field created and co-ordinates are added
-            either by autocoordinates (for cspace,SBML(unless it is not saved from moose)) or from kkit
         '''
-        
+        By this time, model loaded from kkit,cspace,SBML would have info
+        field created and co-ordinates are added either by autocoordinates (for
+        cspace,SBML(unless it is not saved from moose)) or from kkit.
+        '''
         x = float(moose.element(iteminfo).getField('x'))
         y = float(moose.element(iteminfo).getField('y'))
         return x, y
@@ -877,7 +870,7 @@ class kineticEditorWidget(KineticsWidget):
 
         KineticsWidget.__init__(self, plugin, *args)
         self.plugin = plugin
-        self.insertMenu = QtGui.QMenu('&Insert')
+        self.insertMenu = QMenu('&Insert')
         self._menus.append(self.insertMenu)
         self.insertMapper = QtCore.QSignalMapper(self)
         classlist = ['CubeMesh','CylMesh','Pool','BufPool','Function','Reac','Enz','MMenz','StimulusTable']
@@ -979,13 +972,14 @@ class KineticRunWidget(KineticsWidget):
                 item.returnEllispeSize()
 
 if __name__ == "__main__":
-    from PyQt5 import QApplication
+    from PyQt5.QtWidgets import QApplication
     app = QApplication(sys.argv)
     size = QtCore.QSize(1024 ,768)
-    modelPath = 'Khelodenco'
+    sdir = os.path.dirname(__file__)
+    modelPath = 'Kholodenko'
     itemignoreZooming = False
     try:
-        filepath = '../data/'+modelPath+'.g'
+        filepath = os.path.join(sdir, '../data/'+modelPath+'.g')
         print( "%s" %(filepath))
         f = open(filepath, "r")
         moose.loadModel(filepath,'/'+modelPath)
@@ -994,7 +988,5 @@ if __name__ == "__main__":
         dt.updateModelView()
         dt.show()
     except IOError as e:
-      print(e)
-      quit(1)
-
+        print(e)
     sys.exit(app.exec_())
