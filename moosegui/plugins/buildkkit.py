@@ -9,6 +9,11 @@ import posixpath
 
 from PyQt5 import QtGui, QtCore, Qt
 from PyQt5.QtWidgets import QFileDialog, QWidget
+from PyQt5.QtWidgets import QGraphicsScene, QMenu, QMessageBox
+
+if __name__ == "__main__":
+    from PyQt5.QtWidgets import QApplication
+    app = QApplication(sys.argv)
 
 import networkx as nx
 import numpy as np
@@ -16,10 +21,10 @@ import numpy as np
 from moosegui import config
 from moosegui.plugins.default import *
 from moosegui.plugins.kkitUtil import *
-from moosegui.plugins.kkitQGraphics import PoolItem, ReacItem, EnzItem, CplxItem, ComptItem
+from moosegui.plugins.kkitQGraphics import *
 from moosegui.plugins.kkitViewcontrol import *
 from moosegui.plugins.kkitCalcArrow import *
-from moosegui.plugins.kkitOrdinateUtil import *
+from moosegui.plugins import kkitOrdinateUtil 
 from moosegui.mtoolbutton import MToolButton
 
 class KkitPlugin(MoosePlugin):
@@ -67,13 +72,13 @@ class KkitEditorView(MooseEditorView):
     def __init__(self, plugin):
         MooseEditorView.__init__(self, plugin)
         '''
-        self.insertMenu = QtGui.QMenu('Insert')
+        self.insertMenu = QMenu('Insert')
         sortList = ['CubeMesh','CylMesh','Pool','FuncPool','SumFunc','Reac','Enz','MMenz','StimulusTable','Table']
         for slist in sortList:
             action = QtGui.QAction(moose.element('/classes/'+slist).name, self.insertMenu)
             self._toolBars.append(action)
         '''
-        self.fileinsertMenu = QtGui.QMenu('&File')
+        self.fileinsertMenu = QMenu('&File')
         if not hasattr(self,'SaveModelAction'):
             self.saveModelAction = QtGui.QAction('SaveToSBMLFile', self)
             self.saveModelAction.setShortcut( "Ctrl+S" )
@@ -120,15 +125,15 @@ class  KineticsWidget(EditorWidgetBase):
         EditorWidgetBase.__init__(self, *args)
         self.setAcceptDrops(True)
         self.border = 10        
-        self.sceneContainer = QtGui.QGraphicsScene(self)
+        self.sceneContainer = QGraphicsScene(self)
         self.sceneContainer.setSceneRect(self.sceneContainer.itemsBoundingRect())
         self.sceneContainer.setBackgroundBrush(QtGui.QColor(230,220,219,120))
 
-        self.insertMenu = QtGui.QMenu('&Insert')
+        self.insertMenu = QMenu('&Insert')
         self._menus.append(self.insertMenu)
         self.insertMapper = QtCore.QSignalMapper(self)
 
-        classlist = ['CubeMesh','CylMesh','Pool','FuncPool','SumFunc','Reac','Enz','MMenz','StimulusTable','Table']
+        classlist = ['CubeMesh','CylMesh','Pool', 'Reac','Enz','MMenz','StimulusTable','Table']
         insertMapper, actions = self.getInsertActions(classlist)
 
         for action in actions:
@@ -150,9 +155,9 @@ class  KineticsWidget(EditorWidgetBase):
     def updateModelView(self):
         #print "update model view",self.modelRoot
         if self.modelRoot == '/':
-            m = wildcardFind('/##[ISA=ChemCompt]')
+            m = moose.wildcardFind('/##[ISA=ChemCompt]')
         else:
-            m = wildcardFind(self.modelRoot+'/##[ISA=ChemCompt]')
+            m = moose.wildcardFind(self.modelRoot+'/##[ISA=ChemCompt]')
         #print "111",self.modelRoot,m
         if not m:
             # when we want an empty GraphicView while creating new model,
@@ -180,20 +185,17 @@ class  KineticsWidget(EditorWidgetBase):
             colormap_file.close()
             
             # Compartment and its members are setup """
-            self.meshEntry,self.xmin,self.xmax,self.ymin,self.ymax,self.noPositionInfo = setupMeshObj(self.modelRoot)
-            # srcdesConnection dictonary will have connection information between src and des """
+            o, self.meshEntry, self.xmin, self.xmax, self.ymin, \
+                    self.ymax, self.noPositionInfo = kkitOrdinateUtil.setupMeshObj(self.modelRoot)
 
             self.srcdesConnection = {}
-            setupItem(self.modelRoot,self.srcdesConnection)
+            kkitOrdinateUtil.setupItem(self.modelRoot,self.srcdesConnection)
             if self.noPositionInfo:
                 self.autocoordinates = True
-                QtGui.QMessageBox.warning(self, 
-                                          'No coordinates found for the model', 
-                                          '\n Automatic layouting will be done')
-            #raise Exception('Unsupported kkit version')
-                
-                
-                self.xmin,self.xmax,self.ymin,self.ymax,self.autoCordinatepos = autoCoordinates(self.meshEntry,self.srcdesConnection)
+                QMessageBox.warning(self, 
+                        'No coordinates found for the model', 
+                        '\n Automatic layouting will be done')
+                kkitOrdinateUtil.autoCoordinates(self.meshEntry,self.srcdesConnection)
 
             # Scale factor to translate the x -y position to fit the Qt graphicalScene, scene width. """
             if self.xmax-self.xmin != 0:
@@ -237,14 +239,9 @@ class  KineticsWidget(EditorWidgetBase):
         for cmpt in sorted(self.meshEntry.keys()):
             self.createCompt(cmpt)
             self.qGraCompt[cmpt]
-            #comptRef = self.qGraCompt[cmpt]
-        
-        #Enzymes of all the compartments are placed first, \
-        #     so that when cplx (which is pool object) queries for its parent, it gets its \
-        #     parent enz co-ordinates with respect to QGraphicsscene """
         
         for cmpt,memb in list(self.meshEntry.items()):
-            for enzObj in find_index(memb,'enzyme'):
+            for enzObj in memb.get('enzyme', []):
                 enzinfo = enzObj.path+'/info'
                 if enzObj.className == 'ZEnz':
                     enzItem = EnzItem(enzObj,self.qGraCompt[cmpt])
@@ -254,25 +251,25 @@ class  KineticsWidget(EditorWidgetBase):
                 self.setupSlot(enzObj,enzItem)
 
         for cmpt,memb in list(self.meshEntry.items()):
-            for poolObj in find_index(memb,'pool'):
+            for poolObj in kkitOrdinateUtil.find_index(memb,'pool'):
                 poolinfo = poolObj.path+'/info'
                 poolItem = PoolItem(poolObj,self.qGraCompt[cmpt])
                 self.setupDisplay(poolinfo,poolItem,"pool")
                 self.setupSlot(poolObj,poolItem)
             
-            for cplxObj in find_index(memb,'cplx'):
+            for cplxObj in kkitOrdinateUtil.find_index(memb,'cplx'):
                 cplxinfo = (cplxObj[0].parent).path+'/info'
                 cplxItem = CplxItem(cplxObj,self.mooseId_GObj[element(cplxObj[0]).parent.getId()])
                 self.setupDisplay(cplxinfo,cplxItem,"cplx")
                 self.setupSlot(cplxObj,cplxItem)
 
-            for reaObj in find_index(memb,'reaction'):
+            for reaObj in kkitOrdinateUtil.find_index(memb,'reaction'):
                 reainfo = reaObj.path+'/info'
                 reaItem = ReacItem(reaObj,self.qGraCompt[cmpt])
                 self.setupDisplay(reainfo,reaItem,"reaction")
                 self.setupSlot(reaObj,reaItem)
 
-            for tabObj in find_index(memb,'table'):
+            for tabObj in kkitOrdinateUtil.find_index(memb,'table'):
                 tabinfo = tabObj.path+'/info'
                 tabItem = PoolItem(tabObj,self.qGraCompt[cmpt])
                 self.setupDisplay(tabinfo,tabItem,"tab")
@@ -553,7 +550,6 @@ class  KineticsWidget(EditorWidgetBase):
             v.setRect(rectcompt.x()-comptWidth,rectcompt.y()-comptWidth,(rectcompt.width()+2*comptWidth),(rectcompt.height()+2*comptWidth))
 
 if __name__ == "__main__":
-    app = QtGui.QApplication(sys.argv)
     size = QtCore.QSize(1024 ,768)
     modelPath = 'Kholodenko'
     #modelPath = 'acc61'
@@ -563,19 +559,13 @@ if __name__ == "__main__":
     modelPath = '5AreacB'
     itemignoreZooming = False
     try:
-        filepath = '../../Demos/Genesis_files/'+modelPath+'.g'
-        #filepath = '/home/harsha/genesis_files/gfile/'+modelPath+'.g'
+        sdir = os.path.dirname(__file__)
+        filepath = os.path.join(sdir, '../../data/Kholodenko.g')
         print(filepath)
-        f = open(filepath, "r")
-        loadModel(filepath,'/'+modelPath)
-        
+        moose.loadModel(filepath, '/'+modelPath)
         moose.le('/'+modelPath+'/kinetics')
         dt = KineticsWidget()
         dt.modelRoot ='/'+modelPath
-        ''' Loading moose signalling model in python '''
-        #execfile('/home/harsha/BuildQ/Demos/Genesis_files/scriptKineticModel.py')
-        #dt.modelRoot = '/model'
-        
         dt.updateModelView()
         dt.show()
   

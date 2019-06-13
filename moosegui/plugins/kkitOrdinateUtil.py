@@ -412,7 +412,7 @@ def find_index(value, key):
     Value.get(key) to avoid expection which would raise if empty value in
     dictionary for a given key.
     """
-    if value.get(key) != None:
-        return value.get(key)
+    if key in value:
+        return value[key]
     else:
-        raise ValueError('no dict with the key found')
+        raise ValueError("key '%s' not found" % key)

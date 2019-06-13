@@ -37,7 +37,8 @@ from moosegui.MdiArea import MdiArea
 from moosegui.plugins import defines
 
 # Logger
-_logger = config._logger
+import logging
+logger_ = logging.getLogger("moosegui.window")
 
 # This maps model subtypes to corresponding plugin names. Should be
 # moved to a separate property file perhaps
@@ -231,10 +232,7 @@ class MWindow(QMainWindow):
         layout5 = QHBoxLayout()
         layout6 = QHBoxLayout()
         layout7 = QHBoxLayout()
-        listofButtons = {}
         for i, k in enumerate( self.menuitems ):
-            _logger.info( "Adding button for %s" % k[0] )
-            t = k[0]
             button = QPushButton(k[0])
             if k[0] == "Fig2E":
                 button.setToolTip("<span style=\"color:black;\">Illustrates loading a model from an SWC file, inserting  channels, and running it</span>")
@@ -325,7 +323,7 @@ class MWindow(QMainWindow):
         import subprocess, shlex
         t = os.path.abspath(filepath)
         directory, filename = os.path.split(t)
-        _logger.info( "Executing %s" % filepath )
+        logger_.info( "Executing %s" % filepath )
         p = subprocess.Popen([ sys.executable, filename], cwd=directory)
         p.wait()
         freeCursor()
@@ -377,9 +375,9 @@ class MWindow(QMainWindow):
         If re is True, the plugin is _reloaded.
 
         """
-        _logger.info("Loading plugin '%s' from %s" % (name, config.MOOSE_PLUGIN_DIR))
+        logger_.info("Loading plugin '%s' from %s" % (name, config.MOOSE_PLUGIN_DIR))
         if (not _reload) and name in sys.modules:
-            _logger.debug( "\tThis plugin is already loaded" )
+            logger_.debug( "\tThis plugin is already loaded" )
             return sys.modules[name]
 
         fp, pathname, description = imp.find_module(name, [config.MOOSE_PLUGIN_DIR])
@@ -388,7 +386,7 @@ class MWindow(QMainWindow):
         except Exception as e:
             module = ""
             extra = traceback.format_exc()
-            _logger.warn( "Could not load module %s: '%s'" % (fp, extra))
+            logger_.warn( "Could not load module %s: '%s'" % (fp, extra))
 
         if fp: 
             fp.close()
@@ -450,7 +448,7 @@ class MWindow(QMainWindow):
 
         errMsg = 'No plugin found with name: %s' % name
         errMsg += ". Available: '{}'".format(', '.join(self._loadedPlugins.keys()))
-        _logger.error(errMsg)
+        logger_.error(errMsg)
         raise IndexError(errMsg)
 
     def setPlugin(self, name, root='/'):
@@ -1008,6 +1006,7 @@ class MWindow(QMainWindow):
 
     def objectEditSlot(self, mobj, visible=True):
         """Slot for switching the current object in object editor."""
+        logger_.debug("objectEditSlot is called: dropped event")
         self.objectEditDockWidget.setObject(mobj)
         self.objectEditDockWidget.setVisible(visible)
 

@@ -231,8 +231,8 @@ class GraphicalView(QGraphicsView):
                             )
                     popupmenu.exec_(self.mapToGlobal(event.pos()))
 
-    
     def editorMouseMoveEvent(self,event):
+        logger_.debug( "editorMouseMoveEvent %s" % str(event))
         if self.state["press"]["mode"] == constants.INVALID:
             self.state["move"]["happened"] = False
             return

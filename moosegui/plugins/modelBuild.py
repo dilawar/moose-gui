@@ -11,7 +11,7 @@ from moosegui.plugins import kkitQGraphics
 from moosegui.plugins import kkitUtil
 from PyQt5 import Qt, QtCore
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QGraphicsScene
+from PyQt5.QtWidgets import QGraphicsScene, QMessageBox
 
 import logging
 logger_ = logging.getLogger("moosegui.plugin.kkit")
@@ -183,10 +183,10 @@ def checkCreate(scene, view, modelpath, mobj, string, ret_string, num,
         # displaced by some position, need to check how to deal with it
         posWrtComp = pos
         if ((mobj.parent).className == "Enz"):
-            QtGui.QMessageBox.information(
+            QMessageBox.information(
                 None, "Drop Not possible",
                 "'{}' has to have Pool as its parent and not Enzyme Complex".
-                format(string), QtGui.QMessageBox.Ok)
+                format(string), QMessageBox.Ok)
             return None
         else:
             enzparent = findCompartment(mobj)
@@ -251,16 +251,15 @@ def checkCreate(scene, view, modelpath, mobj, string, ret_string, num,
 def createObj(scene, view, modelpath, string, pos, layoutPt):
     logger_.debug( "Crating object %s, %s, %s" % (modelpath, string, str(pos)))
     assert isinstance(view.sceneContainerPt, QGraphicsScene)
-    event_pos = pos
-    num = 0
-    ret_string = " "
+    event_pos, num, ret_string = pos, 0, ""
     pos = view.mapToScene(event_pos)
     itemAt = view.sceneContainerPt.itemAt(float(pos.x()), float(pos.y()), QtGui.QTransform())
+    logger_.debug( "\tItem At %s" % str(itemAt))
     moose.wildcardFind(modelpath + '/##[ISA=ChemCompt]')
     moose.mooseDeleteChemSolver(modelpath)
-    mobj = ""
+    mobj = None
 
-    if itemAt != None:
+    if itemAt is not None:
         itemAtView = view.sceneContainerPt.itemAt(view.mapToScene(event_pos))
         itemClass = type(itemAtView).__name__
         if (itemClass == 'QGraphicsRectItem'):
@@ -271,32 +270,32 @@ def createObj(scene, view, modelpath, string, pos, layoutPt):
             mobj = itemAtView.mobj
 
     if string == "CubeMesh" or string == "CylMesh":
-        ret_string, num = findUniqId(moose.element(modelpath), "Compartment",
-                                     0)
+        ret_string, num = findUniqId(moose.element(modelpath), "Compartment", 0)
         comptexist = moose.wildcardFind(modelpath + '/##[ISA=ChemCompt]')
         if not len(comptexist):
-            if itemAt != None:
-                QtGui.QMessageBox.information(
+            if itemAt is not None:
+                QMessageBox.information(
                     None, 'Drop Not possible',
                     "'{}' currently single compartment model building is allowed"
-                    .format(string), QtGui.QMessageBox.Ok)
+                    .format(string), QMessageBox.Ok)
                 return False
             else:
+                # create Rect here.
+                logger_.info("Mesh is not available")
                 mobj = moose.element(modelpath)
                 return True
         else:
-            QtGui.QMessageBox.information(
+            QMessageBox.information(
                 None, 'Drop Not possible',
-                '\'{newString}\' currently single compartment model building is allowed'
-                .format(newString=string), QtGui.QMessageBox.Ok)
+                "'{}' currently single compartment model building is allowed" .format(string)
+                , QMessageBox.Ok)
             return False
 
     elif string == "Pool" or string == "BufPool" or string == "Reac" or string == "StimulusTable":
         if itemAt == None:
-            QtGui.QMessageBox.information(
+            QMessageBox.information(
                 None, 'Drop Not possible',
-                '\'{newString}\' has to have compartment as its parent'.format(
-                    newString=string), QtGui.QMessageBox.Ok)
+                "'{}' has to have compartment as its parent".format(string), QMessageBox.Ok)
             return False
         else:
             mobj = findCompartment(mobj)
@@ -310,19 +309,19 @@ def createObj(scene, view, modelpath, string, pos, layoutPt):
     elif string == "Enz" or string == "MMenz":
         if itemAt != None:
             if ((mobj).className != "Pool" and (mobj).className != "BufPool"):
-                QtGui.QMessageBox.information(
+                QMessageBox.information(
                     None, 'Drop Not possible',
                     "'{}' has to have Pool as its parent".format(string),
-                    QtGui.QMessageBox.Ok)
+                    QMessageBox.Ok)
                 return False
             else:
                 ret_string, num = findUniqId(mobj, string, num)
                 return True
         else:
-            QtGui.QMessageBox.information(
+            QMessageBox.information(
                 None, 'Drop Not possible',
                 "'{}' has to have Pool as its parent".format(string),
-                QtGui.QMessageBox.Ok)
+                QMessageBox.Ok)
             return False
 
     if ret_string.strip():
@@ -349,7 +348,7 @@ def findUniqId(mobj, string, num):
         return (string, num)
     else:
         num += 1
-        return (findUniqId(mobj, string, num))
+        return findUniqId(mobj, string, num)
 
 def findCompartment(mooseObj):
     if mooseObj.path == '/':

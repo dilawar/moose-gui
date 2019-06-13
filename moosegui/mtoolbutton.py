@@ -11,6 +11,9 @@ from PyQt5.QtWidgets import QToolButton, QToolBar, QMainWindow
 from PyQt5.QtWidgets import QApplication, QTextBrowser
 from PyQt5.Qt import Qt
 
+import logging
+logger_ = logging.getLogger('mtoolbutton')
+
 class MToolButton(QToolButton):
     """
     QToolButton subclass with dragEvent reimplemented. It sends the
@@ -34,7 +37,6 @@ class MToolButton(QToolButton):
         mimeData = QtCore.QMimeData()
         mimeData.setText(self.text())
         drag.setMimeData(mimeData)
-        print( 'mouseMoveEvent', mimeData.text())
         drag.exec_(Qt.CopyAction)
 
 

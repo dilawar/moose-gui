@@ -30,8 +30,9 @@ class RunWidget(QSplitter):
     def __init__(self, modelRoot, *args, **kwargs):
         super(RunWidget, self).__init__(None)
         self.modelRoot  = modelRoot
+        self.topWidget  = QWidget()
         layout          = QGridLayout()
-        self.setLayout(layout)
+        self.topWidget.setLayout(layout)
         self.plotWidgetContainer = None
 
     def setChildWidget(self, widget, wrap, row, col, rowspan = 1, colspan = 1):

@@ -210,15 +210,12 @@ class AnotherKkitRunView(RunView):
         compt = moose.wildcardFind(self.modelRoot + '/##[ISA=ChemCompt]')
         ann = moose.Annotator(self.modelRoot + '/info')
         if compt:
-            #self.runTime = (moose.Annotator(self.modelRoot+'/info')).runtime
-            #solver = (moose.Annotator(self.modelRoot+'/info')).solver
             self.runTime = moose.element(ann).runtime
             solver = moose.element(ann).solver
         else:
             self.runTime = 100
             solver = "gsl"
         self.schedular.simulationRuntime.setText(str(self.runTime))
-        #preferences
         chemprefs = self.schedular.preferences.getChemicalPreferences()
         c = moose.Clock('/clock')
         self.simulationdt = c.tickDt[11]
