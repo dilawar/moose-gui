@@ -1,27 +1,29 @@
 # -*- coding: utf-8 -*-
 
 # Author: "Subhasis", "HarshaRani","Aviral Goel"
-# Maintainer: HarshaRani
+# Maintainer: HarshaRani, Dilawar Singh
 # Created: Mon Nov 12 09:38:09 2012 (+0530)
 
+import os
 import imp
 import inspect
 import traceback
 import re
-import warnings
 import sys
 import code
 
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict
 from PyQt5 import QtGui, QtCore, Qt
 from PyQt5.QtWidgets import QMainWindow, QAction, QApplication
-from PyQt5.QtWidgets import QDockWidget, QMdiArea
+from PyQt5.QtWidgets import QDockWidget, QMdiArea, QMenu
+from PyQt5.QtWidgets import QActionGroup, QSizePolicy, QDialog
+from PyQt5.QtWidgets import QDialog, QGridLayout, QPushButton
+from PyQt5.QtWidgets import QHBoxLayout
 
 # moose
 import moose
-from moose.chemUtil.add_Delete_ChemicalSolver import *
-from moose import utils
 
+# moosegui
 from moosegui import config 
 from moosegui import mplugin
 from moosegui import mexception
@@ -32,11 +34,7 @@ from moosegui.objectedit import ObjectEditDockWidget
 from moosegui.newmodeldialog import DialogWidget
 from moosegui.biomodelsclient import BioModelsClientWidget
 from moosegui.MdiArea import MdiArea
-from moosegui.plugins.setsolver import *
-from moosegui.plugins.defines import *
-from moosegui.MdiArea import MdiArea
-from moosegui.plugins.defines import *
-import moosegui.examples as demos
+from moosegui.plugins import defines
 
 # Logger
 _logger = config._logger
@@ -199,41 +197,31 @@ class MWindow(QMainWindow):
             self.createPopup()
 
     def createPopup(self):
-        self.popup = dialog = QDialog(self)
-        #dialog.setWindowFlags(Qt.Qt.Dialog | Qt.Qt.FramelessWindowHint)
-        dialog.setWindowFlags(Qt.Qt.Dialog | Qt.Qt.CustomizeWindowHint)
-        #dialog.setStyleSheet("border:1px solid rgb(0, 0, 0); ")
-        qapp = QApplication.desktop().screenGeometry();
-        dialog.setGeometry((qapp.bottomLeft().x()+100),(qapp.bottomLeft().y()-250),100,100)
-        #dialog.move(qapp.bottomLeft().x()+10,qapp.bottomLeft().y()-10)
-        layout = QGridLayout()
-        self.setStyleSheet(
-                "QPushButton{border-radius: 5px; border-color: rgb(0,0,0); "
-                "border-width: 2px; border-style: outset;"
-                "padding-top: 2px; padding-bottom: 5px;"
-                "padding-left: 5px; padding-right: 5px}"
-                )
+        self.popup = dialog = QDialog()
         createKineticModelButton = QPushButton("Create Kinetic Model")
         loadKineticModelButton   = QPushButton("Load Model")
         loadNeuronalModelButton  = QPushButton("Load Neuronal Model")
-        layout.setContentsMargins(QtCore.QMargins(20,20,20,20))
 
-        self.menuitems = OrderedDict([
-            ("Fig2C" ,            "../moose-examples/paper-2015/Fig2_elecModels/Fig2C.py"),
-            ("Fig2D (35s)",       "../moose-examples/paper-2015/Fig2_elecModels/Fig2D.py"),
-            ("Fig2E" ,            "../moose-examples/paper-2015/Fig2_elecModels/Fig2E.py"),
-            ("Fig3B_Gssa",        "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
-            ("Fig3C_Gsl",         "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
-            ("Fig3D",             "../moose-examples/paper-2015/Fig3_chemModels/Fig3D.py"),
-            ("Fig4B",             "../moose-examples/paper-2015/Fig4_ReacDiff/Fig4B.py"  ),
-            ("Fig4K",             "../moose-examples/paper-2015/Fig4_ReacDiff/rxdSpineSize.py"),
-            ("Fig5A (20s)",       "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5A.py"),
-            ("Fig5BCD (240s)" ,   "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5BCD.py"),
-            ("Fig6A (60s)",       "../moose-examples/paper-2015/Fig6_NetMultiscale/Fig6A.py" ),
-            ("ReducedModel (200s)",   "../moose-examples/paper-2015/Fig6_NetMultiscale/ReducedModel.py"),
-            ("Squid" ,            "../moose-examples/squid/squid_demo.py")
-            ])
-        layout.setContentsMargins(QtCore.QMargins(20,20,20,20))
+        # setup layout.
+        layout = QGridLayout()
+        _m = 15
+        layout.setContentsMargins(QtCore.QMargins(_m, _m, _m, _m))
+
+        self.menuitems = [
+                ("Fig2C" ,            "../moose-examples/paper-2015/Fig2_elecModels/Fig2C.py"),
+                ("Fig2D (35s)",       "../moose-examples/paper-2015/Fig2_elecModels/Fig2D.py"),
+                ("Fig2E" ,            "../moose-examples/paper-2015/Fig2_elecModels/Fig2E.py"),
+                ("Fig3B_Gssa",        "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
+                ("Fig3C_Gsl",         "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
+                ("Fig3D",             "../moose-examples/paper-2015/Fig3_chemModels/Fig3D.py"),
+                ("Fig4B",             "../moose-examples/paper-2015/Fig4_ReacDiff/Fig4B.py"  ),
+                ("Fig4K",             "../moose-examples/paper-2015/Fig4_ReacDiff/rxdSpineSize.py"),
+                ("Fig5A (20s)",       "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5A.py"),
+                ("Fig5BCD (240s)" ,   "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5BCD.py"),
+                ("Fig6A (60s)",       "../moose-examples/paper-2015/Fig6_NetMultiscale/Fig6A.py" ),
+                ("ReducedModel (200s)",   "../moose-examples/paper-2015/Fig6_NetMultiscale/ReducedModel.py"),
+                ("Squid" ,            "../moose-examples/squid/squid_demo.py")
+                ]
         layout1 = QHBoxLayout()
         layout1.addWidget(createKineticModelButton)
         layout1.addWidget(loadKineticModelButton)
@@ -245,7 +233,7 @@ class MWindow(QMainWindow):
         layout7 = QHBoxLayout()
         listofButtons = {}
         for i, k in enumerate( self.menuitems ):
-            _logger.debug( "Adding button for %s" % k[0] )
+            _logger.info( "Adding button for %s" % k[0] )
             t = k[0]
             button = QPushButton(k[0])
             if k[0] == "Fig2E":
@@ -301,16 +289,22 @@ class MWindow(QMainWindow):
         layout.addLayout(layout5,4,0)
         layout.addLayout(layout6,5,0)
         layout.addLayout(layout7,6,0)
-        dialog.setStyleSheet("border:1px solid rgb(0, 0, 0); ")
-        dialog.setLayout(layout)
+        self.popup.setStyleSheet("border:1px solid rgb(0, 0, 0); ")
+        self.popup.setLayout(layout)
 
         createKineticModelButton.clicked.connect(self.newModelDialogSlot)
         loadKineticModelButton.clicked.connect(self.loadModelDialogSlot)
         loadNeuronalModelButton.clicked.connect(self.loadModelDialogSlot)
-        
-        dialog.show()
-        freeCursor()
-        return dialog
+
+        # Create the popup and move to the middle of destop app.
+        qApp = QApplication.desktop()
+        qAppScreen = qApp.screenGeometry();
+        self.popup.setGeometry((qAppScreen.bottomLeft().x()+100),(qAppScreen.bottomLeft().y()-250),100,100)
+        self.popup.move( qApp.availableGeometry().center() )
+        self.popup.setWindowFlags( Qt.Qt.WindowStaysOnTopHint |
+                Qt.Qt.X11BypassWindowManagerHint # else it wont go on top.
+                )
+        self.popup.show()
 
     def run_genesis_script(self, filepath, solver):
         if self.popup:
@@ -476,9 +470,9 @@ class MWindow(QMainWindow):
             if self._loadedModels[i][0]== root:
                 c = moose.Clock('/clock')
                 compts = moose.wildcardFind(root+'/##[ISA=ChemCompt]')
-                for simdt in CHEMICAL_SIMULATION_DT_CLOCKS:
+                for simdt in defines.CHEMICAL_SIMULATION_DT_CLOCKS:
                     c.tickDt[simdt] = self._loadedModels[i][3]
-                for plotdt in CHEMICAL_PLOT_UPDATE_INTERVAL_CLOCKS:
+                for plotdt in defines.CHEMICAL_PLOT_UPDATE_INTERVAL_CLOCKS:
                     c.tickDt[plotdt] = self._loadedModels[i][4]
         
                 if compts:
@@ -526,7 +520,7 @@ class MWindow(QMainWindow):
         already exists. If so, update the same and return
         True. Otherwise return False.
         """
-        if not isinstance(menu, QtGui.QMenu):
+        if not isinstance(menu, QMenu):
             return False
         for action in self.menuBar().actions():
             if menu.title() == action.text():
@@ -607,10 +601,10 @@ class MWindow(QMainWindow):
             title = widget.modelRoot+'/model'
             #subwin.setWindowTitle('%s: %s' % (view, widget.modelRoot))
             subwin.setWindowTitle('%s: %s' % (view, title))
-            subwin.setSizePolicy(QtGui.QSizePolicy.Minimum |
-                                 QtGui.QSizePolicy.Expanding,
-                                 QtGui.QSizePolicy.Minimum |
-                                 QtGui.QSizePolicy.Expanding)
+            subwin.setSizePolicy(QSizePolicy.Minimum |
+                                 QSizePolicy.Expanding,
+                                 QSizePolicy.Minimum |
+                                 QSizePolicy.Expanding)
             subwin.resize(600, 400)
         # Make dockwidgets from other views invisible and make those
         # from current view visible or add them if not already part of
@@ -653,38 +647,40 @@ class MWindow(QMainWindow):
 
     def getFileMenu(self):
         if self.fileMenu is None:
-            self.fileMenu = QtGui.QMenu('&File')
+            self.fileMenu = QMenu('&File')
         else:
             self.fileMenu.clear()
 
         if not hasattr(self, 'newModelAction'):
             self.newModelAction = QAction('New', self)
-            self.newModelAction.setShortcut(QApplication.translate("MainWindow", "Ctrl+N", None, QApplication.UnicodeUTF8))
-            self.connect(self.newModelAction, QtCore.SIGNAL('triggered()'), self.newModelDialogSlot)
+            self.newModelAction.setShortcut("Ctrl+N")
+            self.newModelAction.triggered.connect(self.newModelDialogSlot)
+
         self.fileMenu.addAction(self.newModelAction)
         if not hasattr(self, 'loadModelAction'):
             self.loadModelAction = QAction('L&oad model', self)
-            self.loadModelAction.setShortcut(QApplication.translate("MainWindow", "Ctrl+O", None, QApplication.UnicodeUTF8))
-            self.connect(self.loadModelAction, QtCore.SIGNAL('triggered()'), self.loadModelDialogSlot)
+            self.loadModelAction.setShortcut("Ctrl+O")
+            self.loadModelAction.triggered.connect(self.loadModelDialogSlot)
+
         self.fileMenu.addAction(self.loadModelAction)
 
         if not hasattr(self, 'Paper_2015'):
             self.menuitems = OrderedDict([
-                                        ("Fig2C (6s)" ,     "../moose-examples/paper-2015/Fig2_elecModels/Fig2C.py"),
-                                        ("Fig2D (35s)",     "../moose-examples/paper-2015/Fig2_elecModels/Fig2D.py"),
-                                        ("Fig2E (5s)" ,     "../moose-examples/paper-2015/Fig2_elecModels/Fig2E.py"),
-                                        ("Fig3B_Gssa (2s)", "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
-                                        ("Fig3C_Gsl (2s)",  "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
-                                        ("Fig3D (1s)",      "../moose-examples/paper-2015/Fig3_chemModels/Fig3D.py"),
-                                        ("Fig4B (10s)",     "../moose-examples/paper-2015/Fig4_ReacDiff/Fig4B.py"  ),
-                                        ("Fig4K",           "../moose-examples/paper-2015/Fig4_ReacDiff/rxdSpineSize.py"),
-                                        ("Fig5A (20s)",     "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5A.py"),
-                                        ("Fig5BCD (240s)" , "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5BCD.py"),
-                                        ("Fig6A (60s)",     "../moose-examples/paper-2015/Fig6_NetMultiscale/Fig6A.py" ),
-                                        ("ReducedModel (200s)", "../moose-examples/paper-2015/Fig6_NetMultiscale/ReducedModel.py"),
-                                        ("Squid" ,          "../moose-examples/squid/squid_demo.py")
-                                     ])
-            self.subMenu = QtGui.QMenu('Demos')
+                ("Fig2C (6s)" ,     "../moose-examples/paper-2015/Fig2_elecModels/Fig2C.py"),
+                ("Fig2D (35s)",     "../moose-examples/paper-2015/Fig2_elecModels/Fig2D.py"),
+                ("Fig2E (5s)" ,     "../moose-examples/paper-2015/Fig2_elecModels/Fig2E.py"),
+                ("Fig3B_Gssa (2s)", "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
+                ("Fig3C_Gsl (2s)",  "../moose-examples/paper-2015/Fig3_chemModels/Fig3ABC.g"),
+                ("Fig3D (1s)",      "../moose-examples/paper-2015/Fig3_chemModels/Fig3D.py"),
+                ("Fig4B (10s)",     "../moose-examples/paper-2015/Fig4_ReacDiff/Fig4B.py"  ),
+                ("Fig4K",           "../moose-examples/paper-2015/Fig4_ReacDiff/rxdSpineSize.py"),
+                ("Fig5A (20s)",     "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5A.py"),
+                ("Fig5BCD (240s)" , "../moose-examples/paper-2015/Fig5_CellMultiscale/Fig5BCD.py"),
+                ("Fig6A (60s)",     "../moose-examples/paper-2015/Fig6_NetMultiscale/Fig6A.py" ),
+                ("ReducedModel (200s)", "../moose-examples/paper-2015/Fig6_NetMultiscale/ReducedModel.py"),
+                ("Squid" ,          "../moose-examples/squid/squid_demo.py")
+                ])
+            self.subMenu = QMenu('Demos')
             for i in range(0,len(self.menuitems)):
                 k = self.menuitems.popitem(0)
                 if k[0] == "Fig2C (6s)":
@@ -755,14 +751,15 @@ class MWindow(QMainWindow):
 
         if not hasattr(self,'connectBioModelAction'):
             self.connectBioModelAction = QAction('&Connect BioModels', self)
-            self.connectBioModelAction.setShortcut(QApplication.translate("MainWindow", "Ctrl+B", None, QApplication.UnicodeUTF8))
-            self.connect(self.connectBioModelAction, QtCore.SIGNAL('triggered()'), self.connectBioModel)
+            self.connectBioModelAction.setShortcut("Ctrl+B")
+            self.connectBioModelAction.triggered.connect(self.connectBioModel)
+
         self.fileMenu.addAction(self.connectBioModelAction)
         return self.fileMenu
 
     def getEditMenu(self):
         if self.editMenu is None:
-            self.editMenu = QtGui.QMenu('&Edit')
+            self.editMenu = QMenu('&Edit')
         else:
             self.editMenu.clear()
         #self.editMenu.addActions(self.getEditActions())
@@ -771,7 +768,7 @@ class MWindow(QMainWindow):
     def getPluginsMenu(self):
         """Populate plugins menu if it does not exist already."""
         if (not hasattr(self, 'pluginsMenu')) or (self.pluginsMenu is None):
-            self.pluginsMenu = QtGui.QMenu('&Plugins')
+            self.pluginsMenu = QMenu('&Plugins')
             mapper = QtCore.QSignalMapper(self)
             pluginsGroup = QActionGroup(self)
             pluginsGroup.setExclusive(True)
@@ -779,44 +776,16 @@ class MWindow(QMainWindow):
                 action = QAction(pluginName, self)
                 action.setObjectName(pluginName)
                 action.setCheckable(True)
-                mapper.setMapping(action, QtCore.QString(pluginName))
-                self.connect(action, QtCore.SIGNAL('triggered()'), mapper, QtCore.SLOT('map()'))
+                mapper.setMapping(action, pluginName)
+                action.triggered.connect(mapper.map)
                 self.pluginsMenu.addAction(action)
                 pluginsGroup.addAction(action)
-            self.connect(mapper, QtCore.SIGNAL('mapped(const QString &)'), self.setPlugin)
-            #self.pluginsMenu.addMenu(self.defaultPluginMenu)
-            #self.pluginsMenu.addMenu(self.kkitPluginMenu)
-            #self.pluginsMenu.addMenu(self.neurokitPluginMenu)
-            #openRootAction = self.defaultPluginMenu.addAction("/")
-            #openRootAction.triggered.connect(lambda : self.setPlugin("default", "/") )
-            # if (not hasattr(self, 'loadedModelAction')) or (self.loadedModelAction is None)  :
-            #     self.loadedModelAction = QAction("kkit",self)
-            #     self.loadedModelAction.addMenu('test')
-            # self.pluginsMenu.addAction(self.loadedModelAction)
-            # self.pluginsMenu.addMenu(self.insertkkitMenu)
-            # self.insertMapperkkit = QtCore.QSignalMapper(self)
-            #insertMapperkkit,actions = self.getInsertkkitActions(self.loadedModels)
-            # ignored_bases = ['ZPool', 'Msg', 'Panel', 'SolverBase', 'none']
-            # ignored_classes = ['ZPool','ZReac','ZMMenz','ZEnz','CplxEnzBase']
-            # classlist = [ch[0].name for ch in moose.element('/classes').children
-            #              if (ch[0].baseClass not in ignored_bases)
-            #              and (ch[0].name not in (ignored_bases + ignored_classes))
-            #              and not ch[0].name.startswith('Zombie')
-            #              and not ch[0].name.endswith('Base')
-            #          ]
-            # insertMapper, actions = self.getInsertActions(classlist)
-            # for action in actions:
-            #     self.insertMenu.addAction(action)
-            # self.connect(insertMapper, QtCore.SIGNAL('mapped(const QString&)'), self.tree.insertElementSlot)
-            # self.editAction = QAction('Edit', self.treeMenu)
-            # self.editAction.triggered.connect(self.editCurrentObjectSlot)
-            # self.tree.elementInserted.connect(self.elementInsertedSlot)
-            # self.treeMenu.addAction(self.editAction)
+            mapper.mapped.connect(self.setPlugin)
         return self.pluginsMenu
 
     def getHelpMenu(self):
         if self.helpMenu is None:
-            self.helpMenu = QtGui.QMenu('&Help')
+            self.helpMenu = QMenu('&Help')
         else:
             self.helpMenu.clear()
         self.helpMenu.addActions(self.getHelpActions())
@@ -824,7 +793,7 @@ class MWindow(QMainWindow):
     '''
     def getConnectMenu(self):
         if self.connectMenu is None:
-            self.connectMenu = QtGui.QMenu('&Connect')
+            self.connectMenu = QMenu('&Connect')
         else:
             self.connectMenu.clear()
         self.connectMenu.addActions(self.getConnectActions())
@@ -832,7 +801,7 @@ class MWindow(QMainWindow):
     '''
     def getViewMenu(self):
         if (not hasattr(self, 'viewMenu')) or (self.viewMenu is None):
-            self.viewMenu = QtGui.QMenu('&View')
+            self.viewMenu = QMenu('&View')
         else:
             self.viewMenu.clear()
         self.viewMenu.addActions(self.getViewActions())
@@ -913,14 +882,15 @@ class MWindow(QMainWindow):
     def getHelpActions(self):
         if (not hasattr(self, 'helpActions')) or (self.helpActions is None):
             self.actionAbout = QAction('About MOOSE', self)
-            self.connect(self.actionAbout, QtCore.SIGNAL('triggered()'), self.showAboutMoose)
+            self.actionAbout.triggered.connect(self.showAboutMoose)
             self.actionBuiltInDocumentation = QAction('Built-in documentation', self)
-            self.connect(self.actionBuiltInDocumentation, QtCore.SIGNAL('triggered()'), self.showBuiltInDocumentation)
+            self.actionBuiltInDocumentation.triggered.connect(self.showBuiltInDocumentation)
             self.actionGuiBug = QAction('Report gui bug', self)
-            self.connect(self.actionGuiBug, QtCore.SIGNAL('triggered()'), self.reportGuiBug)
-            self.actionCoreBug = QAction('Report core bug', self)
-            self.connect(self.actionCoreBug, QtCore.SIGNAL('triggered()'), self.reportCoreBug)
-            self.helpActions = [self.actionAbout, self.actionBuiltInDocumentation, self.actionCoreBug,self.actionGuiBug]
+            self.actionGuiBug.triggered.connect(self.reportGuiBug)
+            self.actionCoreBug = QAction('Report pymoose bug', self)
+            self.actionCoreBug.triggered.connect(self.reportCoreBug)
+            self.helpActions = [self.actionAbout, self.actionBuiltInDocumentation
+                    , self.actionCoreBug,self.actionGuiBug]
         return self.helpActions
 
 

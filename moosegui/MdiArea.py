@@ -1,5 +1,6 @@
-from PyQt5.QtGui import QImage
+from PyQt5.QtGui import QImage, QPainter, QColor, QBrush
 from PyQt5.QtWidgets import QMdiArea
+from PyQt5 import QtCore
 import os
 
 APPLICATION_BACKGROUND_PATH = os.path.join(

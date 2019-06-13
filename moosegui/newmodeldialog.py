@@ -1,46 +1,29 @@
 # -*- coding: utf-8 -*-
  
-import sys
-import os
-import numpy as np
 import re
 
-from PyQt5 import QtGui, QtCore,Qt
+from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QWidget, QDialogButtonBox, QDialog
-
-import moosegui.config as config
-from moosegui.mplugin import MoosePluginBase, EditorBase, EditorWidgetBase, PlotBase, RunBase
+from PyQt5.QtWidgets import QGridLayout, QLabel, QLineEdit
+from PyQt5.QtWidgets import QHBoxLayout
 
 class DialogWidget(QDialog):
     def __init__(self,parent=None):
         QWidget.__init__(self, parent)
         self.warning = None
         self._currentRadioButton ="kkit"
-        self.layout = QtGui.QGridLayout()
-        self.modelPathLabel = QtGui.QLabel('Model Name')
-        self.modelPathEdit =  QtGui.QLineEdit('')
+        self.layout = QGridLayout()
+        self.modelPathLabel = QLabel('Model Name')
+        self.modelPathEdit =  QLineEdit('')
         self.layout.addWidget(self.modelPathLabel, 0, 0)
         self.layout.addWidget(self.modelPathEdit, 0, 1,1,1)
-        # self.defaultRadio = QtGui.QRadioButton('default')
-        # #self.defaultRadio.setChecked(True);
-        # self.kkitRadio = QtGui.QRadioButton('kkit')
-        # self.kkitRadio.setChecked(True)
-        # self.defaultRadio.toggled.connect(lambda : self.setcurrentRadioButton('default'))
-        # self.kkitRadio.toggled.connect(lambda : self.setcurrentRadioButton('kkit'))
-        # layout.addWidget(self.defaultRadio,2,1)
-        # layout.addWidget(self.kkitRadio,2,0)
-        self.hbox = QtGui.QHBoxLayout()
+        self.hbox = QHBoxLayout()
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        self.connect(self.buttonBox, QtCore.SIGNAL('accepted()'), self.validateAccept)
+        self.buttonBox.accepted.connect(self.validateAccept)
         self.hbox.addWidget(self.buttonBox,1)
-
         self.buttonBox1 = QDialogButtonBox(QDialogButtonBox.Cancel)
-        self.connect(self.buttonBox1, QtCore.SIGNAL('rejected()'), self.Cancel)
+        self.buttonBox1.rejected.connect(self.Cancel)
         self.hbox.addWidget(self.buttonBox1,0)
-        #self.hbox.setBackgroundColor(Blue)
-        #self.modelPathEdit.returnPressed.connect(self.validateAccept)
-        # self.connect(self.buttonBox, QtCore.SIGNAL('rejected()'), self.reject)
-        #self.hbox.addStretch(1)
         self.layout.addLayout(self.hbox,1,1)
         self.setLayout(self.layout)
 
@@ -68,7 +51,8 @@ class DialogWidget(QDialog):
         return self._currentRadioButton
 
 if __name__ == '__main__':
-    app =QtGui.QApplication([])
+    from PyQt5.QtWidgets import QApplication
+    app = QApplication([])
     widget = DialogWidget()
     widget.setWindowTitle('New Model')
     widget.setMinimumSize(400, 200)

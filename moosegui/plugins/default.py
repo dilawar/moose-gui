@@ -12,41 +12,32 @@ from collections import defaultdict
 import numpy as np
 
 from matplotlib import rcParams
-from matplotlib.lines import Line2D
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 rcParams.update({'figure.autolayout': True})
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import Qt
-from PyQt5.QtCore import pyqtSlot, Signal, pyqtSignal
+from PyQt5.QtCore import pyqtSlot, pyqtSignal
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtGui import QDoubleValidator
 
 from PyQt5.QtWidgets import QToolBar, QToolButton
 from PyQt5.QtWidgets import QLabel, QLineEdit
-from PyQt5.QtWidgets import QErrorMessage, QSizeGrip, QAction
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QSizeGrip
-from PyQt5.QtWidgets import QLayout
+from PyQt5.QtWidgets import QAction, QSizePolicy
+from PyQt5.QtWidgets import QWidget, QHBoxLayout
 from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtWidgets import QMenu
 
 # moose
 import moose
-from moose import utils
-from moose.chemUtil.add_Delete_ChemicalSolver import *
-
 
 # moosegui
 from moosegui.global_constants import preferences
 from moosegui.mtoolbutton import MToolButton
-from moosegui.msearch import SearchWidget
 from moosegui.checkcombobox import CheckComboBox
-from moosegui.mplugin import MoosePluginBase, EditorBase, EditorWidgetBase, PlotBase, RunBase
+from moosegui.mplugin import MoosePluginBase, EditorBase, EditorWidgetBase, RunBase
 from moosegui.plugins.kkitUtil import getColor
 from moosegui.plugins.Runner import Runner
-from moosegui.global_constants import preferences
-from moosegui.plugins.setsolver import *
 from moosegui import config
 from moosegui import mtree
 #  from moosegui.PlotWidgetContainer import PlotWidgetContainer
@@ -108,7 +99,7 @@ class MooseEditorView(EditorBase):
         self.__initToolBars()
 
     def __initMenus(self):
-        editMenu = QtGui.QMenu('&Edit')
+        editMenu = QMenu('&Edit')
         for menu in self.getCentralWidget().getMenus():
             editMenu.addMenu(menu)
         self._menus.append(editMenu)
@@ -193,7 +184,7 @@ class DefaultEditorWidget(EditorWidgetBase):
     """
     def __init__(self, *args):
         EditorWidgetBase.__init__(self, *args)
-        layout = QtGui.QHBoxLayout()
+        layout = QHBoxLayout()
         self.setLayout(layout)
         self.tree = MooseTreeEditor()
         self.tree.setAcceptDrops(True)
@@ -204,12 +195,12 @@ class DefaultEditorWidget(EditorWidgetBase):
         try:
             return self.treeMenu
         except AttributeError:
-            self.treeMenu = QtGui.QMenu()
+            self.treeMenu = QMenu()
 
         self.tree.setContextMenuPolicy(Qt.CustomContextMenu)
         self.tree.customContextMenuRequested.connect(lambda : self.treeMenu.exec_(QtGui.QCursor.pos()) )
         # Inserting a child element
-        self.insertMenu = QtGui.QMenu('Insert')
+        self.insertMenu = QMenu('Insert')
         self._menus.append(self.insertMenu)
         self.treeMenu.addMenu(self.insertMenu)
         self.insertMapper = QtCore.QSignalMapper(self)
@@ -224,8 +215,8 @@ class DefaultEditorWidget(EditorWidgetBase):
         insertMapper, actions = self.getInsertActions(classlist)
         for action in actions:
             self.insertMenu.addAction(action)
-        self.connect(insertMapper, QtCore.SIGNAL('mapped(const QString&)'), self.tree.insertElementSlot)
-        self.editAction = QtGui.QAction('Edit', self.treeMenu)
+        insertMapper.mapped.connect(self.tree.insertElementSlot)
+        self.editAction = QAction('Edit', self.treeMenu)
         self.editAction.triggered.connect(self.editCurrentObjectSlot)
         self.tree.elementInserted.connect(self.elementInsertedSlot)
         self.treeMenu.addAction(self.editAction)
@@ -256,7 +247,7 @@ class DefaultEditorWidget(EditorWidgetBase):
 
     def getToolBars(self):
         if not hasattr(self, '_insertToolBar'):
-            self._insertToolBar = QtGui.QToolBar('Insert')
+            self._insertToolBar = QToolBar('Insert')
             return self._toolBars
             for action in self.insertMenu.actions():
                 button = MToolButton()
@@ -347,7 +338,6 @@ class RunView(RunBase):
         widget.runner.simulationStarted.connect(self._centralWidget.extendXAxes)
         widget.runner.simulationProgressed.connect(self._centralWidget.updatePlots)
         widget.runner.simulationFinished.connect(self._centralWidget.rescalePlots)
-        # widget.runner.simulationContinued.connect(self._centralWidget.extendXAxes)
         widget.runner.simulationReset.connect(self._centralWidget.plotAllData)
         self._toolBars += widget.getToolBars()
         return self.schedulingDockWidget
@@ -761,7 +751,7 @@ class PlotWidget(QWidget):
         self.canvas.draw()
 
     def getContextMenu(self):
-        menu =  QMenu()
+        menu = QMenu()
         # closeAction      = menu.addAction("Delete")
         exportCsvAction = menu.addAction("Export to CSV")
         exportCsvAction.triggered.connect(self.saveAllCsv)
@@ -1043,11 +1033,11 @@ class PlotWidget(QWidget):
     def getMenus(self):
         if not hasattr(self, '_menus'):
             self._menus = []
-            self.plotAllAction = QtGui.QAction('Plot all data', self)
+            self.plotAllAction = QAction('Plot all data', self)
             self.plotAllAction.triggered.connect(self.plotAllData)
-            self.plotMenu = QtGui.QMenu('Plot')
+            self.plotMenu = QMenu('Plot')
             self.plotMenu.addAction(self.plotAllAction)
-            self.saveAllCsvAction = QtGui.QAction('Save all data in CSV files', self)
+            self.saveAllCsvAction = QAction('Save all data in CSV files', self)
             self.saveAllCsvAction.triggered.connect(self.saveAllCsv)
             self.plotMenu.addAction(self.saveAllCsvAction)
             self._menus.append(self.plotMenu)
@@ -1062,7 +1052,7 @@ class PlotWidget(QWidget):
 # Plot view - select fields to record
 #
 ###################################################
-class PlotSelectionWidget(QtGui.QScrollArea):
+class PlotSelectionWidget(QScrollArea):
     """Widget showing the fields of specified elements and their plottable
     fields. User can select any number of fields for plotting and click a
     button to generate the tables for recording data.
@@ -1072,7 +1062,7 @@ class PlotSelectionWidget(QtGui.QScrollArea):
 
     """
     def __init__(self, model, graph, *args):
-        QtGui.QScrollArea.__init__(self, *args)
+        QScrollArea.__init__(self, *args)
         self.model = moose.element(model.path + "/model")
         self.modelRoot = self.model.path
         self.setLayout(QtGui.QVBoxLayout(self))
@@ -1109,7 +1099,7 @@ class PlotSelectionWidget(QtGui.QScrollArea):
             del item
         self._elementWidgetsDict.clear()
         label = QtGui.QLabel('Element')
-        label.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.getPlotListWidget().layout().addWidget(label, 0, 0, 1, 2)
         self.getPlotListWidget().layout().addWidget(QtGui.QLabel('Fields to plot'), 0, 2, 1, 1)
         for ii, entry in enumerate(elementlist):

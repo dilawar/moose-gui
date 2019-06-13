@@ -12,9 +12,9 @@ import numpy as np
 from PyQt5 import QtGui, QtCore
 from PyQt5.Qt import Qt
 
-#from matplotlib.figure import Figure
-#from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-#from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 import moose
 
@@ -30,8 +30,7 @@ class CanvasWidget(FigureCanvas):
     this).
 
     """
-    updateSignal = pyqtSignal()
-
+    updateSignal = QtCore.pyqtSignal()
     def __init__(self, model, graph, index, *args, **kwargs):
         self.model = model
         self.graph = graph
@@ -143,10 +142,9 @@ class CanvasWidget(FigureCanvas):
         self.draw()
 
 
-import sys
 import os
-from . import config
 import unittest
+from moosegui import config
 
 from PyQt5.QtTest import QTest
 

@@ -6,8 +6,8 @@
 # Maintainer:
 # Created: Tue Oct  2 17:25:41 2012 (+0530)
 
-from PyQt5 import QtGui, QtCore, Qt
-from PyQt5.QtWidgets import QWidget
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QWidget, QAction
 import moose
 
 class MoosePluginBase(QtCore.QObject):
@@ -255,12 +255,9 @@ class EditorWidgetBase(QWidget):
         if len(self._insertActions) == 0:
             self._insertMapper = QtCore.QSignalMapper(self)
             for classname in classlist:
-                action = QtGui.QAction(classname, self)
-                self._insertMapper.setMapping(action, QtCore.QString(classname))
-                self.connect(action,
-                             QtCore.SIGNAL('triggered()'),
-                             self._insertMapper,
-                             QtCore.SLOT('map()'))
+                action = QAction(classname, self)
+                self._insertMapper.setMapping(action, classname)
+                action.triggered.connect(self._insertMapper.map)
                 doc = moose.element('/classes/%s' % (classname)).docs
                 doc = doc.split('Description:')[-1].split('Name:')[0].strip()
                 action.setToolTip(doc)

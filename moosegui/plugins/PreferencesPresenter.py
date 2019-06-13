@@ -15,9 +15,10 @@ import moose
 from moosegui.plugins.PreferencesView import PreferencesView
 from moosegui.plugins.defines import *
 
-PREFERENCES_FILEPATH = os.path.join( os.path.dirname(os.path.abspath(__file__))
-                                   , "datastore/preferences.json"
-                                   )
+PREFERENCES_FILEPATH = os.path.join( 
+        os.path.dirname(os.path.abspath(__file__))
+        , "datastore/preferences.json"
+        )
 
 class PreferencesPresenter(QObject):
 
