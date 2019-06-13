@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 __author__      =   "HarshaRani"
 __credits__     =   ["Upi Lab"]
@@ -8,34 +9,18 @@ __email__       =   "hrani@ncbs.res.in"
 __status__      =   "Development"
 __updated__     =   "Feb 22 2019"
 
-#Change log:
-#2019
-#Feb 22: cross compartment molecules are checked for destination 
-# 2018 
-#Oct 26: xfer cross compartment molecules are hidden and for cross compartment reaction's
-#        connection are now dotted line 
-#Oct 10: filedialog default is sbml
-#         layout co-ordainates are updated with scenepos 
-#Sep 11: comparment size is calculated based on group sceneBoundingRect size
-#Sep 07: in positionChange all the group's boundingRect is calculated
-#        and when group is moved the children's position are stored
-#Jun 18: update the color of the group from objecteditor
-#code
-
 import math
 import sys
-import posixpath
 from os.path import expanduser
 
 from PyQt5 import QtGui, QtCore, Qt
-from PyQt5.QtWidgets import QWidget, QGridLayout
+from PyQt5.QtWidgets import QWidget, QGridLayout, QFileDialog
 from PyQt5.QtGui import QColor
 
 # moosegui
 from moosegui import RunWidget
 from moosegui.mplugin import *
-
-from moosegui.plugins.default import *
+from moosegui.plugins.default import MoosePlugin, MooseEditorView
 from moosegui.plugins.kkitUtil import *
 from moosegui.plugins.kkitQGraphics import *
 from moosegui.plugins.kkitViewcontrol import *
@@ -44,9 +29,7 @@ from moosegui.plugins.kkitOrdinateUtil import *
 from moosegui.plugins.mtoolbutton import MToolButton
 
 # moose
-from moose import SBML
-from moose.genesis.writeKkit import mooseWriteKkit
-from moose.chemUtil.add_Delete_ChemicalSolver import *
+import moose
 
 import re
 
@@ -76,13 +59,9 @@ class KkitPlugin(MoosePlugin):
         if not dirpath:
             dirpath = expanduser("~")
         filters = {'SBML(*.xml)': 'SBML','Genesis(*.g)':'Genesis'}
-        #filename,filter_ = QtGui.QFileDialog.getSaveFileNameAndFilter(None,'Save File',dirpath,';;'.join(filters))
-        filename,filter_ = QtGui.QFileDialog.getSaveFileNameAndFilter(None,'Save File',dirpath,"SBML(*.xml);;Genesis(*.g)")
-        extension = ""
+        filename,filter_ = QFileDialog.getSaveFileNameAndFilter(None,'Save File',dirpath,"SBML(*.xml);;Genesis(*.g)")
         if str(filename).rfind('.') != -1:
             filename = filename[:str(filename).rfind('.')]
-            if str(filter_).rfind('.') != -1:
-                extension = filter_[str(filter_).rfind('.'):len(filter_)-1]
 
         if filename:
             filename = filename
@@ -117,7 +96,7 @@ class KkitPlugin(MoosePlugin):
                         y = -annoInfo.y * 10
                         self.coOrdinates[k] = {'x':x, 'y':y}
 
-                error,written = mooseWriteKkit(self.modelRoot,str(filename),self.coOrdinates)
+                error,written = moose.mooseWriteKkit(self.modelRoot,str(filename),self.coOrdinates)
                 if written == False:
                     QtGui.QMessageBox.information(None,'Could not save the Model','\nCheck the file')
                 else:
@@ -233,11 +212,11 @@ class AnotherKkitRunView(RunView):
 
     def setSolver(self, modelRoot,solver = None):
         if solver == None:
-            reinit = mooseAddChemSolver(modelRoot,self.getSchedulingDockWidget().widget().solver)
+            reinit = moose.mooseAddChemSolver(modelRoot,self.getSchedulingDockWidget().widget().solver)
             if reinit:
                 self.getSchedulingDockWidget().widget().resetSimulation()
         else:
-            reinit = mooseAddChemSolver(modelRoot,solver)
+            reinit = moose.mooseAddChemSolver(modelRoot,solver)
             if reinit:
                 self.getSchedulingDockWidget().widget().resetSimulation()
 
@@ -277,50 +256,10 @@ class KkitRunView(MooseEditorView):
         return self._centralWidget
 
 class KkitEditorView(MooseEditorView):
-    #def __init__(self, plugin, dataTable):
+
     def __init__(self, plugin):
         MooseEditorView.__init__(self, plugin)
-        ''' EditorView  '''
-        #self.dataTable = dataTable
-        #self.fileinsertMenu = QtGui.QMenu('&File')
-        # if not hasattr(self,'SaveModelAction'):
-        #     #self.fileinsertMenu.addSeparator()
-        #     self.saveModelAction = QtGui.QAction('SaveToGenesisFormat', self)
-        #     self.saveModelAction.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
-        #     self.connect(self.saveModelAction, QtCore.SIGNAL('triggered()'), self.SaveToGenesisSlot)
-        #     self.fileinsertMenu.addAction(self.saveModelAction)
-        #self._menus.append(self.fileinsertMenu)
 
-    # def SaveModelDialogSlot(self):
-    #     type_sbml = 'SBML'
-    #     filters = {'SBML(*.xml)': type_sbml}
-    #     filename,filter_ = QtGui.QFileDialog.getSaveFileNameAndFilter(None,'Save File','',';;'.join(filters))
-    #     extension = ""
-    #     if str(filename).rfind('.') != -1:
-    #         filename = filename[:str(filename).rfind('.')]
-    #         if str(filter_).rfind('.') != -1:
-    #             extension = filter_[str(filter_).rfind('.'):len(filter_)-1]
-    #     if filename:
-    #         filename = filename+extension
-    #         if filters[str(filter_)] == 'SBML':
-    #             writeerror = moose.writeSBML(str(filename),self.plugin.modelRoot)
-    #             if writeerror:
-    #                 QtGui.QMessageBox.warning(None,'Could not save the Model','\n Error in the consistency check')
-    #             else:
-    #                  QtGui.QMessageBox.information(None,'Saved the Model','\n File Saved to \'{filename}\''.format(filename =filename),QtGui.QMessageBox.Ok)
-    '''
-    def getToolPanes(self):
-        return super(KkitEditorView, self).getToolPanes()
-
-    def getLibraryPane(self):
-        return super(KkitEditorView, self).getLibraryPane()
-
-    def getOperationsWidget(self):
-        return super(KkitEditorView, self).getOperationsPane()
-
-    def getToolBars(self):
-        return self._toolBars
-    '''
     def getCentralWidget(self):
         if self._centralWidget is None:
             self._centralWidget = kineticEditorWidget(self.plugin)
@@ -393,7 +332,7 @@ class  KineticsWidget(EditorWidgetBase):
             elif isinstance(self,kineticRunWidget):
                 self.view.setRefWidget("runView")
             self.connect(self.view, QtCore.SIGNAL("dropped"), self.objectEditSlot)
-            hLayout = QtGui.QGridLayout(self)
+            hLayout = QGridLayout(self)
             self.setLayout(hLayout)
             hLayout.addWidget(self.view,0,0)
         else:
@@ -412,12 +351,12 @@ class  KineticsWidget(EditorWidgetBase):
                 self.view.setRefWidget("editorView")
                 self.view.setAcceptDrops(True)
                 self.connect(self.view, QtCore.SIGNAL("dropped"), self.objectEditSlot)
-                hLayout = QtGui.QGridLayout(self)
+                hLayout = QGridLayout(self)
                 self.setLayout(hLayout)
                 hLayout.addWidget(self.view)
             elif isinstance(self,kineticRunWidget):
                 self.view.setRefWidget("runView")
-                hLayout = QtGui.QGridLayout(self)
+                hLayout = QGridLayout(self)
                 self.setLayout(hLayout)
                 hLayout.addWidget(self.view)
                 self.view.fitInView(self.sceneContainer.itemsBoundingRect().x()-10,self.sceneContainer.itemsBoundingRect().y()-10,self.sceneContainer.itemsBoundingRect().width()+20,self.sceneContainer.itemsBoundingRect().height()+20,Qt.Qt.IgnoreAspectRatio)
@@ -1170,7 +1109,10 @@ class kineticRunWidget(KineticsWidget):
 
     def updateValue(self):
         for item in self.sceneContainer.items():
-            if isinstance(item,ReacItem) or isinstance(item,MMEnzItem) or isinstance(item,EnzItem) or isinstance(item,PoolItemCircle) or isinstance(item,CplxItem):
+            if isinstance(item,ReacItem) or isinstance(item,MMEnzItem) \
+                    or isinstance(item,EnzItem) \
+                    or isinstance(item,PoolItemCircle) \
+                    or isinstance(item,CplxItem):
                 item.updateValue(item.mobj)
 
     def changeBgSize(self):
@@ -1193,37 +1135,25 @@ class kineticRunWidget(KineticsWidget):
 
     def resetColor(self):
         for item in self.sceneContainer.items():
-            if isinstance(item,PoolItemCircle):
+            if isinstance(item, PoolItemCircle):
                 item.returnEllispeSize()
 
 if __name__ == "__main__":
+    from PyQt5 import QApplication
     app = QApplication(sys.argv)
     size = QtCore.QSize(1024 ,768)
-    #modelPath = 'Kholodenko'
     modelPath = 'acc27'
-    #modelPath = 'acc8'
-    #modelPath = '3ARECB'
-    #modelPath = '3AreacB'
-    #modelPath = '5AreacB'
     itemignoreZooming = False
     try:
-        filepath = '../../Demos/Genesis_files/'+modelPath+'.g'
-        filepath = '/home/harsha/genesis_files/gfile/'+modelPath+'.g'
+        filepath = '../data/'+modelPath+'.g'
         print( "%s" %(filepath))
         f = open(filepath, "r")
-        loadModel(filepath,'/'+modelPath)
-
-        #moose.le('/'+modelPath+'/kinetics')
+        moose.loadModel(filepath,'/'+modelPath)
         dt = KineticsWidget()
         dt.modelRoot ='/'+modelPath
-        ''' Loading moose signalling model in python '''
-        #execfile('/home/harsha/BuildQ/Demos/Genesis_files/scriptKineticModel.py')
-        #dt.modelRoot = '/model'
-
         dt.updateModelView()
         dt.show()
-
-    except IOError as what:
+    except IOError as e:
       print(e)
       quit(1)
 

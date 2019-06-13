@@ -1,8 +1,7 @@
-
 # -*- coding: utf-8 -*-
 
-
-"""Dialog for settings. Currently only plot settings are supported
+"""
+Dialog for settings. Currently only plot settings are supported
 """
 
 __author__      =   "Aviral Goel"
@@ -15,13 +14,12 @@ __status__      =   "Development"
 
 
 import sys
-import os
-from PyQt5 import QtGui, Qt
-from PyQt5.QtGui import QWidget
-from PyQt5.QtGui import QLabel
-from PyQt5.QtGui import QComboBox
-from PyQt5.QtGui import QGridLayout
-from PyQt5.QtGui import QTabWidget
+from PyQt5 import Qt
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QComboBox
+from PyQt5.QtWidgets import QGridLayout
+from PyQt5.QtWidgets import QTabWidget
 
 class SettingsWidget(QTabWidget):
     def __init__( self
@@ -50,32 +48,21 @@ class SettingsWidget(QTabWidget):
             index += 1
         return page
 
-        # combo.move(50, 50)
-        # self.lbl.move(50, 150)
-
-        # combo.activated[str].connect(self.onActivated)
-
-        # self.setGeometry(300, 300, 300, 200)
-        # self.setWindowTitle('QtGui.QComboBox')
-        # self.show()
-
-
 def main():
-    app = QtGui.QApplication(sys.argv)
-    window = QtGui.QMainWindow()
+    from PyQt5.QtWidgets import QApplication
+    app = QApplication(sys.argv)
     dialog = SettingsWidget({
-                            'LeakyIaF':['Vm'],
-                            'Compartment':['Vm','Im'],
-                            'HHChannel':['Ik','Gk'],
-                            'ZombiePool':['n','conc'],
-                            'ZombieBufPool':['n','conc'],
-                            'HHChannel2D':['Ik','Gk'],
-                            'CaConc':['Ca']
-                            }
-                           )
+        'LeakyIaF':['Vm'],
+        'Compartment':['Vm','Im'],
+        'HHChannel':['Ik','Gk'],
+        'ZombiePool':['n','conc'],
+        'ZombieBufPool':['n','conc'],
+        'HHChannel2D':['Ik','Gk'],
+        'CaConc':['Ca']
+        }
+        )
     dialog.show()
     sys.exit(app.exec_())
-
 
 if __name__ == "__main__":
     main()

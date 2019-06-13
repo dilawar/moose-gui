@@ -1,23 +1,16 @@
+# -*- coding: utf-8 -*-
+
 __author__      =   "HarshaRani"
-__credits__     =   ["Upi Lab"]
-__license__     =   "GPL3"
-__version__     =   "1.0.0"
+__credits__     =   ["Bhalla Lab, NCBS Bangalore"]
+__license__     =   "GPLv3"
 __maintainer__  =   "HarshaRani"
 __email__       =   "hrani@ncbs.res.in"
-__status__      =   "Development"
-__updated__     =   "Oct 11 2018"
 
-'''
-2018
-Oct 11: when collision is handled an update of position is done
-Sep 28: spell corrected cyclMesh to cylMesh
-Sep 17: when vertical or horizontal layout is applied for group, compartment size is recalculated
-Sep 11: group size is calculated based on sceneBoundingRect for compartment size
-2017
-Oct 18  some of the function moved to this file from kkitOrdinateUtils
-'''
+__all__ = [ "ReacItem",  "EnzItem",  "CplxItem" ]
+
 from moose import Annotator,element,ChemCompt
-from kkitQGraphics import PoolItem, ReacItem,EnzItem,CplxItem,GRPItem,ComptItem
+
+from moosegui.plugins.kkitQGraphics import PoolItem, ReacItem, EnzItem, CplxItem, GRPItem
 
 from PyQt5 import QtCore, QtGui, QtSvg
 from PyQt5.QtGui import QColor
@@ -33,7 +26,16 @@ colormap_file = open(os.path.join(config.settings[config.KEY_COLORMAP_DIR], 'rai
 colorMap = pickle.load(colormap_file)
 colormap_file.close()
 
-ignoreColor= ["mistyrose","antiquewhite","aliceblue","azure","bisque","black","blanchedalmond","blue","cornsilk","darkolivegreen","darkslategray","dimgray","floralwhite","gainsboro","ghostwhite","honeydew","ivory","lavender","lavenderblush","lemonchiffon","lightcyan","lightgoldenrodyellow","lightgray","lightyellow","linen","mediumblue","mintcream","navy","oldlace","papayawhip","saddlebrown","seashell","snow","wheat","white","whitesmoke","aquamarine","lightsalmon","moccasin","limegreen","snow","sienna","beige","dimgrey","lightsage"]
+ignoreColor= ["mistyrose", "antiquewhite", "aliceblue", "azure", "bisque",
+        "black", "blanchedalmond", "blue", "cornsilk", "darkolivegreen",
+        "darkslategray", "dimgray", "floralwhite", "gainsboro", "ghostwhite",
+        "honeydew", "ivory", "lavender", "lavenderblush", "lemonchiffon",
+        "lightcyan", "lightgoldenrodyellow", "lightgray", "lightyellow",
+        "linen", "mediumblue", "mintcream", "navy", "oldlace", "papayawhip",
+        "saddlebrown", "seashell", "snow", "wheat", "white", "whitesmoke",
+        "aquamarine", "lightsalmon", "moccasin", "limegreen", "snow", "sienna",
+        "beige",  "dimgrey",  "lightsage"]
+
 matplotcolor = {}
 for name,hexno in matplotlib.colors.cnames.items():
     matplotcolor[name]=hexno
@@ -72,12 +74,11 @@ def getColor(iteminfo):
     return(textcolor,bgcolor)
 
 def colorCheck(fc_bgcolor,fcbg):
-    """ textColor or background can be anything like string or tuple or list \
-        if string its taken as colorname further down in validColorcheck checked for valid color, \
-        but for tuple and list its taken as r,g,b value.
+    """ 
+    textColor or background can be anything like string or tuple or list \
+            if string its taken as colorname further down in validColorcheck checked for valid color, \
+            but for tuple and list its taken as r,g,b value.
     """
-    #import re
-    #fc_bgcolor = re.sub('[^a-zA-Z0-9-_*.]', '', fc_bgcolor)
     if isinstance(fc_bgcolor,str):
         if fc_bgcolor.startswith("#"):
             fc_bgcolor = QColor(fc_bgcolor)
@@ -99,11 +100,6 @@ def colorCheck(fc_bgcolor,fcbg):
     return(fc_bgcolor)
 
 def validColorcheck(color):
-        ''' 
-        Both in Qt4.7 and 4.8 if not a valid color it makes it as back but in 4.7 there will be a warning mssg which is taken here
-        checking if textcolor or backgroundcolor is valid color, if 'No' making white color as default
-        where I have not taken care for checking what will be backgroundcolor for textcolor or textcolor for backgroundcolor 
-        '''
         if QColor(color).isValid():
             return (QColor(color))
         else:
@@ -120,10 +116,7 @@ def moveMin(reference, collider, layoutPt,margin):
     else:
         yDistance = referenceRect.y() + referenceRect.height() / 2.0 + colliderRect.height() / 2.0 + margin - colliderRect.y()
 
-    #if xDistance > yDistance:
     collider.moveBy(xDistance, yDistance)
-    #else:
-    #   collider.moveBy(xDistance, 0.0)
     layoutPt.drawLine_arrow(itemignoreZooming=False)
 
 def moveX(reference, collider, layoutPt, margin):
@@ -138,20 +131,20 @@ def handleCollisions(compartments, moveCallback, layoutPt,margin = 5.0):
     if len(compartments) is 0 : return
     compartments = sorted(compartments, key = lambda c: c.sceneBoundingRect().center().x())
     reference = compartments.pop(0);
-    print (reference.name)
     referenceRect = reference.sceneBoundingRect()
-    colliders = [compartment for compartment in compartments if referenceRect.intersects(compartment.sceneBoundingRect())]
+    colliders = [compartment for compartment in compartments 
+            if referenceRect.intersects(compartment.sceneBoundingRect())
+            ]
     for collider in colliders:
         moveCallback(reference, collider, layoutPt,margin)
-    #print (reference.mobj).parent
+
     if isinstance(element(((reference.mobj).parent)),ChemCompt):
         v = layoutPt.qGraCompt[element(((reference.mobj).parent))]
-        #layoutPt.updateCompartmentSize(x)
         rectcompt = calculateChildBoundingRect(v)
         comptBoundingRect = v.boundingRect()
         if not comptBoundingRect.contains(rectcompt):
             layoutPt.updateCompartmentSize(v)
-                    
+
         else:
             rectcompt = calculateChildBoundingRect(v)
             v.setRect(rectcompt.x()-10,rectcompt.y()-10,(rectcompt.width()+20),(rectcompt.height()+20))
@@ -181,17 +174,14 @@ def calculateChildBoundingRect(compt):
                     xpos.append(l.sceneBoundingRect().bottomRight().x())
                     ypos.append(l.sceneBoundingRect().y())
                     ypos.append(l.sceneBoundingRect().bottomRight().y())
-                    '''
-                    xpos.append(l.rect().x())
-                    xpos.append(l.boundingRect().bottomRight().x())
-                    ypos.append(l.rect().y())
-                    ypos.append(l.boundingRect().bottomRight().y())
-                    '''
         if (isinstance(l,PoolItem) or isinstance(l,EnzItem)):
             ''' For Enz cplx height and for pool function height needs to be taken'''
             for ll in l.childItems():
-                ''' eleminating polygonItem (arrow) [This is happen in cross-compartment model that arrow from one compartment will be child]
-                    pool's outboundary RectItem and Enz's outerboundary Ellipse is eleminating since its same 
+                ''' eleminating polygonItem (arrow) [This is happen in
+                cross-compartment model that arrow from one compartment will be
+                child]
+                    pool's outboundary RectItem and Enz's outerboundary Ellipse
+                    is eleminating since its samee
                 '''
                 if ( (not isinstance(ll,QtGui.QGraphicsPolygonItem)) and 
                      (not isinstance(ll,QtGui.QGraphicsRectItem)) and 

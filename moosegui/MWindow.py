@@ -17,8 +17,8 @@ from PyQt5 import QtGui, QtCore, Qt
 from PyQt5.QtWidgets import QMainWindow, QAction, QApplication
 from PyQt5.QtWidgets import QDockWidget, QMdiArea, QMenu
 from PyQt5.QtWidgets import QActionGroup, QSizePolicy, QDialog
-from PyQt5.QtWidgets import QDialog, QGridLayout, QPushButton
-from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QGridLayout, QPushButton
+from PyQt5.QtWidgets import QHBoxLayout, QMessageBox
 
 # moose
 import moose
@@ -143,16 +143,16 @@ class MWindow(QMainWindow):
                 self.show()
                 self.createPopup()
                 freeCursor()
-                reply = QtGui.QMessageBox.information(self,"Model file can not open","At present python file cann\'t be laoded into GUI",QtGui.QMessageBox.Ok)
-                if reply == QtGui.QMessageBox.Ok:
+                reply = QMessageBox.information(self,"Model file can not open","At present python file cann\'t be laoded into GUI", QMessageBox.Ok)
+                if reply == QMessageBox.Ok:
                     QApplication.restoreOverrideCursor()
                     return
             if not os.path.exists(cmdfilepath):
                 self.setWindowState(QtCore.Qt.WindowMaximized)
                 self.show()
                 self.createPopup()
-                reply = QtGui.QMessageBox.information(self,"Model file can not open","File Not Found \n \nCheck filename or filepath\n ",QtGui.QMessageBox.Ok)
-                if reply == QtGui.QMessageBox.Ok:
+                reply = QMessageBox.information(self,"Model file can not open","File Not Found \n \nCheck filename or filepath\n ", QMessageBox.Ok)
+                if reply == QMessageBox.Ok:
                     QApplication.restoreOverrideCursor()
                     return
             if os.path.isdir(cmdfilepath):
@@ -351,9 +351,9 @@ class MWindow(QMainWindow):
         if isinstance(v, mexception.MooseInfo):
             self.statusBar().showMessage(title, 5000)
         elif isinstance(v, mexception.MooseWarning):
-            QtGui.QMessageBox.warning(self, title, '\n'.join((title, trace)))
+            QMessageBox.warning(self, title, '\n'.join((title, trace)))
         else:
-            QtGui.QMessageBox.critical(self, title, '\n'.join((title, trace)))
+            QMessageBox.critical(self, title, '\n'.join((title, trace)))
 
     def getPluginNames(self):
         """
@@ -447,18 +447,17 @@ class MWindow(QMainWindow):
             if issubclass(classobj, mplugin.MoosePluginBase):
                 self._loadedPlugins[name] = classobj
                 return self._loadedPlugins[name]
-        raise IndexError('No plugin with name: %s' % name)
+
+        errMsg = 'No plugin found with name: %s' % name
+        errMsg += ". Available: '{}'".format(', '.join(self._loadedPlugins.keys()))
+        _logger.error(errMsg)
+        raise IndexError(errMsg)
 
     def setPlugin(self, name, root='/'):
         """Set the current plugin to use.
-
-        This -
-
         1. sets the `plugin` attribute.
-
         2. updates menus by clearing and reinstating menus including
         anything provided by the plugin.
-
         3. sets the current view  to the plugins editor view.
 
         """
@@ -476,9 +475,7 @@ class MWindow(QMainWindow):
                     c.tickDt[plotdt] = self._loadedModels[i][4]
         
                 if compts:
-                    #setCompartmentSolver(self._loadedModels[i][0],"gsl")
-                    mooseAddChemSolver(self._loadedModels[i][0],"gsl")
-                    #addSolver(self._loadedModels[i][0],"gsl")
+                    moose.mooseAddChemSolver(self._loadedModels[i][0],"gsl")
                 else:
                     c.tickDt[7] = self._loadedModels[i][3]
                     c.tickDt[8] = self._loadedModels[i][4]
@@ -551,8 +548,9 @@ class MWindow(QMainWindow):
 
         for menu in self.plugin.getMenus():
             if not self.updateExistingMenu(menu):
-                if not self.menuBar().isEmpty():
-                    action.menu().addSeparator()
+                # bug: action was empty here.
+                #if not self.menuBar().isEmpty():
+                #    action.menu().addSeparator()
                 self.menuBar().addMenu(menu)
         menus[0].addSeparator()
         menus[0].addAction(self.quitAction)
@@ -931,7 +929,7 @@ class MWindow(QMainWindow):
         about = "<h3>MOOSE simulator</h3>"
         about += '<a href="http://moose.ncbs.res.in">MOOSE Website</a>'
         about += "<p>VERSION " + moose.__version__ + " </p>"
-        QtGui.QMessageBox.about(self, 'About MOOSE', about )
+        QMessageBox.about(self, 'About MOOSE', about )
 
     def showDocumentation(self):
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(config.MOOSE_DOC_URL))
@@ -1133,8 +1131,8 @@ class MWindow(QMainWindow):
         noOfEnz   = len(moose.wildcardFind(ret['model'].path+'/##[ISA=EnzBase]'))
         noOfStimtab  = len(moose.wildcardFind(ret['model'].path+'/##[ISA=StimulusTable]'))
         
-        reply = QtGui.QMessageBox.information(self,"Model Info","Model has : \n %s Compartment \t \n %s Group \t \n %s Pool  \t \n %s Function \t \n %s reaction \t \n %s Enzyme \t \n %s StimulusTable" %(noOfCompt, grp, noOfPool, noOfFunc, noOfReac, noOfEnz, noOfStimtab))
-        if reply == QtGui.QMessageBox.Ok:
+        reply = QMessageBox.information(self,"Model Info","Model has : \n %s Compartment \t \n %s Group \t \n %s Pool  \t \n %s Function \t \n %s reaction \t \n %s Enzyme \t \n %s StimulusTable" %(noOfCompt, grp, noOfPool, noOfFunc, noOfReac, noOfEnz, noOfStimtab))
+        if reply == QMessageBox.Ok:
             QApplication.restoreOverrideCursor()
             return
 
@@ -1169,16 +1167,16 @@ class MWindow(QMainWindow):
 
         if pluginName == 'kkit':
             if (ret['subtype'] == 'sbml' and ret['foundlib'] == False):
-                reply = QtGui.QMessageBox.question(self, "python-libsbml is not found.","\n Read SBML is not possible.\n This can be installed using \n \n pip python-libsbml  or \n apt-get install python-libsbml",
-                                           QtGui.QMessageBox.Ok)
-                if reply == QtGui.QMessageBox.Ok:
+                reply = QMessageBox.question(self, "python-libsbml is not found.","\n Read SBML is not possible.\n This can be installed using \n \n pip python-libsbml  or \n apt-get install python-libsbml",
+                                           QMessageBox.Ok)
+                if reply == QMessageBox.Ok:
                     QApplication.restoreOverrideCursor()
                     return valid, ret
             else:
                 if ret['loaderror'] != "":
-                    reply = QtGui.QMessageBox.question(self, "Model can't be loaded", ret['loaderror']+" \n \n Do you want another file",
-                                               QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-                    if reply == QtGui.QMessageBox.Yes:
+                    reply = QMessageBox.question(self, "Model can't be loaded", ret['loaderror']+" \n \n Do you want another file",
+                                               QMessageBox.Yes | QMessageBox.No)
+                    if reply == QMessageBox.Yes:
                         dialog = LoaderDialog(self,self.tr('Load model from file'))
                         if dialog.exec_():
                             pluginName = None
