@@ -11,7 +11,10 @@ from moosegui.plugins import kkitQGraphics
 from moosegui.plugins import kkitUtil
 from PyQt5 import Qt, QtCore
 from PyQt5 import QtGui
+from PyQt5.QtWidgets import QGraphicsScene
 
+import logging
+logger_ = logging.getLogger("moosegui.plugin.kkit")
 
 def updateCompartmentSize(qGraCompt):
     #childBoundingRect = qGraCompt.childrenBoundingRect()
@@ -31,8 +34,9 @@ def updateCompartmentSize(qGraCompt):
 
 def checkCreate(scene, view, modelpath, mobj, string, ret_string, num,
                 event_pos, layoutPt):
-    # The variable 'compt' will be empty when dropping cubeMesh,cyclMesh, but rest it shd be
-    # compartment
+    # The variable 'compt' will be empty when dropping cubeMesh,cyclMesh, 
+    # but rest it shd be compartment
+    logger_.debug( "checkCreate is called")
     if moose.exists(modelpath + '/info'):
         moose.Annotator((moose.element(modelpath + '/info'))).modeltype
     itemAtView = view.sceneContainerPt.itemAt(view.mapToScene(event_pos))
@@ -244,8 +248,9 @@ def checkCreate(scene, view, modelpath, mobj, string, ret_string, num,
     if view.iconScale != 1:
         view.updateScale(view.iconScale)
 
-
 def createObj(scene, view, modelpath, string, pos, layoutPt):
+    logger_.debug( "Crating object %s, %s, %s" % (modelpath, string, str(pos)))
+    assert isinstance(view.sceneContainerPt, QGraphicsScene)
     event_pos = pos
     num = 0
     ret_string = " "
@@ -320,7 +325,7 @@ def createObj(scene, view, modelpath, string, pos, layoutPt):
                 QtGui.QMessageBox.Ok)
             return False
 
-    if ret_string != " ":
+    if ret_string.strip():
         checkCreate(scene, view, modelpath, mobj, string, ret_string, num,
                     event_pos, layoutPt)
 
@@ -345,7 +350,6 @@ def findUniqId(mobj, string, num):
     else:
         num += 1
         return (findUniqId(mobj, string, num))
-
 
 def findCompartment(mooseObj):
     if mooseObj.path == '/':

@@ -13,15 +13,7 @@ from PyQt5 import QtCore
 
 # Logger
 import logging
-if os.environ.get('MOOSE_GUI_DEBUG', ''):
-    logLevel = logging.DEBUG
-else:
-    logLevel = logging.WARN
-
-logging.basicConfig(level=logLevel
-        , format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
-        , datefmt='%m-%d %H:%M'
-        )
+logging.basicConfig(level=logging.DEBUG)
 _logger = logging.getLogger('moosegui')
 
 KEY_UNDO_LENGTH = 'main/undolength'

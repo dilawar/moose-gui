@@ -12,7 +12,8 @@ from PyQt5.QtWidgets import QApplication, QTextBrowser
 from PyQt5.Qt import Qt
 
 class MToolButton(QToolButton):
-    """QToolButton subclass with dragEvent reimplemented. It sends the
+    """
+    QToolButton subclass with dragEvent reimplemented. It sends the
     text of the ToolButton as the mimedata.
 
     """
@@ -33,7 +34,8 @@ class MToolButton(QToolButton):
         mimeData = QtCore.QMimeData()
         mimeData.setText(self.text())
         drag.setMimeData(mimeData)
-        dropAction = drag.exec_(Qt.CopyAction)
+        print( 'mouseMoveEvent', mimeData.text())
+        drag.exec_(Qt.CopyAction)
 
 
 class MyWidget(QTextBrowser):
@@ -62,7 +64,7 @@ class MyWidget(QTextBrowser):
         self.dropCount += 1
         self.setPlainText('`%s` dropped: %d times' % (event.mimeData().text(), self.dropCount))
         event.acceptProposedAction()
-        QtGui.QTextBrowser.dropEvent(self, event)
+        QTextBrowser.dropEvent(self, event)
 
 def test_main():
     """Test main: see if drag and drop is working"""

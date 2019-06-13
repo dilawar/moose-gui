@@ -556,17 +556,15 @@ class MWindow(QMainWindow):
         menus[0].addAction(self.quitAction)
 
     def updateToolbars(self):
-        _logger.debug( "Updating toolbar" )
         for toolbar in self.toolBars:
             self.removeToolBar(toolbar)
         self.toolBars = []
         self.toolBars.extend(self.getMyToolBars())
         self.toolBars.extend(self.plugin.getToolBars())
         self.toolBars.extend(self.plugin.getCurrentView().getToolBars())
-        if len(self.toolBars):
-        	for toolbar in self.toolBars:
-        		self.addToolBar(toolbar)
-        		toolbar.setVisible(True)
+        for toolbar in self.toolBars:
+            toolbar.setVisible(True)
+            self.addToolBar(toolbar)
 
     def switchSubwindowSlot(self, window):
         """Change view based on what subwindow `window` is activated."""

@@ -36,7 +36,7 @@ class GraphicalView(QGraphicsView):
 
     # NOTE: why this is not inside __init__? See
     # https://stackoverflow.com/a/2971426/1805129 and cry!
-    dropped = QtCore.pyqtSignal(int, name="dropped")
+    dropped = QtCore.pyqtSignal('PyQt_PyObject')
 
     def __init__(self, modelRoot, parent, border, layoutPt, createdItem):
         QGraphicsView.__init__(self, parent)
@@ -545,7 +545,7 @@ class GraphicalView(QGraphicsView):
                                 color, bgcolor = kkitUtil.getColor(poolinfo)
                                 qGItem.setDisplayProperties(
                                     posWrtComp.x(), posWrtComp.y(), color, bgcolor)
-                                self.emit(QtCore.SIGNAL("dropped"), poolObj)
+                                self.dropped.emit(poolObj)
 
                         if isinstance(cloneObj.parent().mobj, moose.ReacBase):
                             retValue = self.objExist(lKey.path, name, iR)
@@ -560,7 +560,7 @@ class GraphicalView(QGraphicsView):
                                 self.layoutPt.mooseId_GObj[reacObj] = qGItem
                                 posWrtComp = self.mapToScene(event.pos())
                                 qGItem.setDisplayProperties(posWrtComp.x(),posWrtComp.y(),"white", "white")
-                                self.emit(QtCore.SIGNAL("dropped"),reacObj)
+                                self.dropped.emit(reacObj)
                         self.updateScale(self.iconScale)
                     else:
                         if itemAtView is None:
@@ -1297,13 +1297,6 @@ class GraphicalView(QGraphicsView):
                 event.acceptProposedAction()
         else:
             pass
-
-    #  def eventFilter(self, source, event):
-        #  logger_.debug(self, source, event)
-        #  if self.viewBaseType == "editorView":
-            #  if event.type() == QtCore.QEvent.Drop:
-                #  return True
-        #  return False
 
     def dropEvent(self, event):
         """Insert an element of the specified class in drop location
