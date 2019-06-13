@@ -14,7 +14,6 @@ from PyQt5 import QtCore
 # Logger
 import logging
 logging.basicConfig(level=logging.DEBUG)
-_logger = logging.getLogger('moosegui')
 
 KEY_UNDO_LENGTH = 'main/undolength'
 KEY_WINDOW_GEOMETRY = 'main/geometry'

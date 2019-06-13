@@ -324,7 +324,8 @@ class KineticsWidget(mplugin.EditorWidgetBase):
         return self.cord
 
     def updateModelView(self):
-        self.getMooseObj()
+        self.initMooseObject()
+        logger_.info( "updateModelView called ... %s" % str(self.m) )
         if not self.m:
             if hasattr(self, 'view') and isinstance(self.view, QWidget):
                 self.layout().removeWidget(self.view)
@@ -344,38 +345,38 @@ class KineticsWidget(mplugin.EditorWidgetBase):
             hLayout = QGridLayout(self)
             self.setLayout(hLayout)
             hLayout.addWidget(self.view, 0, 0)
-        else:
-            if hasattr(self, 'view') and isinstance(self.view, QWidget):
-                self.layout().removeWidget(self.view)
-            self.view = kkitViewcontrol.GraphicalView(self.modelRoot,
-                                                      self.sceneContainer,
-                                                      self.border, self,
-                                                      self.createdItem)
-            if isinstance(self, kineticEditorWidget):
-                #self.getMooseObj()
-                self.mooseObjOntoscene()
-                self.drawLine_arrow()
-                self.view.setRefWidget("editorView")
-                self.view.setAcceptDrops(True)
-                self.view.dropped.connect(self.objectEditSlot)
-                hLayout = QGridLayout(self)
-                self.setLayout(hLayout)
-                hLayout.addWidget(self.view)
-            elif isinstance(self, KineticRunWidget):
-                self.view.setRefWidget("runView")
-                hLayout = QGridLayout(self)
-                self.setLayout(hLayout)
-                hLayout.addWidget(self.view)
-                self.view.fitInView(
-                    self.sceneContainer.itemsBoundingRect().x() - 10,
-                    self.sceneContainer.itemsBoundingRect().y() - 10,
-                    self.sceneContainer.itemsBoundingRect().width() + 20,
-                    self.sceneContainer.itemsBoundingRect().height() + 20,
-                    Qt.Qt.IgnoreAspectRatio)
-            else:
-                logger_.warning("Unhandled type: %s:%s" % (type(self),self))
+            return
 
-    def getMooseObj(self):
+        if hasattr(self, 'view') and isinstance(self.view, QWidget):
+            self.layout().removeWidget(self.view)
+
+        self.view = kkitViewcontrol.GraphicalView(self.modelRoot,
+                self.sceneContainer, self.border, self, self.createdItem)
+
+        if isinstance(self, kineticEditorWidget):
+            self.mooseObjOntoscene()
+            self.drawLine_arrow()
+            self.view.setRefWidget("editorView")
+            self.view.setAcceptDrops(True)
+            self.view.dropped.connect(self.objectEditSlot)
+            hLayout = QGridLayout(self)
+            self.setLayout(hLayout)
+            hLayout.addWidget(self.view)
+        elif isinstance(self, KineticRunWidget):
+            self.view.setRefWidget("runView")
+            hLayout = QGridLayout(self)
+            self.setLayout(hLayout)
+            hLayout.addWidget(self.view)
+            self.view.fitInView(
+                self.sceneContainer.itemsBoundingRect().x() - 10,
+                self.sceneContainer.itemsBoundingRect().y() - 10,
+                self.sceneContainer.itemsBoundingRect().width() + 20,
+                self.sceneContainer.itemsBoundingRect().height() + 20,
+                Qt.Qt.IgnoreAspectRatio)
+        else:
+            logger_.warning("Unhandled type: %s:%s" % (type(self),self))
+
+    def initMooseObject(self):
         self.m = moose.wildcardFind(self.modelRoot + '/##[ISA=ChemCompt]')
         if self.m:
             self.srcdesConnection = {}
@@ -459,6 +460,8 @@ class KineticsWidget(mplugin.EditorWidgetBase):
             self.mooseId_GObj.clear()
         else:
             self.mooseId_GObj = {}
+
+        logger_.debug( "self.objPar: " + str(self.objPar) )
         for k, v in self.objPar.items():
             if isinstance(moose.element(k), moose.ChemCompt):
                 self.createCompt(k)
@@ -563,6 +566,7 @@ class KineticsWidget(mplugin.EditorWidgetBase):
                            Qt.Qt.SolidLine, Qt.Qt.RoundCap, Qt.Qt.RoundJoin))
 
     def createCompt(self, key):
+        logger_.debug( "Creating new compartment %s" % key)
         self.new_Compt = kkitQGraphics.ComptItem(self, 0, 0, 0, 0, key)
         self.qGraCompt[key] = self.new_Compt
         self.new_Compt.setRect(10, 10, 10, 10)
@@ -1045,7 +1049,7 @@ class KineticRunWidget(KineticsWidget):
                                              '/##[ISA=ChemCompt]')
         if self.Comptexist:
             # pass
-            self.getMooseObj()
+            self.initMooseObject()
             self.mooseObjOntoscene()
             self.drawLine_arrow(itemignoreZooming=False)
 

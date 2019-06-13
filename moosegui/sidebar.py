@@ -23,7 +23,9 @@ from PyQt5.QtGui import QPixmap, QIcon
 
 from moosegui import SettingsDialog
 from moosegui import config
-_logger = config._logger
+
+import logging
+logger_ = logging.getLogger("sidebar")
 
 ICON_DIRECTORY              = "../icons"
 HAND_ICON_FILENAME          = "hand.png"
@@ -50,7 +52,7 @@ def create_action( parent
     return action
 
 def do_nothing(event, msg):
-    _logger.debug( "do_nothing: %s" % msg )
+    logger_.debug( "do_nothing: %s" % msg )
 
 def mode_action( parent
         , callback   = lambda ev: do_nothing(ev, "Action clicked")

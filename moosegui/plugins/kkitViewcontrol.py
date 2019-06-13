@@ -33,13 +33,13 @@ logger_ = logging.getLogger("moosegui.kkit.viewcontrol")
 SDIR_ = os.path.dirname(__file__)
 
 class GraphicalView(QGraphicsView):
-
     # NOTE: why this is not inside __init__? See
     # https://stackoverflow.com/a/2971426/1805129 and cry!
     dropped = QtCore.pyqtSignal('PyQt_PyObject')
 
     def __init__(self, modelRoot, parent, border, layoutPt, createdItem):
         QGraphicsView.__init__(self, parent)
+        logging.debug( "Creating  GraphicalView " )
         self.state = None
         self.move = False
         self.resetState()
