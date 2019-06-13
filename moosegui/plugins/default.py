@@ -43,13 +43,13 @@ from moosegui.mtoolbutton import MToolButton
 from moosegui.msearch import SearchWidget
 from moosegui.checkcombobox import CheckComboBox
 from moosegui.mplugin import MoosePluginBase, EditorBase, EditorWidgetBase, PlotBase, RunBase
-from moosegui.PlotWidgetContainer import PlotWidgetContainer
 from moosegui.plugins.kkitUtil import getColor
 from moosegui.plugins.Runner import Runner
 from moosegui.global_constants import preferences
 from moosegui.plugins.setsolver import *
 from moosegui import config
 from moosegui import mtree
+#  from moosegui.PlotWidgetContainer import PlotWidgetContainer
 
 ELECTRICAL_MODEL = 0
 CHEMICAL_MODEL   = 1

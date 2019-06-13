@@ -1,54 +1,14 @@
-# mtree.py --- 
-# 
-# Filename: mtree.py
+# -*- coding: utf-8 -*-
+
 # Description: 
 # Author: Subhasis Ray
 # Maintainer: 
 # Created: Tue May 14 11:51:35 2013 (+0530)
-# Version: 
-# Last-Updated: Fri Jun 14 16:13:08 2013 (+0530)
-#           By: subha
-#     Update #: 154
-# URL: 
-# Keywords: 
-# Compatibility: 
-# 
-# 
-
-# Commentary: 
-# 
-# Implementation of moose tree widget. This can be used by multiple
-# components in the moose gui.
-# 
-# 
-
-# Change log:
-# 
-# 
-# 
-# 
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 3, or
-# (at your option) any later version.
-# 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program; see the file COPYING.  If not, write to
-# the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-# Floor, Boston, MA 02110-1301, USA.
-# 
-# 
-
-# Code:
 
 import sys
 from PyQt5 import QtGui, QtCore
 from PyQt5.Qt import Qt
+from PyQt5.QtWidgets import QTreeWidgetItem, QTreeWidget
 import moose
 
 
@@ -117,22 +77,21 @@ class MooseTreeModel(QtCore.QAbstractItemModel):
          return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
         
     
-class MooseTreeItem(QtGui.QTreeWidgetItem):
+class MooseTreeItem(QTreeWidgetItem):
     def __init__(self, *args):
-        QtGui.QTreeWidgetItem.__init__(self, *args)
+        QTreeWidgetItem.__init__(self, *args)
         self.mobj = None
 
     def setObject(self, element):
         self.mobj = moose.element(element)
-        self.setText(0, QtCore.QString(self.mobj.path.rpartition('/')[-1]))
-        self.setText(1, QtCore.QString(self.mobj.className))
-        #self.setToolTip(0, QtCore.QString('class:' + self.mooseObj_.className))
+        self.setText(0, self.mobj.path.rpartition('/')[-1])
+        self.setText(1, self.mobj.className)
 
     def updateSlot(self):
-        self.setText(0, QtCore.QString(self.mobj.name))
+        self.setText(0, self.mobj.name)
 
 
-class MooseTreeWidget(QtGui.QTreeWidget):
+class MooseTreeWidget(QTreeWidget):
     """Widget for displaying MOOSE model tree.
 
     """
@@ -159,7 +118,7 @@ class MooseTreeWidget(QtGui.QTreeWidget):
         elementInserted(melement) emitted when a new element is inserted.
 
         """
-        QtGui.QTreeWidget.__init__(self, *args)
+        QTreeWidget.__init__(self, *args)
         self.header().hide()
         self.rootElement = moose.element('/')
         self.odict = {}
@@ -242,25 +201,26 @@ class MooseTreeWidget(QtGui.QTreeWidget):
 
         - adds ability to set item by corresponding moose object.
         """
-        if isinstance(item, QtGui.QTreeWidgetItem):
-            QtGui.QTreeWidget.setCurrentItem(self, item)
+        if isinstance(item, QTreeWidgetItem):
+            QTreeWidget.setCurrentItem(self, item)
             return        
         mobj = moose.element(item)
-        QtGui.QTreeWidget.setCurrentItem(self, self.odict[mobj])
+        QTreeWidget.setCurrentItem(self, self.odict[mobj])
 
     def updateItemSlot(self, element):
         self.odict[element].updateSlot()
         
 def main():
-    """Test main: load a model and display the tree for it"""
+    """
+    Test main: load a model and display the tree for it
+    """
+    import sys
+    from PyQt5.QtWidgets import QApplication, QMainWindow
     model = moose.Neutral('/model')
-    moose.loadModel('../Demos/Genesis_files/Kholodenko.g', '/model/Kholodenko')
-    # tab = moose.element('/model/Kholodenko/graphs/conc1/MAPK_PP.Co')
-    # print tab
-    # for t in tab.children:
-    #     print t
-    app = QtGui.QApplication(sys.argv)
-    mainwin = QtGui.QMainWindow()
+    modelfile = sys.argv[1]
+    moose.loadModel(modelfile, '/model')
+    app = QApplication(sys.argv)
+    mainwin = QMainWindow()
     mainwin.setWindowTitle('Model tree test')
     tree = MooseTreeWidget()
     tree.recreateTree(root='/model/')
@@ -268,10 +228,6 @@ def main():
     mainwin.show()
     sys.exit(app.exec_())
 
-
 if __name__ == "__main__":
     main()
     
-
-# 
-# mtree.py ends here
