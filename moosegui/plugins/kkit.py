@@ -25,7 +25,7 @@ from moosegui import RunWidget
 from moosegui import mplugin, config
 from moosegui.mtoolbutton import MToolButton
 from moosegui.plugins.default import MoosePlugin, MooseEditorView, RunView
-from moosegui.plugins import kkitUtil
+from moosegui.plugins import kkitUtil, kkitOrdinateUtil
 from moosegui.plugins import kkitQGraphics
 from moosegui.plugins import kkitViewcontrol 
 from moosegui.PlotWidgetContainer import PlotWidgetContainer
@@ -342,18 +342,17 @@ class  KineticsWidget(mplugin.EditorWidgetBase):
             else:
                 self.meshEntry = {}
             self.objPar, self.meshEntry, self.xmin, self.xmax, self.ymin\
-                    , self.ymax, self.noPositionInfo = kkitUtil.setupMeshObj(self.modelRoot)
+                    , self.ymax, self.noPositionInfo = kkitOrdinateUtil.setupMeshObj(self.modelRoot)
             self.autocoordinates = False
             if self.srcdesConnection:
                 self.srcdesConnection.clear()
             else:
                 self.srcdesConnection = {}
             
-            kkitUtil.setupItem(self.modelRoot,self.srcdesConnection)
-            #self.noPositionInfo = False
+            kkitOrdinateUtil.setupItem(self.modelRoot,self.srcdesConnection)
             if not self.noPositionInfo:
                 self.autocoordinates = True
-                kkitUtil.autoCoordinates(self.meshEntry,self.srcdesConnection)
+                kkitOrdinateUtil.autoCoordinates(self.meshEntry,self.srcdesConnection)
         
         self.size = QtCore.QSize(1000 ,550)
 
