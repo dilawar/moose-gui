@@ -17,6 +17,7 @@ import math
 from PyQt5 import QtGui, QtCore, Qt
 from PyQt5.QtWidgets import QWidget, QGridLayout, QFileDialog
 from PyQt5.QtWidgets import QMenu, QAction, QGraphicsScene
+from PyQt5.QtWidgets import QToolBar
 from PyQt5.QtGui import QColor
 
 # moosegui
@@ -287,16 +288,19 @@ class  KineticsWidget(mplugin.EditorWidgetBase):
             # then remove all the view and add an empty view
             if hasattr(self, 'view') and isinstance(self.view, QWidget):
                 self.layout().removeWidget(self.view)
+
             self.view = kkitViewcontrol.GraphicalView(self.modelRoot
                     , self.sceneContainer
                     , self.border
                     , self
                     , self.createdItem)
+
             if isinstance(self, kineticEditorWidget):
                 self.view.setRefWidget("editorView")
                 self.view.setAcceptDrops(True)
             elif isinstance(self, KineticRunWidget):
                 self.view.setRefWidget("runView")
+
             self.view.dropped.connect(self.objectEditSlot)
             hLayout = QGridLayout(self)
             self.setLayout(hLayout)
@@ -906,7 +910,7 @@ class kineticEditorWidget(KineticsWidget):
     def getToolBars(self):
         #Add specific tool items with respect to kkit
         if not hasattr(self, '_insertToolBar'):
-            self._insertToolBar = QtGui.QToolBar('Insert')
+            self._insertToolBar = QToolBar('Insert')
             self._toolBars.append(self._insertToolBar)
             for action in self.insertMenu.actions():
                 button = MToolButton()

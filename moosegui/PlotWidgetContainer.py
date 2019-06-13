@@ -6,15 +6,14 @@ __license__     =   "GPL3"
 __maintainer__  =   "Aviral Goel", "HarshaRani"
 __email__       =   "goel.aviral@gmail.com"
 
-from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QWidget
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QWidget, QSizePolicy
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtWidgets import QSplitter
 
 # MOOSE gui
 from moosegui import sidebar
-from moosegui.plugins import default
 
 # MOOSE
 import moose
@@ -25,7 +24,6 @@ CHEMICAL = 1
 class PlotWidgetContainer(QWidget):
 
     def __init__(self, modelRoot, *args, **kwargs):
-
         super(PlotWidgetContainer, self).__init__(*args)
         self.modelRoot = modelRoot
         if len(moose.wildcardFind(modelRoot + "/##[ISA=ChemCompt]")) == 0:
@@ -33,24 +31,22 @@ class PlotWidgetContainer(QWidget):
         else:
             self.modelType = CHEMICAL
 
-        self.model          = moose.element(self.modelRoot)
+        self.model = moose.element(self.modelRoot)
         if self.modelRoot != "/":
             self.modelRoot = self.findModelPath(self.modelRoot)
             if moose.exists(modelRoot + "/data"):
-                self.data   = moose.element(self.modelRoot + "/data")
+                self.data = moose.element(self.modelRoot + "/data")
             else:
-                self.data   = moose.Neutral(self.modelRoot + "/data")
+                self.data = moose.Neutral(self.modelRoot + "/data")
         else:
-            self.data       = moose.element("/data")
+            self.data = moose.element("/data")
 
-        self._layout        = QVBoxLayout()
-        self.graphs         = QSplitter()
+        self._layout = QVBoxLayout()
+        self.graphs = QSplitter()
         self.graphs.setOrientation(QtCore.Qt.Vertical)
-        self.graphsArea     = QScrollArea()
-        self.rowIndex       = 0
-        self.graphs.setSizePolicy( QtGui.QSizePolicy.Expanding
-                , QtGui.QSizePolicy.Expanding
-                )
+        self.graphsArea = QScrollArea()
+        self.rowIndex = 0
+        self.graphs.setSizePolicy( QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setAcceptDrops(True)
         self.graphsArea.setWidget(self.graphs)
         self.graphsArea.setWidgetResizable(True)
@@ -89,20 +85,24 @@ class PlotWidgetContainer(QWidget):
     def addPlotWidget(self, row = None, col = 0, graph = None):
         if graph == None:
             graph = moose.Neutral(self.data.path + "/graph_" + str(self.rowIndex))
-        widget = default.PlotWidget(self.model, graph, self.rowIndex, self)
 
-        if self.modelType == ELECTRICAL:
-            for axes in list(widget.canvas.axes.values()):
-                axes.set_ylim(bottom = -0.07, top= 0.03)
 
         if row == None:
             row = self.rowIndex
-        self.graphs.addWidget(widget)
-        self.rowIndex += 1
-        self.graphWidgets.append(widget)
-        widget.widgetClosedSignal.connect(self.deleteWidget)
-        widget.addGraph.connect(lambda event : self.addPlotWidget())
-        return widget
+
+        #if self.modelType == ELECTRICAL:
+        #    for axes in list(widget.canvas.axes.values()):
+        #        axes.set_ylim(bottom = -0.07, top= 0.03)
+
+        # FIXME:
+        # Has been removed? See #23
+        #  widget = default.PlotWidget(self.model, graph, self.rowIndex, self)
+        ## self.graphs.addWidget(widget)
+        ## self.rowIndex += 1
+        ## self.graphWidgets.append(widget)
+        ## widget.widgetClosedSignal.connect(self.deleteWidget)
+        ## widget.addGraph.connect(lambda event : self.addPlotWidget())
+        ## return widget
 
     def showPlotView(self):
         pass

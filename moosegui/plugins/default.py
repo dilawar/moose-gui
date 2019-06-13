@@ -18,15 +18,14 @@ rcParams.update({'figure.autolayout': True})
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtGui import QDoubleValidator
 
 from PyQt5.QtWidgets import QToolBar, QToolButton
 from PyQt5.QtWidgets import QLabel, QLineEdit
 from PyQt5.QtWidgets import QAction, QSizePolicy
 from PyQt5.QtWidgets import QWidget, QHBoxLayout
-from PyQt5.QtWidgets import QScrollArea
-from PyQt5.QtWidgets import QMenu
+from PyQt5.QtWidgets import QScrollArea, QGridLayout, QMessageBox
+from PyQt5.QtWidgets import QMenu, QApplication, QDockWidget
+from PyQt5.QtWidgets import QFrame, QFileDialog, QVBoxLayout
 
 # moose
 import moose
@@ -40,7 +39,7 @@ from moosegui.plugins.kkitUtil import getColor
 from moosegui.plugins.Runner import Runner
 from moosegui import config
 from moosegui import mtree
-#  from moosegui.PlotWidgetContainer import PlotWidgetContainer
+from moosegui.PlotWidgetContainer import PlotWidgetContainer
 
 ELECTRICAL_MODEL = 0
 CHEMICAL_MODEL   = 1
@@ -73,13 +72,7 @@ class MoosePlugin(MoosePluginBase):
             self.currentView = self.editorView
         return self.editorView
 
-    def getPlotView(self):
-        if not hasattr(self, 'plotView'):
-            self.plotView = PlotView(self)
-        return self.plotView
-
     def getRunView(self):
-
         if not hasattr(self, 'runView') or self.runView is None:
             self.runView = RunView(self.modelRoot, self)
         return self.runView
@@ -271,8 +264,8 @@ class RunView(RunBase):
     canvas: widget for plotting
 
     dataRoot: location of data tables
-
     """
+
     def __init__(self, modelRoot, *args, **kwargs):
         RunBase.__init__(self, *args, **kwargs)
         self.modelRoot = modelRoot
@@ -326,8 +319,8 @@ class RunView(RunBase):
         """Create and/or return a widget for schduling"""
         if hasattr(self, 'schedulingDockWidget')  and self.schedulingDockWidget is not None:
             return self.schedulingDockWidget
-        self.schedulingDockWidget = QtGui.QDockWidget('Scheduling')
-        self.schedulingDockWidget.setFeatures( QtGui.QDockWidget.NoDockWidgetFeatures);
+        self.schedulingDockWidget = QDockWidget('Scheduling')
+        self.schedulingDockWidget.setFeatures( QDockWidget.NoDockWidgetFeatures);
         self.schedulingDockWidget.setWindowFlags(Qt.CustomizeWindowHint)
         titleWidget = QWidget();
         self.schedulingDockWidget.setTitleBarWidget(titleWidget)
@@ -402,14 +395,14 @@ class SchedulingWidget(QWidget):
         bar = QToolBar("Run", self)
 
         self.resetAction = bar.addAction( 
-                QIcon( os.path.join( config.MOOSE_ICON_DIR, 'reset.png' ) )
+                QtGui.QIcon( os.path.join( config.MOOSE_ICON_DIR, 'reset.png' ) )
                 , 'Reset'
                 , self.resetSimulation
                 )
         self.resetAction.setToolTip('Reset simulation.')
 
         self.runAction = bar.addAction( 
-                QIcon( os.path.join( config.MOOSE_ICON_DIR, 'run.png') )
+                QtGui.QIcon( os.path.join( config.MOOSE_ICON_DIR, 'run.png') )
                 , 'Run'
                 , self.runSimulation
                 )
@@ -417,7 +410,7 @@ class SchedulingWidget(QWidget):
 
 
         self.stopAction = bar.addAction( 
-                QIcon( os.path.join( config.MOOSE_ICON_DIR,  'stop.png') )
+                QtGui.QIcon( os.path.join( config.MOOSE_ICON_DIR,  'stop.png') )
                 , 'Stop'
                 , self.runner.togglePauseSimulation
                 )
@@ -427,7 +420,7 @@ class SchedulingWidget(QWidget):
 
         runtimeLabel = QLabel('Run for')
         self.simulationRuntime = QLineEdit()
-        self.simulationRuntime.setValidator(QDoubleValidator())
+        self.simulationRuntime.setValidator(QtGui.QDoubleValidator())
         self.simulationRuntime.setFixedWidth(75)
         bar.addWidget(runtimeLabel)
         bar.addWidget(self.simulationRuntime)
@@ -438,7 +431,7 @@ class SchedulingWidget(QWidget):
         self.currentSimulationRuntime = QLineEdit() # 6 digits
         self.currentSimulationRuntime.setToolTip('Current simulation runtime.')
         self.currentSimulationRuntime.setFixedWidth(75)
-        self.currentSimulationRuntime.setValidator(QDoubleValidator())
+        self.currentSimulationRuntime.setValidator(QtGui.QDoubleValidator())
         self.currentSimulationRuntime.setText("0.0")
         self.currentSimulationRuntime.setReadOnly(True)
 
@@ -568,35 +561,29 @@ class SchedulingWidget(QWidget):
                         nameRE = nameRE+"\n "+res.className + " --> "+res.parent.name+ " --> "+res.name
 
             if status == -1:
-                QtGui.QMessageBox.warning(None,"Could not Run the model","Warning: Reaction path not yet assigned.\n ")
+                QMessageBox.warning(None,"Could not Run the model","Warning: Reaction path not yet assigned.\n ")
                 return -1
             if status == 1:
-                #QtGui.QMessageBox.warning(None,"Could not Run the model","Warning: Missing a reactant in a Reac or Enz.\n ")
-                QtGui.QMessageBox.warning(None,"Could not Run the model","Warning: Missing a reactant in %s " %(nameRE))
+                #QMessageBox.warning(None,"Could not Run the model","Warning: Missing a reactant in a Reac or Enz.\n ")
+                QMessageBox.warning(None,"Could not Run the model","Warning: Missing a reactant in %s " %(nameRE))
                 return 1
             elif status == 2:
-                QtGui.QMessageBox.warning(None,"Could not Run the model","Warning: Missing a substrate in an MMenz %s " %(nameRE))
-                #QtGui.QMessageBox.warning(None,"Could not Run the model","Warning: Missing a substrate in an MMenz.\n ")
+                QMessageBox.warning(None,"Could not Run the model","Warning: Missing a substrate in an MMenz %s " %(nameRE))
+                #QMessageBox.warning(None,"Could not Run the model","Warning: Missing a substrate in an MMenz.\n ")
                 return 2
             elif status == 4:
-                QtGui.QMessageBox.warning(None,"Could not Run the model"," Warning: Compartment not defined.\n ")
+                QMessageBox.warning(None,"Could not Run the model"," Warning: Compartment not defined.\n ")
                 return 4
             elif status == 8:
-                QtGui.QMessageBox.warning(None,"Could not Run the model","Warning: Neither Ksolve nor Dsolve defined.\n ")
+                QMessageBox.warning(None,"Could not Run the model","Warning: Neither Ksolve nor Dsolve defined.\n ")
                 return 8
             elif status == 16:
-                QtGui.QMessageBox.warning(None,"Could not Run the model","Warning: No objects found on path.\n ")
+                QMessageBox.warning(None,"Could not Run the model","Warning: No objects found on path.\n ")
                 return 16
             elif status == 0:
                 print("Successfully built stoichiometry matrix.\n ")
                 # moose.reinit()
                 return 0
-
-    def __getAdvanceOptionsButton(self):
-        icon = QtGui.QIcon(os.path.join(config.settings[config.KEY_ICON_DIR],'arrow.png'))
-        # self.advancedOptionsButton.setIcon(QtGui.QIcon(icon))
-        # self.advancedOptionsButton.setToolButtonStyle( Qt.ToolButtonTextBesideIcon );
-        return self.advancedOptionsButton
 
     def preferencesToggler(self):
         visibility = not self.preferences.getView().isVisible()
@@ -612,7 +599,7 @@ class SchedulingWidget(QWidget):
     def updateTextFromTick(self, tickNo):
         tick = moose.vector('/clock/tick')[tickNo]
         widget = self.tickListWidget.layout().itemAtPosition(tickNo + 1, 1).widget()
-        if widget is not None and isinstance(widget, QtGui.QLineEdit):
+        if widget is not None and isinstance(widget, QLineEdit):
             widget.setText(str(tick.dt))
 
     def updateFromMoose(self):
@@ -627,10 +614,9 @@ class SchedulingWidget(QWidget):
         try:
             time = float(str(self.simtimeEdit.text()))
             return time
-        except ValueError as e:
-            QtGui.QMessageBox.warning(self, 'Invalid value', 'Specified runtime was meaningless.')
-        return 0
-
+        except ValueError:
+            QMessageBox.warning(self, 'Invalid value', 'Specified runtime was meaningless.')
+        return 0.0
 
     def setDataRoot(self, root='/data'):
         self.dataRoot = moose.element(root).path
@@ -687,18 +673,19 @@ class PlotWidget(QWidget):
 
         self.menu = self.getContextMenu()
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.connect( self
-                    , SIGNAL("customContextMenuRequested(QPoint)")
-                    , self
-                    , SLOT("contextMenuRequested(QPoint)")
-                    )
+        self.customContextMenuRequested.connect(self.contextMenuRequested)
+        #  self.connect( self
+                    #  , SIGNAL("customContextMenuRequested(QPoint)")
+                    #  , self
+                    #  , SLOT("contextMenuRequested(QPoint)")
+                    #  )
 
         self.canvas = CanvasWidget(self.model, self.graph, self.index)
         self.canvas.setParent(self)
         self.navToolbar = NavigationToolbar(self.canvas, self)
         self.hackNavigationToolbar()
         self.canvas.mpl_connect('pick_event',self.togglePlot)
-        layout = QtGui.QGridLayout()
+        layout = QGridLayout()
         layout.addWidget(self.navToolbar, 0, 0)
         layout.addWidget(self.canvas, 1, 0)
         self.setLayout(layout)
@@ -706,35 +693,35 @@ class PlotWidget(QWidget):
         self.lineToDataSource = {}
         self.axesRef = self.canvas.addSubplot(1, 1)
         self.legend  = None
-        desktop = QtGui.QApplication.desktop()
-        self.setMinimumSize(desktop.screenGeometry().width() / 4, desktop.screenGeometry().height() / 3)
+        desktop = QApplication.desktop()
+        self.setMinimumSize(desktop.screenGeometry().width()//4, desktop.screenGeometry().height()//3)
         self.canvas.updateSignal.connect(self.plotAllData)
         self.plotAllData()
 
     def hackNavigationToolbar(self):
         # ADD Graph Action
-        pixmap = QPixmap(
+        pixmap = QtGui.QPixmap(
                 os.path.join( config.MOOSE_ICON_DIR, 'add_graph.png' )
                 )
-        icon   = QIcon(pixmap)
+        icon   = QtGui.QIcon(pixmap)
         action  = QAction(icon, "Add a graph", self.navToolbar)
         # self.navToolbar.addAction(action)
         action.triggered.connect( self.addGraph.emit )
         self.navToolbar.insertAction(self.navToolbar.actions()[0], action)
 
         # Delete Graph Action
-        pixmap = QPixmap( os.path.join( config.MOOSE_ICON_DIR,
+        pixmap = QtGui.QPixmap( os.path.join( config.MOOSE_ICON_DIR,
             "delete_graph.png") )
-        icon   = QIcon(pixmap)
+        icon   = QtGui.QIcon(pixmap)
         action  = QAction(icon, "Delete this graph", self.navToolbar)
         action.triggered.connect(self.delete)
         self.navToolbar.insertAction(self.navToolbar.actions()[1], action)
 
         #Toggle Grid Action
-        pixmap = QPixmap(
+        pixmap = QtGui.QPixmap(
                 os.path.join( config.MOOSE_ICON_DIR, "grid.png" )
                 )
-        icon   = QIcon(pixmap)
+        icon   = QtGui.QIcon(pixmap)
         action  = QAction(icon, "Toggle Grid", self.navToolbar)
         action.triggered.connect(self.canvas.toggleGrid)
         self.navToolbar.insertAction(self.navToolbar.actions()[2], action)
@@ -1015,13 +1002,13 @@ class PlotWidget(QWidget):
         """Save data for all currently plotted lines"""
         #Harsha: Plots were saved in GUI folder instead provided QFileDialog box to save to
         #user choose
-        fileDialog2 = QtGui.QFileDialog(self)
-        fileDialog2.setFileMode(QtGui.QFileDialog.Directory)
+        fileDialog2 = QFileDialog(self)
+        fileDialog2.setFileMode(QFileDialog.Directory)
         fileDialog2.setWindowTitle('Select Directory to save plots')
-        fileDialog2.setOptions(QtGui.QFileDialog.ShowDirsOnly)
-        fileDialog2.setLabelText(QtGui.QFileDialog.Accept, self.tr("Save"))
-        targetPanel = QtGui.QFrame(fileDialog2)
-        targetPanel.setLayout(QtGui.QVBoxLayout())
+        fileDialog2.setOptions(QFileDialog.ShowDirsOnly)
+        fileDialog2.setLabelText(QFileDialog.Accept, self.tr("Save"))
+        targetPanel = QFrame(fileDialog2)
+        targetPanel.setLayout(QVBoxLayout())
         layout = fileDialog2.layout()
         layout.addWidget(targetPanel)
         if fileDialog2.exec_():
@@ -1065,7 +1052,7 @@ class PlotSelectionWidget(QScrollArea):
         QScrollArea.__init__(self, *args)
         self.model = moose.element(model.path + "/model")
         self.modelRoot = self.model.path
-        self.setLayout(QtGui.QVBoxLayout(self))
+        self.setLayout(QVBoxLayout(self))
         self.layout().addWidget(self.getPlotListWidget())
         self.setDataRoot(self.model.path)
         self._elementWidgetsDict = {} # element path to corresponding qlabel and fields combo
@@ -1075,9 +1062,9 @@ class PlotSelectionWidget(QScrollArea):
         plottable fields in comboboxes."""
         if not hasattr(self, '_plotListWidget'):
             self._plotListWidget = QWidget(self)
-            layout = QtGui.QGridLayout(self._plotListWidget)
+            layout = QGridLayout(self._plotListWidget)
             self._plotListWidget.setLayout(layout)
-            layout.addWidget(QtGui.QLabel('<h1>Elements matching search criterion will be listed here</h1>'), 0, 0)
+            layout.addWidget(QLabel('<h1>Elements matching search criterion will be listed here</h1>'), 0, 0)
         return self._plotListWidget
 
     def setSelectedElements(self, elementlist):
@@ -1098,10 +1085,10 @@ class PlotSelectionWidget(QScrollArea):
             del w
             del item
         self._elementWidgetsDict.clear()
-        label = QtGui.QLabel('Element')
+        label = QLabel('Element')
         label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.getPlotListWidget().layout().addWidget(label, 0, 0, 1, 2)
-        self.getPlotListWidget().layout().addWidget(QtGui.QLabel('Fields to plot'), 0, 2, 1, 1)
+        self.getPlotListWidget().layout().addWidget(QLabel('Fields to plot'), 0, 2, 1, 1)
         for ii, entry in enumerate(elementlist):
             el = moose.element(entry)
             plottableFields = []
@@ -1110,7 +1097,7 @@ class PlotSelectionWidget(QScrollArea):
                     plottableFields.append(field)
             if len(plottableFields) == 0:
                 continue
-            elementLabel = QtGui.QLabel(el.path)
+            elementLabel = QLabel(el.path)
             fieldsCombo = CheckComboBox(self)
             fieldsCombo.addItem('')
             for item in plottableFields:

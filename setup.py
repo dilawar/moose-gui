@@ -9,7 +9,6 @@ __maintainer__       = "Dilawar Singh"
 __email__            = "dilawars@ncbs.res.in"
 __status__           = "Development"
 
-import sys
 import os
 import sys
 from setuptools import setup

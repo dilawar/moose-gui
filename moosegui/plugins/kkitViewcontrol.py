@@ -22,19 +22,24 @@ import moose
 from moosegui.plugins import kkitUtil
 from moosegui.plugins import modelBuild 
 from moosegui.plugins import constants
-from moosegui.plugins import setsolver 
 from moosegui.plugins import kkitQGraphics 
 from moosegui.plugins import kkitOrdinateUtil
 
 # logger
 from moosegui import config 
-_logger = config._logger
+import logging
+logger_ = logging.getLogger("moosegui.kkit.viewcontrol")
+
+SDIR_ = os.path.dirname(__file__)
 
 class GraphicalView(QGraphicsView):
 
+    # NOTE: why this is not inside __init__? See
+    # https://stackoverflow.com/a/2971426/1805129 and cry!
+    dropped = QtCore.pyqtSignal(int, name="dropped")
+
     def __init__(self, modelRoot,parent,border,layoutPt,createdItem):
-        QGraphicsView.__init__(self,parent)
-        
+        QGraphicsView.__init__(self, parent)
         self.state = None
         self.move = False
         self.resetState()
@@ -43,7 +48,7 @@ class GraphicalView(QGraphicsView):
         self.expectedConnection = None
         self.selections = []
         self.connector = None
-        self.connectionSignImagePath = "../gui/icons/connection.png"
+        self.connectionSignImagePath = os.path.join(SDIR_, "../icons/connection.png")
         self.connectionSignImage = QtGui.QImage(self.connectionSignImagePath)
         self.setScene(parent)
         self.modelRoot = modelRoot
@@ -96,7 +101,7 @@ class GraphicalView(QGraphicsView):
 
     def resolveGroupInteriorAndBoundary(self, item, position):
         bound = item.rect().adjusted(3,3,-3,-3)
-        return constants.constants.GROUP_INTERIOR \
+        return constants.GROUP_INTERIOR \
                 if bound.contains(item.mapFromScene(position)) \
                 else constants.GROUP_BOUNDARY
 
@@ -146,7 +151,7 @@ class GraphicalView(QGraphicsView):
                 gsolution = (item, self.resolveGroupInteriorAndBoundary(item, position))
                 if gsolution[1] == constants.GROUP_BOUNDARY:
                     return gsolution
-                elif gsolution[1] == constants.constants.GROUP_INTERIOR:
+                elif gsolution[1] == constants.GROUP_INTERIOR:
                     groupInteriorfound = True
                     groupList.append(gsolution)
             if item.name == constants.COMPARTMENT:
@@ -188,7 +193,7 @@ class GraphicalView(QGraphicsView):
                 self.state["press"]["scenepos"]  = item.parent().scenePos() 
             if itemType == constants.COMPARTMENT_INTERIOR \
                     or itemType == constants.GROUP_BOUNDARY \
-                    or itemType == constants.constants.GROUP_INTERIOR:
+                    or itemType == constants.GROUP_INTERIOR:
                 self.removeConnector()
 
             elif itemType == constants.ITEM:
@@ -227,7 +232,7 @@ class GraphicalView(QGraphicsView):
 
     
     def editorMouseMoveEvent(self,event):
-        if self.state["press"]["mode"] == constants.INconstants.VALID:
+        if self.state["press"]["mode"] == constants.INVALID:
             self.state["move"]["happened"] = False
             return
         if self.move:
@@ -294,7 +299,7 @@ class GraphicalView(QGraphicsView):
             self.layoutPt.positionChange(item.mobj.path)
             self.state["press"]["pos"] = event.pos()
 
-        if itemType == constants.COMPARTMENT_INTERIOR or itemType == constants.constants.GROUP_INTERIOR:
+        if itemType == constants.COMPARTMENT_INTERIOR or itemType == constants.GROUP_INTERIOR:
             if self.customrubberBand == None:
                 self.customrubberBand = QRubberBand(QRubberBand.Rectangle,self)
                 self.customrubberBand.show()
@@ -322,8 +327,8 @@ class GraphicalView(QGraphicsView):
             self.move = False
             self.setCursor(Qt.Qt.ArrowCursor)
     
-        if self.state["press"]["mode"] == constants.INconstants.VALID:
-            self.state["release"]["mode"] = constants.INconstants.VALID
+        if self.state["press"]["mode"] == constants.INVALID:
+            self.state["release"]["mode"] = constants.INVALID
             self.resetState()
             return
 
@@ -1290,12 +1295,12 @@ class GraphicalView(QGraphicsView):
         else:
             pass
 
-    def eventFilter(self, source, event):
-        if self.viewBase == "editorView":
-            if (event.type() == QtCore.QEvent.Drop):
-                pass
-        else:
-            pass
+    #  def eventFilter(self, source, event):
+        #  logger_.debug(self, source, event)
+        #  if self.viewBaseType == "editorView":
+            #  if event.type() == QtCore.QEvent.Drop:
+                #  return True
+        #  return False
 
     def dropEvent(self, event):
         """Insert an element of the specified class in drop location
@@ -1308,7 +1313,7 @@ class GraphicalView(QGraphicsView):
         """
         if self.viewBaseType == "editorView":
             if not event.mimeData().hasFormat('text/plain'):
-                _logger.warn("MIMEData is not text/plain. Doing nothing ...")
+                logger_.warn("MIMEData is not text/plain. Doing nothing ...")
                 return
             event_pos = event.pos()
             string = str(event.mimeData().text())
@@ -1323,7 +1328,7 @@ class GraphicalView(QGraphicsView):
             # Check if view needs to rescaled to fit the dropped item.
             self.layoutPt.rescaleView( )
         else:
-            _logger.debug("Not is editorView ")
+            logger_.debug("Not is editorView ")
             return
 
     def populate_srcdes(self, src, des):
