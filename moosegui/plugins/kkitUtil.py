@@ -6,21 +6,21 @@ __license__     =   "GPLv3"
 __maintainer__  =   "HarshaRani"
 __email__       =   "hrani@ncbs.res.in"
 
-__all__ = [ "ReacItem",  "EnzItem",  "CplxItem" ]
-
-from moose import Annotator,element,ChemCompt
-
-from moosegui.plugins.kkitQGraphics import PoolItem, ReacItem, EnzItem, CplxItem, GRPItem
-
-from PyQt5 import QtCore, QtGui, QtSvg
-from PyQt5.QtGui import QColor
-from moosegui import config
-
 import numpy as np
 import os
 import pickle
 import random
 import matplotlib
+
+from PyQt5 import QtCore, QtGui, QtSvg
+from PyQt5.QtGui import QColor
+
+# MOOSE
+from moose import Annotator, element, ChemCompt
+
+# MOOSE gui
+from moosegui.plugins.kkitQGraphics import PoolItem, EnzItem, GRPItem
+from moosegui import config
 
 colormap_file = open(os.path.join(config.settings[config.KEY_COLORMAP_DIR], 'rainbow2.pkl'),'rb')
 colorMap = pickle.load(colormap_file)
