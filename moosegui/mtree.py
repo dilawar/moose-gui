@@ -5,12 +5,11 @@
 # Maintainer: 
 # Created: Tue May 14 11:51:35 2013 (+0530)
 
-import sys
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtCore
 from PyQt5.Qt import Qt
 from PyQt5.QtWidgets import QTreeWidgetItem, QTreeWidget
-import moose
 
+import moose
 
 class MooseTreeModel(QtCore.QAbstractItemModel):
     """Tree model for the MOOSE element tree.
@@ -215,9 +214,11 @@ def main():
     Test main: load a model and display the tree for it
     """
     import sys
+    import os
+    sdir = os.path.dirname(__file__)
     from PyQt5.QtWidgets import QApplication, QMainWindow
-    model = moose.Neutral('/model')
-    modelfile = sys.argv[1]
+    #  model = moose.Neutral('/model')
+    modelfile = os.path.join(sdir, '../data/Kholodenko.g')
     moose.loadModel(modelfile, '/model')
     app = QApplication(sys.argv)
     mainwin = QMainWindow()
