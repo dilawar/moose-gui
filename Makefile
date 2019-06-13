@@ -1,17 +1,19 @@
+PY := $(shell which python3)
+
 all : check build
 
 check :
-	python -m compileall -q .
+	$(PY) -m compileall -q .
 
 build :
-	python setup.py sdist bdist
+	$(PY) setup.py sdist bdist
 
 install : uninstall
 	git clean -fxd .
-	python -m pip install . --upgrade --user
+	$(PY) -m pip install . --upgrade --user
 
 test: install
 	( cd /tmp && moosegui )
 
 uninstall :
-	python -m pip uninstall moosegui -y
+	$(PY) -m pip uninstall moosegui -y

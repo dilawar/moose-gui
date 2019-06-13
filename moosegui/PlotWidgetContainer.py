@@ -6,22 +6,20 @@ __license__     =   "GPL3"
 __maintainer__  =   "Aviral Goel", "HarshaRani"
 __email__       =   "goel.aviral@gmail.com"
 
+from PyQt5 import QtGui, QtCore
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QScrollArea
+from PyQt5.QtWidgets import QSplitter
 
-import sys
-import os
-from PyQt5 import QtGui, Qt
-from PyQt5.QtWidgets import QWidget, QSizeGrip
-from PyQt5.QtWidgets import QDockWidget, QLayout, QVBoxLayout
-from PyQt5.QtWidgets import QGridLayout, QScrollArea, QToolBar
-from PyQt5.QtWidgets import QSizeGrip, QSplitter
-
-from moosegui import default
-from moosegui import sidebar
+from moosegui.plugins import default
+from moosegui.plugins import sidebar
 
 import moose
 
 ELECTRICAL = 0
 CHEMICAL = 1
+
 class PlotWidgetContainer(QWidget):
 
     def __init__(self, modelRoot, *args, **kwargs):
@@ -40,31 +38,21 @@ class PlotWidgetContainer(QWidget):
                 self.data   = moose.element(self.modelRoot + "/data")
             else:
                 self.data   = moose.Neutral(self.modelRoot + "/data")
-
         else:
             self.data       = moose.element("/data")
 
         self._layout        = QVBoxLayout()
         self.graphs         = QSplitter()
-        self.graphs.setOrientation(PyQt5.QtCore.Qt.Vertical)
+        self.graphs.setOrientation(QtCore.Qt.Vertical)
         self.graphsArea     = QScrollArea()
-        # self.graphsLayout   = QGridLayout()
-        # self.menubar        = self.createMenuBar()
         self.rowIndex       = 0
-            # self.setSizePolicy( QtGui.QSizePolicy.Expanding
-        #                   , QtGui.QSizePolicy.Expanding
-        #                   )
-
         self.graphs.setSizePolicy( QtGui.QSizePolicy.Expanding
-                                 , QtGui.QSizePolicy.Expanding
-                                 )
+                , QtGui.QSizePolicy.Expanding
+                )
         self.setAcceptDrops(True)
-        # self._layout.setSizeConstraint( QLayout.SetNoConstraint )
-        # self.graphs.setLayout(self.graphsLayout)
         self.graphsArea.setWidget(self.graphs)
         self.graphsArea.setWidgetResizable(True)
         self.graphWidgets = []
-        # self._layout.addWidget(self.menubar)
         self._layout.addWidget(self.graphsArea)
         self.setLayout(self._layout)
 
@@ -94,8 +82,6 @@ class PlotWidgetContainer(QWidget):
     def createMenuBar(self):
         bar = sidebar.sidebar()
         bar.addAction(sidebar.add_graph_action(bar, lambda event: self.addPlotWidget() ))
-        # bar.addAction(sidebar.delete_graph_action(bar, lambda event: self.addPlotWidget() ))
-        # bar.addAction(sidebar.list_action(bar, self.showPlotView))
         return bar
 
     def addPlotWidget(self, row = None, col = 0, graph = None):
@@ -105,7 +91,6 @@ class PlotWidgetContainer(QWidget):
 
         if self.modelType == ELECTRICAL:
             for axes in list(widget.canvas.axes.values()):
-            # axes.autoscale(False, axis='x', tight=True)
                 axes.set_ylim(bottom = -0.07, top= 0.03)
 
         if row == None:
@@ -115,7 +100,6 @@ class PlotWidgetContainer(QWidget):
         self.graphWidgets.append(widget)
         widget.widgetClosedSignal.connect(self.deleteWidget)
         widget.addGraph.connect(lambda event : self.addPlotWidget())
-        # widget.resize(1, 1);
         return widget
 
     def showPlotView(self):
@@ -145,31 +129,3 @@ class PlotWidgetContainer(QWidget):
     def plotAllData(self):
         for graphWidget in self.graphWidgets:
             graphWidget.plotAllData()
-
-    #print(graphWidget)
-    # def plotAll(self):
-    #     self.apply(lambda obj: obj.plotAll())
-
-    # def plotAllData(self):
-    #     selt.plotWidgetContainer.plotAllData()
-
-    # def genColorMap(self,tableObject):
-    #     pass
-
-    # def onclick(self,event1):
-    #     pass
-
-    # def addTimeSeries(self, table, *args, **kwargs):
-    #     pass
-
-    # def addRasterPlot(self, eventtable, yoffset=0, *args, **kwargs):
-    #     pass
-
-    # def extendXAxes(self, xlim):
-    #     pass
-
-    # def saveCsv(self, line,directory):
-    #     pass
-
-    # def saveAllCsv(self):
-    #     pass

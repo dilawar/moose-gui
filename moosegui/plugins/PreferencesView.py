@@ -1,21 +1,16 @@
+# -*- coding: utf-8 -*-
 
 import PyQt5
 from PyQt5 import Qt, QtGui, QtCore
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QWidget
-from PyQt5.QtGui import QButtonGroup
-from PyQt5.QtGui import QRadioButton
-from PyQt5.QtGui import QVBoxLayout
-from PyQt5.QtGui import QLabel
-from PyQt5.QtGui import QGridLayout
-from PyQt5.QtGui import QLineEdit
-from PyQt5.QtGui import QDoubleValidator
-from PyQt5.QtGui import QComboBox
-from PyQt5.QtGui import QTabWidget
-from PyQt5.QtGui import QPushButton
-from PyQt5.QtGui import QColorDialog
+from PyQt5.QtWidgets import QWidget, QButtonGroup, QRadioButton
+from PyQt5.QtWidgets import QVBoxLayout, QLineEdit, QGridLayout
+from PyQt5.QtWidgets import QLineEdit, QComboBox, QLabel
+from PyQt5.QtWidgets import QTabWidget, QPushButton, QColorDialog
+from PyQt5.QtWidgets import QColorDialog, QSizePolicy
+from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QColor
-from PyQt5.QtGui import QSizePolicy
+from PyQt5.QtGui import QDoubleValidator
 import sys
 
 class PreferencesView(QTabWidget):
@@ -78,7 +73,7 @@ class PreferencesView(QTabWidget):
 
     def createChemicalSettingsTab(self):
         chemicalSettingsTab = QWidget()
-        layout = QtGui.QGridLayout()
+        layout = QGridLayout()
         chemicalSettingsTab.setLayout(layout)
 
         layout.addWidget(QLabel('Simulation dt'), 0, 0)
@@ -134,7 +129,7 @@ class PreferencesView(QTabWidget):
     def createElectricalSimulationSettingsTab(self):
 
         widget = QWidget()
-        layout = QtGui.QGridLayout()
+        layout = QGridLayout()
         widget.setLayout(layout)
 
         layout.addWidget(QLabel('Simulation dt'), 0, 0)
@@ -169,7 +164,7 @@ class PreferencesView(QTabWidget):
     def createElectricalSimulationVisualizationTab(self):
 
         widget = QWidget()
-        layout = QtGui.QGridLayout()
+        layout = QGridLayout()
         widget.setLayout(layout)
 
         layout.addWidget(QLabel('Base Membrane Voltage'), 1, 0)
@@ -229,7 +224,7 @@ class PreferencesView(QTabWidget):
         return floatingPointEditor
 
 def main():
-    app     = QtGui.QApplication(sys.argv)
+    app     = QApplication(sys.argv)
     widget  = PreferencesView()
     widget.show()
     sys.exit(app.exec_())
