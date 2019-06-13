@@ -14,6 +14,12 @@ import sys
 import re
 import math
 
+from PyQt5.QtWidgets import QApplication
+
+# For testing: QApplication must be created before any other widget.
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+
 from PyQt5 import QtGui, QtCore, Qt
 from PyQt5.QtWidgets import QWidget, QGridLayout, QFileDialog
 from PyQt5.QtWidgets import QMenu, QAction, QGraphicsScene
@@ -33,6 +39,9 @@ from moosegui.PlotWidgetContainer import PlotWidgetContainer
 # moose
 import moose
 
+# Logging
+import logging
+logger_ = logging.getLogger('gui.plugins.kkit')
 
 class KkitPlugin(MoosePlugin):
     """
@@ -324,9 +333,9 @@ class KineticsWidget(mplugin.EditorWidgetBase):
                 self.layout().removeWidget(self.view)
 
             self.view = kkitViewcontrol.GraphicalView(self.modelRoot,
-                                                      self.sceneContainer,
-                                                      self.border, self,
-                                                      self.createdItem)
+                    self.sceneContainer,
+                    self.border, self,
+                    self.createdItem)
 
             if isinstance(self, kineticEditorWidget):
                 self.view.setRefWidget("editorView")
@@ -366,6 +375,8 @@ class KineticsWidget(mplugin.EditorWidgetBase):
                     self.sceneContainer.itemsBoundingRect().width() + 20,
                     self.sceneContainer.itemsBoundingRect().height() + 20,
                     Qt.Qt.IgnoreAspectRatio)
+            else:
+                logger_.warning("Unhandled type: %s:%s" % (type(self),self))
 
     def getMooseObj(self):
         self.m = moose.wildcardFind(self.modelRoot + '/##[ISA=ChemCompt]')
@@ -1024,7 +1035,6 @@ class kineticEditorWidget(KineticsWidget):
                 self._insertToolBar.addWidget(button)
         return self._toolBars
 
-
 class KineticRunWidget(KineticsWidget):
     def __init__(self, plugin, *args):
         KineticsWidget.__init__(self, plugin, *args)
@@ -1079,18 +1089,15 @@ class KineticRunWidget(KineticsWidget):
 
 
 if __name__ == "__main__":
-    from PyQt5.QtWidgets import QApplication
-    app = QApplication(sys.argv)
     size = QtCore.QSize(1024, 768)
     sdir = os.path.dirname(__file__)
     modelPath = 'Kholodenko'
     itemignoreZooming = False
     try:
-        filepath = os.path.join(sdir, '../data/' + modelPath + '.g')
+        filepath = os.path.join(sdir, '../../data/' + modelPath + '.g')
         print("%s" % (filepath))
-        f = open(filepath, "r")
         moose.loadModel(filepath, '/' + modelPath)
-        dt = KineticsWidget()
+        dt = KineticsWidget( "kkit" )
         dt.modelRoot = '/' + modelPath
         dt.updateModelView()
         dt.show()

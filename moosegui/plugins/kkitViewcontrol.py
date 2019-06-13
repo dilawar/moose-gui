@@ -38,7 +38,7 @@ class GraphicalView(QGraphicsView):
     # https://stackoverflow.com/a/2971426/1805129 and cry!
     dropped = QtCore.pyqtSignal(int, name="dropped")
 
-    def __init__(self, modelRoot,parent,border,layoutPt,createdItem):
+    def __init__(self, modelRoot, parent, border, layoutPt, createdItem):
         QGraphicsView.__init__(self, parent)
         self.state = None
         self.move = False
@@ -1279,7 +1279,9 @@ class GraphicalView(QGraphicsView):
         return
 
     def wheelEvent(self, event):
-        factor = 1.41 ** (event.delta() / 240.0)
+        pD = event.angleDelta().y()
+        factor = 1.41 ** (pD / 240.0)
+        logger_.debug( "WheelEvent %s and factor: %s" % (pD, factor))
         self.scale(factor, factor)
 
     def dragEnterEvent(self, event):
@@ -1326,10 +1328,8 @@ class GraphicalView(QGraphicsView):
                 event_pos,
                 self.layoutPt
             )
-            # Check if view needs to rescaled to fit the dropped item.
-            self.layoutPt.rescaleView( )
         else:
-            logger_.debug("Not is editorView ")
+            logger_.debug("Not in editorView ")
             return
 
     def populate_srcdes(self, src, des):

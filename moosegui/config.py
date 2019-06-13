@@ -9,14 +9,16 @@
 
 import os
 import sys
-import tempfile
-import logging
-import errno
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtCore
 
 # Logger
 import logging
-logging.basicConfig( level=logging.INFO
+if os.environ.get('MOOSE_GUI_DEBUG', ''):
+    logLevel = logging.DEBUG
+else:
+    logLevel = logging.WARN
+
+logging.basicConfig(level=logLevel
         , format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
         , datefmt='%m-%d %H:%M'
         )

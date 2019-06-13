@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 # Description: Subclass of QToolButton to allow drag and drop
 # Author: 
 # Maintainer: 
@@ -26,13 +27,12 @@ class MToolButton(QToolButton):
     def mouseMoveEvent(self, event):        
         if not (event.buttons() & Qt.LeftButton):
             return 
-        if (event.pos() - self.dragStartPosition).manhattanLength() < QtGui.QApplication.startDragDistance():
+        if (event.pos() - self.dragStartPosition).manhattanLength() < QApplication.startDragDistance():
             return
         drag = QtGui.QDrag(self)
         mimeData = QtCore.QMimeData()
         mimeData.setText(self.text())
         drag.setMimeData(mimeData)
-        # print '1111', mimeData.text()
         dropAction = drag.exec_(Qt.CopyAction)
 
 

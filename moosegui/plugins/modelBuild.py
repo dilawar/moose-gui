@@ -250,7 +250,7 @@ def createObj(scene, view, modelpath, string, pos, layoutPt):
     num = 0
     ret_string = " "
     pos = view.mapToScene(event_pos)
-    itemAt = view.sceneContainerPt.itemAt(pos)
+    itemAt = view.sceneContainerPt.itemAt(float(pos.x()), float(pos.y()), QtGui.QTransform())
     moose.wildcardFind(modelpath + '/##[ISA=ChemCompt]')
     moose.mooseDeleteChemSolver(modelpath)
     mobj = ""
