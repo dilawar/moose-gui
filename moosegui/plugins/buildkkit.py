@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
+
 import sys
 import os
 import math
 import re
-import config
 import pickle 
 import posixpath
 
@@ -12,9 +13,10 @@ from PyQt5.QtWidgets import QFileDialog, QWidget
 import networkx as nx
 import numpy as np
 
+from moosegui import config
 from moosegui.plugins.default import *
 from moosegui.plugins.kkitUtil import *
-from moosegui.plugins.kkitQGraphics import PoolItem, ReacItem,EnzItem,CplxItem,ComptItem
+from moosegui.plugins.kkitQGraphics import PoolItem, ReacItem, EnzItem, CplxItem, ComptItem
 from moosegui.plugins.kkitViewcontrol import *
 from moosegui.plugins.kkitCalcArrow import *
 from moosegui.plugins.kkitOrdinateUtil import *

@@ -58,8 +58,11 @@ MOOSE_CORE_BUG_URL = 'https://github.com/BhallaLab/moose-core/issues'
 MOOSE_DOCS_DIR =  '/usr/share/doc/moose'
 
 MOOSE_GUI_DIR = os.path.dirname(os.path.abspath(__file__))
+assert os.path.exists(MOOSE_GUI_DIR)
 MOOSE_PLUGIN_DIR = os.path.join(MOOSE_GUI_DIR, 'plugins')
+assert os.path.exists(MOOSE_PLUGIN_DIR)
 MOOSE_ICON_DIR = os.path.join(MOOSE_GUI_DIR, 'icons' )
+assert os.path.exists(MOOSE_ICON_DIR)
 NEUROKIT_PLUGIN_DIR = os.path.join(MOOSE_GUI_DIR, 'plugins/NeuroKit')
 MOOSE_NUMPTHREADS = '1'
 

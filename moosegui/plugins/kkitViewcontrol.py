@@ -49,6 +49,7 @@ class GraphicalView(QGraphicsView):
         self.selections = []
         self.connector = None
         self.connectionSignImagePath = os.path.join(SDIR_, "../icons/connection.png")
+        assert os.path.exists( self.connectionSignImagePath )
         self.connectionSignImage = QtGui.QImage(self.connectionSignImagePath)
         self.setScene(parent)
         self.modelRoot = modelRoot
